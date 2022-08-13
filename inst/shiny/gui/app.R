@@ -3,11 +3,11 @@ library(shinyFiles)
 library(simplaceUtil)
 
 ui <- fluidPage(
-  titlePanel("Convert Sunscan file"),
+  titlePanel("Simplace R GUI"),
   sidebarLayout(
     
     sidebarPanel(
-      shinyFilesButton('files', label='File select', title='Please select a file', multiple=FALSE),
+      shinyFilesButton('files', label='Select solution', title='Please select a solution', multiple=FALSE),
       
     ),
     
