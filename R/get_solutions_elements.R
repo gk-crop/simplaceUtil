@@ -120,7 +120,11 @@ getLinks <- function(x,df)
   }
   trf_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//resources//transform"),'id')
   trans_resources <-  xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//resources//transform")),'resource')
-  vdf_all <-rbind(vdf_all,data.frame(from=trans_resources, to=trf_id, name="-",rel="value"))
+  if(length(trans_resources)>0)
+  {
+    vdf_all <-rbind(vdf_all,data.frame(from=trans_resources, to=trf_id, name="-",rel="value"))
+  }
+  
 
   for(i in df[df$type=="resource","id"])
   {
