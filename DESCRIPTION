@@ -1,14 +1,18 @@
 Package: simplaceUtil
 Title: Provides Utility Functions and ShinyApps to work with Simplace
-Version: 0.0.2
+Version: 0.0.3
+Date: 2022-08-14
 Authors@R: 
     person("Gunther", "Krauss", , "guntherkrauss@uni-bonn.de", role = c("aut", "cre"))
 Description: Provides Utility Functions and ShinyApps to work with Simplace. It visualises components of a solution, runs simulations and displays results.
 License: GPL-3
 Encoding: UTF-8
+Depends:
+  R (>= 4.1)
 Imports:
   DiagrammeR,
   DiagrammeRsvg,
+  rlang,
   dplyr,
   knitr,
   rsvg,
@@ -16,5 +20,8 @@ Imports:
   stringr,
   tidyr,
   xml2
+Suggests:
+  shinyFiles,
+  simplace
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1

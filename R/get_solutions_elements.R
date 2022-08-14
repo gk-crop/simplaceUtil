@@ -67,10 +67,15 @@ getComponents <- function(x)
 
   out_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//outputs//output"),'id')
   out_interf<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//outputs//output"),'interface')
-  out_file <- sapply(out_interf, function(oi) xml2::xml_text(xml2::xml_find_all(x,paste0("//solution//interfaces//interface[@id='",oi,"']//filename"))))
+  out_file <- sapply(out_interf, 
+                     function(oi) {
+                       typ <- xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//interfaces//interface[@id='",oi,"']")),"type")
+                       is_mem = typ %in% c("MEMORY")
+                       ifelse(is_mem,typ,xml2::xml_text(xml2::xml_find_all(x,paste0("//solution//interfaces//interface[@id='",oi,"']//filename"))))}
+                    )
   if(length(out_id)>0)
   {
-    df <- rbind(df,data.frame(id=out_id,type="output",subtype="output",ref=paste(out_interf,out_file), javaclass=""))
+    df <- rbind(df,data.frame(id=out_id,type="output",subtype="output",ref=paste0(out_interf,"[",out_file,"]"), javaclass=""))
   }
 
   df$nr <- 1:nrow(df)
@@ -195,6 +200,15 @@ getMetadataForFile <- function(file, rootdir)
   date <- file.info(file)[1,'mtime']
   list(date=date,folders=folders)
 }
+
+
+#' Get ids of memory outputs
+#' @param comp components dataframe
+#' @export
+getMemoryOutputIds <- function(comp) {
+  comp[!is.na(comp$ref) & substr(comp$ref,nchar(comp$ref)-7,nchar(comp$ref))=="[MEMORY]", "id"]
+}
+
 
 #' Get info for a solution
 #'

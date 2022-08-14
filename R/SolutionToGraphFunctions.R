@@ -15,6 +15,7 @@ getComponentsFromFile <- function(file)
 #' @param comp components dataframe
 #' @param links links dataframe
 #' @export
+#' @importFrom rlang .data
 componentsToGraph <- function(comp, links)
 {
 
@@ -37,12 +38,12 @@ componentsToGraph <- function(comp, links)
                                       tooltip=comp$ref)
 
   edf <- links |>
-    dplyr::filter(!is.na(from)) |>
-    dplyr::group_by(from,to,rel) |>
+    dplyr::filter(!is.na(.data$from)) |>
+    dplyr::group_by(.data$from,.data$to,.data$rel) |>
     dplyr::summarise( count=dplyr::n(), .groups="drop") |>
-    dplyr::left_join( nodes |> dplyr::select(to_id=id,label), by=c("to"="label")) |>
-    dplyr::left_join( nodes |> dplyr::select(from_id=id,label), by=c("from"="label")) |>
-    dplyr::mutate(color=dplyr::if_else(to_id-from_id < 0,"red","blue"))
+    dplyr::left_join( nodes |> dplyr::select(to_id=.data$id,.data$label), by=c("to"="label")) |>
+    dplyr::left_join( nodes |> dplyr::select(from_id=.data$id,.data$label), by=c("from"="label")) |>
+    dplyr::mutate(color=dplyr::if_else(.data$to_id-.data$from_id < 0,"red","blue"))
 
 
 
@@ -80,10 +81,11 @@ solutionToGraph <- function(file)
 #' @param name id of the sim component
 #' @param distance maximum number of steps from given component
 #' @export
+#' @importFrom rlang .data
 getNeighborhood <- function(graph, name, distance=1)
 {
   nodeid <- graph |>
-    DiagrammeR::select_nodes(conditions = label==name) |>
+    DiagrammeR::select_nodes(conditions = .data$label==name) |>
     DiagrammeR::get_selection()
 
   graph |>
