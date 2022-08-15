@@ -1,3 +1,9 @@
+Version 0.0.4
+* create & run simulation when memory output exists
+* display memory output
+* filter graph by components
+* sortable, paged tables
+
 Version 0.0.3
 * set simplace folders and run simulations
 * display component and link table

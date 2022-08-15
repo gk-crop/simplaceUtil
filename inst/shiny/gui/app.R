@@ -1,8 +1,15 @@
 library(shiny)
 library(shinyFiles)
 library(simplaceUtil)
+library(DT)
 
 source("helper.R")
+
+tableOptions <- list(
+  lengthMenu = list(c(10,25,100,200,-1),c("10","25","100","200","All")),
+  pageLength=100
+)
+
 
 ui <- fluidPage(
   titlePanel("Simplace R GUI"),
@@ -17,7 +24,16 @@ ui <- fluidPage(
       h4("Simplace"),
       shinyDirButton('instdir', label='Simplace Installation', title='Please select simplace installation dir', multiple=FALSE),
       uiOutput("workdirselect"),
-      uiOutput("outputdirselect")
+      uiOutput("outputdirselect"),
+      
+      h4("Solution Graph & tables"),
+      uiOutput("componentselect"),
+      selectInput("componenttype","Type",choices = c("all","var", "resource", "simcomponent", "output"),selected=1),
+      selectInput("graphlayout","Graph Layout",choices = c("nicely", "circle", "tree", "kk", "fr"),selected=1),
+      
+      h4("Simulation Runs"),
+      uiOutput("memoryoutselect")
+      
     ),
     mainPanel(
       tabsetPanel(
@@ -31,23 +47,24 @@ ui <- fluidPage(
           textOutput("outputdirlabel"),
           uiOutput("initbutton"),
           h4("Run Simulations"),
-          uiOutput("runbutton")
-                 
-        
+          uiOutput("runbutton"),
+          textOutput("runstatus"),
+          uiOutput("createsimbutton"),
+          textOutput("createstatus")
         ),
      
         tabPanel("Solution Graph",
-                
                  
                  DiagrammeR::grVizOutput("diagram",width = "100%", height="75%")),
+        
         tabPanel("Component Table",
-                 
-                 
-                 tableOutput("components")),
+                 dataTableOutput("components")),
+        
         tabPanel("Links Table",
-                 
-                 
-                 tableOutput("links"))
+                 dataTableOutput("links")),
+        
+        tabPanel("Memory Output",
+                 dataTableOutput("memoutput"))
     
       )
     )
@@ -74,6 +91,8 @@ server <- function(input, output) {
   v$project <- NULL
   
   v$cmp <- NULL
+  
+  v$actsim <- NULL
   
   
   # File and directory choose
@@ -103,6 +122,26 @@ server <- function(input, output) {
                 if(!is.na(v$solution))
                 {
                   v$cmp<-getComponentsFromFile(v$solution)
+                  
+                  
+                  comps <- unique(v$cmp$components$id)
+                  names(comps) <- comps
+                  ch_c <- c("All"='all',comps)
+                  
+                  if(length(ch_c)>0) {
+                    output$componentselect <-  renderUI(selectInput("componentselect","Select component", choices = ch_c, selected=1,multiple=FALSE))
+                  }
+                  
+                  memid <- getMemoryOutputIds(v$cmp$components)
+                  names(memid)<-memid
+                  ch_m <- memid
+                  if(length(ch_m)>0) {
+                    output$memoryoutselect <-  renderUI(selectInput("memoryoutselect","Select outputs", choices = ch_m, selected=1,multiple=FALSE))
+                  }
+                  else {
+                    output$memoryoutselect <- renderText("")
+                  }
+                  
                 }
                 output$solutionlabel <- renderText(paste("Solution:",v$solution))
                 
@@ -145,7 +184,8 @@ server <- function(input, output) {
     ignoreInit = TRUE
   )
   
-  observeEvent(input$workdir,
+  observeEvent(
+    input$workdir,
     {
       
       v$workdir <- paste0(shinyFiles::parseDirPath(vols,input$workdir),'/')
@@ -154,70 +194,125 @@ server <- function(input, output) {
     }     
   )
   
-  observeEvent(input$outputdir,
+  observeEvent(
+    input$outputdir,
     {
       v$outputdir <- paste0(shinyFiles::parseDirPath(vols,input$outputdir),'/')
       output$outputdirlabel <- renderText(paste("Output Dir:",v$outputdir))
       
-    })
+    }
+  )
   
-  observeEvent(input$init,
+  observeEvent(
+    input$init,
     {
       try(
-        { print(paste(v$instdir, v$workdir, v$outputdir))
+        { 
           v$sp <- simplace::initSimplace(v$instdir, v$workdir, v$outputdir)
           output$runbutton <- renderUI(actionButton('run',"Run Project"))
+          output$createsimbutton <- renderUI(actionButton('createsimulation',"Create and Run Simulation"))
+        
         }
       )
-    })
+    }
+  )
   
-  observeEvent(input$run,
-               {
-                 try({
-                   if(!is.null(v$sp) && !is.null(v$solution)) {
-                     print("running simulation")
-                     if(is.null(v$project))
-                     {
-                       simplace::openProject(v$sp,v$solution)
-                     }
-                     else
-                     {
-                       simplace::openProject(v$sp,v$solution,v$project)
-                     }
-                     
-                     simplace::runProject(v$sp)
-                     simplace::closeProject(v$sp)
-                     print("ended simulation")
-                   }
-                 }
-                 )
-               })
+  observeEvent(
+    input$run,
+    {
+      try({
+        if(!is.null(v$sp) && !is.null(v$solution)) {
+          output$runstatus <- renderText("running simulation in project mode")
+          if(is.null(v$project))
+          {
+            simplace::openProject(v$sp,v$solution)
+          }
+          else
+          {
+            simplace::openProject(v$sp,v$solution,v$project)
+          }
+          
+          simplace::runProject(v$sp)
+          simplace::closeProject(v$sp)
+          output$runstatus <- renderText("ended simulation")
+        }
+      }
+      )
+    }
+  )
+  
+  
+  observeEvent(
+    input$createsimulation, 
+    {
+      try({
+        if(!is.null(v$sp) && !is.null(v$solution)) {
+          simplace::openProject(v$sp,v$solution)
+          sim <- simplace::createSimulation(v$sp) 
+          output$createstatus<-renderText(paste("running simulation",sim))
+          simplace::runSimulations(v$sp)
+          simplace::closeProject(v$sp)
+          output$createstatus<-renderText(paste("ended simulation",sim))
+          v$actsim <- sim
+        }
+      }
+      )
+      
+    }
+  )
   
   
   output$diagram <- DiagrammeR::renderGrViz({
       if(!is.null(v$cmp))
       {
         dg <- componentsToGraph(v$cmp$components, v$cmp$links)
-        DiagrammeR::render_graph(dg)
+        if(!is.na(input$componentselect) & !(input$componentselect=='all'))
+        {
+          dg <- getNeighborhood(dg,input$componentselect,1)
+        }
+        
+        if(!is.na(input$componenttype) & !(input$componenttype=='all'))
+        {
+          dg <- dg |> 
+            DiagrammeR::select_nodes(conditions = .data$type!=input$componenttype) |> 
+            DiagrammeR::delete_nodes_ws()
+        }
+        
+        DiagrammeR::render_graph(dg, layout=input$graphlayout)
       }
     })
   
-  output$components <- renderTable(
+  output$components <- renderDataTable(
     {
       
       v$cmp$components
-    }
-  )
+    }, options=tableOptions)
   
-  output$links <- renderTable(
+  output$links <- renderDataTable(
     {
       
-      v$cmp$links
-    }
-  )
+      t <- v$cmp$links
+      if(!is.na(input$componentselect) & !(input$componentselect=='all'))
+      {
+        t <- t[!is.na(t$from) & (t$from==input$componentselect | t$to==input$componentselect),]
+      }
+      t
+    }, options=tableOptions)
+  
+  output$memoutput <- renderDataTable (
+    {
+      
+      if(!is.null(v$actsim))
+      {
+        res <- simplace::getResult(v$sp, input$memoryoutselect,v$actsim)
+        
+        df <- simplace::resultToDataframe(res)
+        df
+      }
+    }, options=tableOptions)
   
     
- }
+}
   
 # Run the application 
 shinyApp(ui = ui, server = server)

@@ -1,7 +1,7 @@
 
 
 simComponentType <- function(s) ifelse(s=="net.simplace.sim.components.DefaultManagement","mgm",
-                                       ifelse(s=="net.simplace.sim.components.FWSimpleSimComponent","simple","normal"))
+                                       ifelse(s=="net.simplace.sim.components.FWSimpleSimComponent","simple",ifelse(s=="net.simplace.sim.model.FWSimComponentGroup","grouped","normal")))
 
 mark_variables<-function(v){if(v[2]=="")c("variables",v[1])else v}
 
@@ -46,7 +46,7 @@ getComponents <- function(x)
   res_file <- sapply(res_interf, function(oi) xml2::xml_text(xml2::xml_find_all(x,paste0("//solution//interfaces//interface[@id='",oi,"']//filename"))))
   if(length(res_id)>0)
   {
-    df <- rbind(df,data.frame(id=res_id,type="resource",subtype="resource",ref=paste(res_interf, res_file),javaclass=""))
+    df <- rbind(df,data.frame(id=res_id,type="resource",subtype="resource",ref=paste0(res_interf,"[", res_file,"]"),javaclass=""))
   }
 
   trf_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//resources//transform"),'id')
@@ -56,13 +56,23 @@ getComponents <- function(x)
   {
     df <- rbind(df,data.frame(id=trf_id,type="resource",subtype="transform",ref=trf_res,javaclass=trf_cls))
   }
+  
+  als_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//resources//alias"),'id')
+  als_res<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//resources//alias"),'resource')
+  if(length(als_id)>0)
+  {
+    df <- rbind(df,data.frame(id=als_id,type="resource",subtype="alias",ref=als_res,javaclass=""))
+  }
+  
 
   cmp_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//simmodel//simcomponent"),'id')
   cmp_cls <-xml2::xml_attr(xml2::xml_find_all(x,"//solution//simmodel//simcomponent"),'class')
   cmp_clst<-simComponentType(cmp_cls)
+  cmp_ref <- sapply(seq_along(cmp_id),\(i)ifelse(cmp_clst[i]=="grouped",
+      xml2::xml_text(xml2::xml_find_all(x,paste0("//solution//simmodel//simcomponent[@id='",cmp_id[i],"']/group")))                                           ,cmp_cls[i]))
   if(length(cmp_id)>0)
   {
-    df <- rbind(df,data.frame(id=cmp_id,type="simcomponent",subtype=cmp_clst,ref=cmp_cls,javaclass=cmp_cls))
+    df <- rbind(df,data.frame(id=cmp_id,type="simcomponent",subtype=cmp_clst,ref=cmp_ref,javaclass=cmp_cls))
   }
 
   out_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//outputs//output"),'id')

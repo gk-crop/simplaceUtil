@@ -23,7 +23,7 @@ componentsToGraph <- function(comp, links)
 
   shapes <- c(var="oval",resource="egg", simcomponent="rectangle",output="triangle")
   ranks <- c(var=1,resource=2, simcomponent=3,output=4)
-  fills <- c(var="white",resource="#ffff99cc",transform="#ffdd88cc", mgm="#ff9999cc",simple="#ff6666cc", normal="#ff3333cc", output="#999999cc")
+  fills <- c(var="white",resource="#ffff99cc",alias="#ffff99cc",transform="#ffdd88cc", mgm="#ff9999cc",simple="#ff6666cc", normal="#ff3333cc",grouped="#ff1111cc", output="#999999cc")
 
 
   nodes <- DiagrammeR::create_node_df(n = nrow(comp), label=comp$id, shape=shapes[comp$type],
