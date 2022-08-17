@@ -75,6 +75,30 @@ solutionToGraph <- function(file)
 
 }
 
+#' Selects edges of specific timestep
+#'
+#' @param graph graph
+#' @param linkage all steps, same step or previous step
+#' @export
+filterEdges <- function(graph, linkage="allsteps") {
+
+  if(linkage=="prevstep") {
+    graph <- graph |>
+      DiagrammeR::select_edges(conditions = .data$color=="red") |>
+      DiagrammeR::invert_selection() |>
+      DiagrammeR::delete_edges_ws()
+  }
+  else if(linkage=="samestep") {
+    graph <- graph |>
+      DiagrammeR::select_edges(conditions = .data$color=="blue") |>
+      DiagrammeR::invert_selection() |>
+      DiagrammeR::delete_edges_ws()
+  }
+
+  graph
+}
+
+
 #' Get the simcomponent in the neighborhood of given component
 #'
 #' @param graph the solution graph
@@ -85,15 +109,7 @@ solutionToGraph <- function(file)
 #' @importFrom rlang .data
 getNeighborhood <- function(graph, name, distance=1, linkage="allsteps")
 {
-  if(linkage=="prevstep") {
-    graph <- graph |> DiagrammeR::select_edges(conditions = .data$color!="red") |>
-      DiagrammeR::delete_edges_ws()
-  }
-
-  if(linkage=="samestep") {
-    graph <- graph |> DiagrammeR::select_edges(conditions = .data$color!="blue") |>
-      DiagrammeR::delete_edges_ws()
-  }
+  graph <- filterEdges(graph, linkage)
 
   nodeid <- graph |>
     DiagrammeR::select_nodes(conditions = .data$label==name) |>
@@ -110,15 +126,7 @@ getConnected <- function(graph, name, distance = 50, linkage = "allsteps", dir=1
 
   fun <- if(dir==1) DiagrammeR::trav_in else DiagrammeR::trav_out
 
-  if(linkage=="prevstep") {
-    graph <- graph |> DiagrammeR::select_edges(conditions = .data$color!="red") |>
-      DiagrammeR::delete_edges_ws()
-  }
-
-  if(linkage=="samestep") {
-    graph <- graph |> DiagrammeR::select_edges(conditions = .data$color!="blue") |>
-      DiagrammeR::delete_edges_ws()
-  }
+  graph <- filterEdges(graph, linkage)
 
 
   nodes <- graph |>
@@ -147,6 +155,7 @@ getConnected <- function(graph, name, distance = 50, linkage = "allsteps", dir=1
 #' @param name name of component
 #' @param distance maximum distance from given component
 #' @param linkage all steps, same step or previous step
+#' @export
 getLinkingToComponent <- function(graph, name, distance = 50, linkage = "allsteps")
 {
   getConnected(graph, name, distance, linkage, dir=1)
@@ -158,6 +167,7 @@ getLinkingToComponent <- function(graph, name, distance = 50, linkage = "allstep
 #' @param name name of component
 #' @param distance maximum distance from given component
 #' @param linkage all steps, same step or previous step
+#' @export
 
 getLinkingFromComponent <- function(graph, name, distance = 50, linkage = "allsteps")
 {

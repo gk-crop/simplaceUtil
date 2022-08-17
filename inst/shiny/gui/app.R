@@ -299,11 +299,12 @@ server <- function(input, output) {
       if(!is.null(v$cmp))
       {
         cid <- ""
-        dg <- componentsToGraph(v$cmp$components, v$cmp$links)
+        dg <- componentsToGraph(v$cmp$components, v$cmp$links) |>
+          filterEdges(input$linkage)
         if(!is.na(input$componentselect) && !(input$componentselect=='all'))
         {
           cid <- input$componentselect
-          dg <- getNeighborhood(dg,cid,input$distance, input$linkage)
+          dg <- getNeighborhood(dg,cid,input$distance)
         }
         if(!is.na(input$componenttype) && !(input$componenttype=='all'))
         {
