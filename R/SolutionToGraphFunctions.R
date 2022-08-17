@@ -80,10 +80,21 @@ solutionToGraph <- function(file)
 #' @param graph the solution graph
 #' @param name id of the sim component
 #' @param distance maximum number of steps from given component
+#' @param linkage all steps, same step or previous step
 #' @export
 #' @importFrom rlang .data
-getNeighborhood <- function(graph, name, distance=1)
+getNeighborhood <- function(graph, name, distance=1, linkage="allsteps")
 {
+  if(linkage=="prevstep") {
+    graph <- graph |> DiagrammeR::select_edges(conditions = .data$color!="red") |>
+      DiagrammeR::delete_edges_ws()
+  }
+
+  if(linkage=="samestep") {
+    graph <- graph |> DiagrammeR::select_edges(conditions = .data$color!="blue") |>
+      DiagrammeR::delete_edges_ws()
+  }
+
   nodeid <- graph |>
     DiagrammeR::select_nodes(conditions = .data$label==name) |>
     DiagrammeR::get_selection()
@@ -92,5 +103,63 @@ getNeighborhood <- function(graph, name, distance=1)
     DiagrammeR::select_nodes_in_neighborhood(node = nodeid, distance=distance) |>
     DiagrammeR::invert_selection() |>
     DiagrammeR::delete_nodes_ws()
+}
 
+getConnected <- function(graph, name, distance = 50, linkage = "allsteps", dir=1)
+{
+
+  fun <- if(dir==1) DiagrammeR::trav_in else DiagrammeR::trav_out
+
+  if(linkage=="prevstep") {
+    graph <- graph |> DiagrammeR::select_edges(conditions = .data$color!="red") |>
+      DiagrammeR::delete_edges_ws()
+  }
+
+  if(linkage=="samestep") {
+    graph <- graph |> DiagrammeR::select_edges(conditions = .data$color!="blue") |>
+      DiagrammeR::delete_edges_ws()
+  }
+
+
+  nodes <- graph |>
+    DiagrammeR::select_nodes(conditions = .data$label==name) |>
+    DiagrammeR::get_selection()
+
+  l <- 0
+  dist <- 0
+  while (length(nodes)>l && dist<distance) {
+    l <- length(nodes)
+    dist <- dist + 1
+    nodes <- graph |>
+      DiagrammeR::select_nodes_by_id(nodes) |>
+      fun(add_to_selection = TRUE) |>
+      DiagrammeR::get_selection()
+  }
+  graph |>
+    DiagrammeR::select_nodes_by_id(nodes) |>
+    DiagrammeR::invert_selection() |>
+    DiagrammeR::delete_nodes_ws()
+}
+
+#' Get components that link to given component
+#'
+#' @param graph graph
+#' @param name name of component
+#' @param distance maximum distance from given component
+#' @param linkage all steps, same step or previous step
+getLinkingToComponent <- function(graph, name, distance = 50, linkage = "allsteps")
+{
+  getConnected(graph, name, distance, linkage, dir=1)
+}
+
+#' Get components that are linked from given component
+#'
+#' @param graph graph
+#' @param name name of component
+#' @param distance maximum distance from given component
+#' @param linkage all steps, same step or previous step
+
+getLinkingFromComponent <- function(graph, name, distance = 50, linkage = "allsteps")
+{
+  getConnected(graph, name, distance, linkage, dir=-1)
 }

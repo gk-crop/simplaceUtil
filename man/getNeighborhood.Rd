@@ -4,7 +4,7 @@
 \alias{getNeighborhood}
 \title{Get the simcomponent in the neighborhood of given component}
 \usage{
-getNeighborhood(graph, name, distance = 1)
+getNeighborhood(graph, name, distance = 1, linkage = "allsteps")
 }
 \arguments{
 \item{graph}{the solution graph}
@@ -12,6 +12,8 @@ getNeighborhood(graph, name, distance = 1)
 \item{name}{id of the sim component}
 
 \item{distance}{maximum number of steps from given component}
+
+\item{linkage}{all steps, same step or previous step}
 }
 \description{
 Get the simcomponent in the neighborhood of given component

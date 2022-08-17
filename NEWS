@@ -1,3 +1,6 @@
+Version 0.0.6
+* Enhanced display of solution graphs (linking from and to panel)
+
 Version 0.0.5
 * display memory output also when running project
 * smaller bugfixes
