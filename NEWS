@@ -1,3 +1,7 @@
+Version 0.0.5
+* display memory output also when running project
+* smaller bugfixes
+
 Version 0.0.4
 * create & run simulation when memory output exists
 * display memory output

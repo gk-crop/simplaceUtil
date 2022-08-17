@@ -3,13 +3,18 @@ my_volumes <- function()
   dirs <- simplace::findSimplaceInstallations()
   if(length(dirs)>0)
   {
-    names(dirs) <- paste0("simplace_",1:length(dirs))
+    if(length(dirs)>1){
+       names(dirs) <-paste0("simplace (",c("default",2:length(dirs)),")")
+    }
+    else{
+      names(dirs) <-"simplace"
+    }
     c(dirs, shinyFiles::getVolumes()())
   }
   else {
     shinyFiles::getVolumes()()
   }
-  
+
 }
 
 
