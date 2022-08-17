@@ -295,7 +295,7 @@ server <- function(input, output) {
 
   # outputs
 
-  output$diagram <- DiagrammeR::renderGrViz({
+  output$diagram <- DiagrammeR::renderGrViz(try({
       if(!is.null(v$cmp))
       {
         cid <- ""
@@ -317,9 +317,9 @@ server <- function(input, output) {
 
         DiagrammeR::render_graph(dg, layout=input$graphlayout)
       }
-    })
+    }))
 
-  output$diagram_from <- DiagrammeR::renderGrViz({
+  output$diagram_from <- DiagrammeR::renderGrViz(try({
     if(!is.null(v$cmp) && !is.na(input$componentselect) && !(input$componentselect=='all'))
     {
       cid <- input$componentselect
@@ -337,9 +337,9 @@ server <- function(input, output) {
 
       DiagrammeR::render_graph(dg, layout=input$graphlayout)
     }
-  })
+  }))
 
-  output$diagram_to <- DiagrammeR::renderGrViz({
+  output$diagram_to <- DiagrammeR::renderGrViz(try({
     if(!is.null(v$cmp) && !is.na(input$componentselect) && !(input$componentselect=='all'))
     {
       cid <- input$componentselect
@@ -357,7 +357,7 @@ server <- function(input, output) {
 
       DiagrammeR::render_graph(dg, layout=input$graphlayout)
     }
-  })
+  }))
 
 
   output$components <- renderDataTable(

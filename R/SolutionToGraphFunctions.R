@@ -80,22 +80,21 @@ solutionToGraph <- function(file)
 #' @param graph graph
 #' @param linkage all steps, same step or previous step
 #' @export
+#' @importFrom rlang .data
 filterEdges <- function(graph, linkage="allsteps") {
 
   if(linkage=="prevstep") {
-    graph <- graph |>
-      DiagrammeR::select_edges(conditions = .data$color=="red") |>
-      DiagrammeR::invert_selection() |>
-      DiagrammeR::delete_edges_ws()
+    edf <- graph$edges_df |>
+      dplyr::filter(.data$color=="red")
   }
   else if(linkage=="samestep") {
-    graph <- graph |>
-      DiagrammeR::select_edges(conditions = .data$color=="blue") |>
-      DiagrammeR::invert_selection() |>
-      DiagrammeR::delete_edges_ws()
+    edf <-graph$edges_df |>
+      dplyr::filter(.data$color=="blue")
   }
-
-  graph
+  else {
+    edf <- graph$edges_df
+  }
+  DiagrammeR::create_graph(graph$nodes_df,edf)
 }
 
 
@@ -121,6 +120,7 @@ getNeighborhood <- function(graph, name, distance=1, linkage="allsteps")
     DiagrammeR::delete_nodes_ws()
 }
 
+#' @importFrom rlang .data
 getConnected <- function(graph, name, distance = 50, linkage = "allsteps", dir=1)
 {
 
