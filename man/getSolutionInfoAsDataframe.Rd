@@ -4,12 +4,12 @@
 \alias{getSolutionInfoAsDataframe}
 \title{Get info for a solution}
 \usage{
-getSolutionInfoAsDataframe(file, rootdir)
+getSolutionInfoAsDataframe(file, workdir)
 }
 \arguments{
 \item{file}{solution file}
 
-\item{rootdir}{root directory}
+\item{workdir}{working directory}
 }
 \description{
 Get info for a solution

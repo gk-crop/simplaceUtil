@@ -16,22 +16,29 @@ ui <- fluidPage(
   sidebarLayout(
 
     sidebarPanel(
+
       h4("Solution & Project"),
       shinyFilesButton('solution', label='Select solution',
                        title='Please select a solution', multiple=FALSE),
       shinyFilesButton('project', label='Select project',
                        title='Please select a project', multiple=FALSE),
+
       h4("Simplace"),
-      shinyDirButton('instdir', label='Simplace Installation', title='Please select simplace installation dir', multiple=FALSE),
-      uiOutput("workdirselect"),
-      uiOutput("outputdirselect"),
+      fluidRow(
+        column(5, shinyDirButton('instdir', label='Simplace Installation', title='Please select simplace installation dir', multiple=FALSE)),
+        column(7, uiOutput("dirselect"))
+      ),
 
       h4("Solution Graph & tables"),
       selectInput("graphlayout","Graph Layout",choices = c("nicely", "circle", "tree", "kk", "fr"),selected=1),
-      selectInput("componenttype","Type",choices = c("all","var", "resource", "simcomponent", "output"),selected=1),
       uiOutput("componentselect"),
-      selectInput("distance","Distance from Component",choices = c(1:10,25,50),selected=1),
-      selectInput("linkage","Linked Values",choices = c("All Timesteps"="allsteps", "Actual Timestep"="samestep", "Previous Timestep"="prevstep"),selected=1),
+      fluidRow(
+        column(4, selectInput("componenttype","Type",choices = c("all","var", "resource", "simcomponent", "output"),selected=1)),
+        column(3, selectInput("distance","Distance",choices = c(1:10),selected=1)),
+        column(5, selectInput("linkage","Linked Values",
+                  choices = c("All Timesteps"="allsteps", "Actual Timestep"="samestep", "Previous Timestep"="prevstep"),
+                  selected=1))
+      ),
 
       h4("Simulation Runs"),
       uiOutput("memoryoutselect"),
@@ -56,23 +63,29 @@ ui <- fluidPage(
         ),
 
         tabPanel("Solution Graph",
-
                  DiagrammeR::grVizOutput("diagram",width = "100%", height="75%")),
+
         tabPanel("Linking To",
-
                  DiagrammeR::grVizOutput("diagram_to",width = "100%", height="75%")),
-        tabPanel("Linked From",
 
+        tabPanel("Linked From",
                  DiagrammeR::grVizOutput("diagram_from",width = "100%", height="75%")),
 
-        tabPanel("Component Table",
+        tabPanel("Components",
                  dataTableOutput("components")),
 
-        tabPanel("Links Table",
+        tabPanel("Links",
                  dataTableOutput("links")),
 
-        tabPanel("Memory Output",
-                 dataTableOutput("memoutput"))
+        tabPanel("User Variables",
+                 dataTableOutput("variables")),
+
+        tabPanel("Mem Output",
+                 dataTableOutput("memoutput")),
+
+        tabPanel("Plots",
+                 uiOutput("plotcontrols"),
+                 plotOutput("plot"))
 
       )
     )
@@ -105,6 +118,8 @@ server <- function(input, output) {
 
   v$res <- NULL
 
+  v$resultdf <- NULL
+
 
   # File and directory choose
   shinyFileChoose(input, 'solution', roots=vols,
@@ -134,7 +149,7 @@ server <- function(input, output) {
                 v$solution <- filename(input$solution,vols)
                 if(!is.na(v$solution))
                 {
-                  v$cmp<-getComponentsFromFile(v$solution)
+                  v$cmp<-getElementsFromSolutionFile(v$solution)
 
 
                   comps <- unique(v$cmp$components$id)
@@ -184,16 +199,15 @@ server <- function(input, output) {
         output$instdirlabel <- renderText(paste("Installation Dir:",d))
         output$workdirlabel <- renderText(paste("Work Dir:",v$workdir))
         output$outputdirlabel <- renderText(paste("Output Dir:",v$outputdir))
-        output$workdirselect <-  renderUI(
+        output$dirselect <-  renderUI(
+          tagList(
           shinyDirButton('workdir',
                      label='Workdir',
-                     title='Please select simplace work dir', multiple=FALSE)
-
-        )
-        output$outputdirselect <-  renderUI(
+                     title='Please select simplace work dir', multiple=FALSE),
           shinyDirButton('outputdir',
                          label='Outputdir',
                          title='Please select simplace output dir', multiple=FALSE)
+          )
         )
         output$initbutton <- renderUI(actionButton('init',"Start Simplace"))
       }
@@ -291,6 +305,28 @@ server <- function(input, output) {
 
   observeEvent(v$simulated,{
     if(!v$simulated) {output$runstatus <- renderText("")}
+    else {
+      if(v$simulated && !is.null(input$memoryoutselect))
+      {
+        if(!is.null(v$actsim))
+        {
+          res <- simplace::getResult(v$sp, input$memoryoutselect,v$actsim)
+        }
+        else {
+          res <- simplace::getResult(v$sp, input$memoryoutselect)
+        }
+        v$resultdf <- simplace::resultToDataframe(res)
+        sims <- unique(v$resultdf$simulationid)
+        cols <- names(v$resultdf)
+        output$plotcontrols <- renderUI(
+          tagList(fluidRow(
+            column(4,selectInput("simulation", "SimulationId",sims)),
+            column(4,selectInput("columnx", "X-Column",cols, selected="CURRENT.DATE")),
+            column(4,selectInput("columny", "Y-Column",cols, selected="CURRENT.DATE"))
+          ))
+        )
+      }
+    }
   })
 
   # outputs
@@ -384,24 +420,29 @@ server <- function(input, output) {
     }, options=tableOptions)
 
 
+  output$variables <- renderDataTable(
+    {
+      v$cmp$variables
+    }, options=tableOptions)
+
   output$memoutput <- renderDataTable (
     {
-
-      if(v$simulated && !is.null(input$memoryoutselect))
-      {
-        if(!is.null(v$actsim))
-        {
-          res <- simplace::getResult(v$sp, input$memoryoutselect,v$actsim)
-        }
-        else {
-          res <- simplace::getResult(v$sp, input$memoryoutselect)
-        }
-        df <- simplace::resultToDataframe(res)
-        df
-      }
-
-
+      v$resultdf
     }, options=tableOptions)
+
+  output$plot <- renderPlot({
+    data <- v$resultdf[v$resultdf$simulationid==input$simulation,]
+    if(mode(data[,input$columnx])!="numeric")
+    {
+      data[,input$columnx] <- as.factor(data[,input$columnx])
+    }
+    if(mode(data[,input$columny])!="numeric")
+       {
+         data[,input$columny] <- as.factor(data[,input$columny])
+    }
+
+    plot(data[,input$columnx],data[,input$columny],xlab=input$columnx, ylab=input$columny, pch=20)
+  })
 
 
 }

@@ -1,10 +1,20 @@
-
-
+#' Determines the type of sim component by class attribute
+#'
+#' @param s class attribute
 simComponentType <- function(s) ifelse(s=="net.simplace.sim.components.DefaultManagement","mgm",
                                        ifelse(s=="net.simplace.sim.components.FWSimpleSimComponent","simple",ifelse(s=="net.simplace.sim.model.FWSimComponentGroup","grouped","normal")))
 
+
+#' Add the prefix "variables" if there is none
+#'
+#' @param v vector with prefix and name
 mark_variables<-function(v){if(v[2]=="")c("variables",v[1])else v}
 
+
+
+#' Get the variables from source, rule etc. attributes
+#'
+#' @param s attribute text (rule)
 getVars <- function(s)
 {
   m <- NULL
@@ -28,6 +38,25 @@ getVars <- function(s)
   }
   colnames(df)<-c("from","name")
   df
+}
+
+#' Gets user variables for a solution
+#'
+#' @param x xml object (solution)
+#' @export
+getUserVariables <- function(x)
+{
+  var <- xml2::xml_find_all(x,"//solution//variables//var")
+  dyn <- xml2::xml_find_all(x,"//solution//variables//dyn")
+  kind <- c(rep("var",length(var)), rep("dyn",length(dyn)))
+  id <- c(xml2::xml_attr(var,'id'),xml2::xml_attr(dyn,'id'))
+  value <- c(xml2::xml_text(var),
+            xml2::xml_text(dyn))
+  unit <-c(xml2::xml_attr(var,'unit'),
+            xml2::xml_attr(dyn,'unit'))
+  datatype <- c(xml2::xml_attr(var,'datatype'),
+          xml2::xml_attr(dyn,'datatype'))
+  data.frame(id,value, unit, datatype, kind)
 }
 
 #' Gets components for a solution
@@ -56,14 +85,14 @@ getComponents <- function(x)
   {
     df <- rbind(df,data.frame(id=trf_id,type="resource",subtype="transform",ref=trf_res,javaclass=trf_cls))
   }
-  
+
   als_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//resources//alias"),'id')
   als_res<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//resources//alias"),'resource')
   if(length(als_id)>0)
   {
     df <- rbind(df,data.frame(id=als_id,type="resource",subtype="alias",ref=als_res,javaclass=""))
   }
-  
+
 
   cmp_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//simmodel//simcomponent"),'id')
   cmp_cls <-xml2::xml_attr(xml2::xml_find_all(x,"//solution//simmodel//simcomponent"),'class')
@@ -77,7 +106,7 @@ getComponents <- function(x)
 
   out_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//outputs//output"),'id')
   out_interf<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//outputs//output"),'interface')
-  out_file <- sapply(out_interf, 
+  out_file <- sapply(out_interf,
                      function(oi) {
                        typ <- xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//interfaces//interface[@id='",oi,"']")),"type")
                        is_mem = typ %in% c("MEMORY")
@@ -134,7 +163,7 @@ getLinks <- function(x,df)
   {
     vdf_all <-rbind(vdf_all,data.frame(from=trans_resources, to=trf_id, name="-",rel="value"))
   }
-  
+
 
   for(i in df[df$type=="resource","id"])
   {
@@ -200,21 +229,18 @@ getLinks <- function(x,df)
 }
 
 
-isSolution <-function(file) {
-  substr(file, nchar(file)-7, nchar(file)) == ".sol.xml"
-}
-
-
-
-getMetadataForFile <- function(file, rootdir)
+#' Get component and links dataframe from solution file
+#'
+#' @param file solution
+#' @export
+getElementsFromSolutionFile <- function(file)
 {
-  part <- gsub(paste0(rootdir,"/"),"",file)
-  folders <- strsplit(part,"/")[[1]]
-  folders <-folders[folders!="solution" & !isSolution(folders)]
-  date <- file.info(file)[1,'mtime']
-  list(date=date,folders=folders)
+  sol <- xml2::read_xml(file)
+  comp <- getComponents(sol)
+  links <- getLinks(sol,comp)
+  vars <- getUserVariables(sol)
+  list("solution"=sol,"components"=comp, "links"=links, "variables"=vars)
 }
-
 
 #' Get ids of memory outputs
 #' @param comp components dataframe
@@ -223,17 +249,39 @@ getMemoryOutputIds <- function(comp) {
   comp[!is.na(comp$ref) & substr(comp$ref,nchar(comp$ref)-7,nchar(comp$ref))=="[MEMORY]", "id"]
 }
 
+#' Determines the solution by it's file extension
+#'
+#' @param file filename
+isSolution <-function(file) {
+  substr(file, nchar(file)-7, nchar(file)) == ".sol.xml"
+}
+
+
+#' Get metadata from file
+#'
+#' @param file filename (full path)
+#' @param workdir working directory path
+getMetadataForFile <- function(file, workdir)
+{
+  part <- gsub(paste0(workdir,"/"),"",file)
+  folders <- strsplit(part,"/")[[1]]
+  folders <-folders[folders!="solution" & !isSolution(folders)]
+  date <- file.info(file)[1,'mtime']
+  list(date=date,folders=folders)
+}
+
+
 
 #' Get info for a solution
 #'
 #' @param file solution file
-#' @param rootdir root directory
+#' @param workdir working directory
 #' @export
-getSolutionInfoAsDataframe <- function (file, rootdir)
+getSolutionInfoAsDataframe <- function (file, workdir)
 {
   sol <- xml2::read_xml(file)
   comp <- getComponents(sol)
-  md <- getMetadataForFile(file, rootdir)
+  md <- getMetadataForFile(file, workdir)
   comp$file <- file
   comp$lastmodified <- md$date
   comp$user <- md$folders[1]

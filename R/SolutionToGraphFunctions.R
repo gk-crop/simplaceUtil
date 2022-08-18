@@ -1,15 +1,3 @@
-#' Get component and links dataframe from solution file
-#'
-#' @param file solution
-#' @export
-getComponentsFromFile <- function(file)
-{
-  sol <- xml2::read_xml(file)
-  comp <- getComponents(sol)
-  links <- getLinks(sol,comp)
-  list("solution"=sol,"components"=comp, "links"=links)
-}
-
 #' Creates a graph from component and links dataframe
 #'
 #' @param comp components dataframe
@@ -70,7 +58,7 @@ componentsToGraph <- function(comp, links)
 #' @export
 solutionToGraph <- function(file)
 {
-  cp <- getComponentsFromFile(file)
+  cp <- getElementsFromSolutionFile(file)
   componentsToGraph(cp$components, cp$links)
 
 }
