@@ -25,3 +25,25 @@ parseDate <- function(data, newName="Date", format="%d.%m.%Y", oldName ="CURRENT
   data[[newName]] <- as.Date(data[[oldName]],format=format)
   data
 }
+
+
+transdf <- function(l, n)
+{
+  if(is.list(l))
+  {
+    d <- as.data.frame(t(as.data.frame(l)))
+    names(d) <- gsub("V",paste0(n,"_"),names(d))
+  }
+  else {
+    d <- data.frame(l)
+    names(d)<-n
+  }
+  d
+}
+
+#' converts expanded resultlist to dataframe in wide format
+#' @param reslist result list from simplace simulation
+#' @export
+resultToDataframeExpanded <- function(reslist) {
+  do.call(cbind,lapply(names(resultlistexp),\(n)transdf(resultlistexp[[n]], n)))
+}

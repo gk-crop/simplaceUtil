@@ -315,7 +315,7 @@ server <- function(input, output) {
         else {
           res <- simplace::getResult(v$sp, input$memoryoutselect)
         }
-        v$resultdf <- simplace::resultToDataframe(res)
+        v$resultdf <- resultToDataframeExpanded(simplace::resultToList(res, expand=TRUE))
         sims <- unique(v$resultdf$simulationid)
         cols <- names(v$resultdf)
         output$plotcontrols <- renderUI(
