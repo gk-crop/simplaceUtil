@@ -2,7 +2,7 @@
 
 Some utility functions to work with the Simplace framework.
 
-**Notice:** This is only an alpha version.
+**Notice:** This is a beta version. 
 
 ## Running the shiny app
 
