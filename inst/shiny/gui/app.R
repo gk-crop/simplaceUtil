@@ -448,19 +448,6 @@ server <- function(input, output) {
         plot(data[,input$columnx],data[,input$columny],xlab=input$columnx, ylab=input$columny, pch=20)
       }
     }
-
-    data <- v$resultdf[v$resultdf$simulationid==input$simulation,]
-    if(mode(data[,input$columnx])!="numeric")
-    {
-      data[,input$columnx] <- as.factor(data[,input$columnx])
-    }
-    if(mode(data[,input$columny])!="numeric")
-       {
-         data[,input$columny] <- as.factor(data[,input$columny])
-    }
-
-    plot(data[,input$columnx],data[,input$columny],xlab=input$columnx, ylab=input$columny, pch=20)
-
   })
 
 
