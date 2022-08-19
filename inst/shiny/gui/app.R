@@ -120,6 +120,33 @@ server <- function(input, output) {
 
   v$resultdf <- NULL
 
+  
+  
+  
+  getSimulationResult <- function ()
+  {
+    if(v$simulated && !is.null(input$memoryoutselect))
+    {
+      if(!is.null(v$actsim))
+      {
+        res <- simplace::getResult(v$sp, input$memoryoutselect,v$actsim)
+      }
+      else {
+        res <- simplace::getResult(v$sp, input$memoryoutselect)
+      }
+      v$resultdf <- resultToDataframeExpanded(simplace::resultToList(res, expand=TRUE))
+      sims <- unique(v$resultdf$simulationid)
+      cols <- names(v$resultdf)
+      output$plotcontrols <- renderUI(
+        tagList(fluidRow(
+          column(4,selectInput("simulation", "SimulationId",sims)),
+          column(4,selectInput("columnx", "X-Column",cols, selected="CURRENT.DATE")),
+          column(4,selectInput("columny", "Y-Column",cols, selected="CURRENT.DATE"))
+        ))
+      )
+    }
+    
+  }
 
   # File and directory choose
   shinyFileChoose(input, 'solution', roots=vols,
@@ -302,30 +329,12 @@ server <- function(input, output) {
     }
   )
 
-
+  
+  observeEvent(input$memoryoutselect,getSimulationResult())
   observeEvent(v$simulated,{
     if(!v$simulated) {output$runstatus <- renderText("")}
     else {
-      if(v$simulated && !is.null(input$memoryoutselect))
-      {
-        if(!is.null(v$actsim))
-        {
-          res <- simplace::getResult(v$sp, input$memoryoutselect,v$actsim)
-        }
-        else {
-          res <- simplace::getResult(v$sp, input$memoryoutselect)
-        }
-        v$resultdf <- resultToDataframeExpanded(simplace::resultToList(res, expand=TRUE))
-        sims <- unique(v$resultdf$simulationid)
-        cols <- names(v$resultdf)
-        output$plotcontrols <- renderUI(
-          tagList(fluidRow(
-            column(4,selectInput("simulation", "SimulationId",sims)),
-            column(4,selectInput("columnx", "X-Column",cols, selected="CURRENT.DATE")),
-            column(4,selectInput("columny", "Y-Column",cols, selected="CURRENT.DATE"))
-          ))
-        )
-      }
+      getSimulationResult()
     }
   })
 

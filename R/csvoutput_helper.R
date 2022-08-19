@@ -45,5 +45,7 @@ transdf <- function(l, n)
 #' @param reslist result list from simplace simulation
 #' @export
 resultToDataframeExpanded <- function(reslist) {
-  do.call(cbind,lapply(names(resultlistexp),\(n)transdf(resultlistexp[[n]], n)))
+  df<-do.call(cbind,lapply(names(reslist),\(n)transdf(reslist[[n]], n)))
+  rownames(df)<-NULL
+  df
 }
