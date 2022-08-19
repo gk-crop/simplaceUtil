@@ -1,3 +1,7 @@
+Version 0.1.2
+* select date range for plots
+* plot array values as filled contour
+
 Version 0.1.1
 * use also array values from memory output
 

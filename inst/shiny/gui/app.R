@@ -85,7 +85,11 @@ ui <- fluidPage(
 
         tabPanel("Plots",
                  uiOutput("plotcontrols"),
-                 plotOutput("plot"))
+                 plotOutput("plot"),
+                 uiOutput("layerplotcontrols"),
+                 plotOutput("layerplot")
+                 )
+                 
 
       )
     )
@@ -137,13 +141,22 @@ server <- function(input, output) {
       v$resultdf <- resultToDataframeExpanded(simplace::resultToList(res, expand=TRUE))
       sims <- unique(v$resultdf$simulationid)
       cols <- names(v$resultdf)
+      lcols <- unique(gsub("_[0-9]+$","",cols[grepl("_[0-9]+$",cols)]))
+      mind <- min(v$resultdf$CURRENT.DATE)
+      maxd <- max(v$resultdf$CURRENT.DATE)
       output$plotcontrols <- renderUI(
         tagList(fluidRow(
-          column(4,selectInput("simulation", "SimulationId",sims)),
-          column(4,selectInput("columnx", "X-Column",cols, selected="CURRENT.DATE")),
-          column(4,selectInput("columny", "Y-Column",cols, selected="CURRENT.DATE"))
+          column(3,selectInput("simulation", "SimulationId",sims)),
+          column(3,selectInput("columnx", "X-Column",cols, selected="CURRENT.DATE")),
+          column(3,selectInput("columny", "Y-Column",cols, selected="CURRENT.DATE")),
+          column(3,dateRangeInput('daterange',
+                                  label = 'Date range: yyyy-mm-dd',
+                                  min = mind, max=maxd,
+                                  start = mind, end = min(mind+3*356,maxd)
+          ),)
         ))
       )
+      output$layerplotcontrols <- renderUI(selectInput("layer","Value",lcols))
     }
     
   }
@@ -442,7 +455,9 @@ server <- function(input, output) {
   output$plot <- renderPlot({
     if(v$simulated)
     {
-      data <- v$resultdf[v$resultdf$simulationid==input$simulation,]
+      data <- v$resultdf[v$resultdf$simulationid==input$simulation &
+                           input$daterange[1]<=v$resultdf$CURRENT.DATE &
+                           v$resultdf$CURRENT.DATE<=input$daterange[2],]
       if(nrow(data)>0)
       {
         if(mode(data[,input$columnx])!="numeric")
@@ -459,6 +474,40 @@ server <- function(input, output) {
     }
   })
 
+  
+  output$layerplot <- renderPlot({
+    if(v$simulated)
+    {
+      data <- v$resultdf[v$resultdf$simulationid==input$simulation &
+                           input$daterange[1]<=v$resultdf$CURRENT.DATE &
+                           v$resultdf$CURRENT.DATE<=input$daterange[2],]
+      if(nrow(data)>0)
+      {
+        lnames <- names(data)
+        lcols <- substr(lnames,1,nchar(input$layer))
+        lnames <- rev(lnames[lcols==input$layer])
+        
+        ldata <- data[,lnames]
+        
+        mat <- data.matrix(ldata,rownames.force = NA)
+        
+       
+       
+        
+        filled.contour(
+          x = data$CURRENT.DATE,
+          y = -(ncol(ldata):1),
+          z=mat,
+          main = input$layer,
+          xlab = "Date",
+          ylab = "Layer")
+        
+        
+        
+        
+      }
+    }
+  })
 
 }
 
