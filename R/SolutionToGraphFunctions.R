@@ -2,15 +2,20 @@
 #'
 #' @param comp components dataframe
 #' @param links links dataframe
+#' @param showinterfaces if TRUE, include interfaces in graph
 #' @export
 #' @importFrom rlang .data
-componentsToGraph <- function(comp, links)
+componentsToGraph <- function(comp, links, showinterfaces=FALSE)
 {
 
 
+  if(!showinterfaces)
+  {
+    comp <- comp[comp$type!="interface",]
+  }
 
-  shapes <- c(var="oval",resource="egg", simcomponent="rectangle",output="triangle")
-  ranks <- c(var=1,resource=2, simcomponent=3,output=4)
+  shapes <- c(var="oval",resource="egg", simcomponent="rectangle",output="triangle",interface="triangle")
+  ranks <- c(interface=0,var=1,resource=2, simcomponent=3,output=4)
   fills <- c(var="white",resource="#ffff99cc",alias="#ffff99cc",transform="#ffdd88cc", mgm="#ff9999cc",simple="#ff6666cc", normal="#ff3333cc",grouped="#ff1111cc", output="#999999cc")
 
 
@@ -26,16 +31,17 @@ componentsToGraph <- function(comp, links)
                                       tooltip=comp$ref)
 
   edf <- links |>
-    dplyr::filter(!is.na(.data$from)) |>
+    dplyr::filter(!is.na(.data$from) & !is.na(.data$to)) |>
     dplyr::group_by(.data$from,.data$to,.data$rel) |>
     dplyr::summarise( count=dplyr::n(), .groups="drop") |>
     dplyr::left_join( nodes |> dplyr::select(to_id=.data$id,.data$label), by=c("to"="label")) |>
     dplyr::left_join( nodes |> dplyr::select(from_id=.data$id,.data$label), by=c("from"="label")) |>
+    dplyr::filter(!is.na(.data$from_id) & !is.na(.data$to_id)) |>
     dplyr::mutate(color=dplyr::if_else(.data$to_id-.data$from_id < 0,"red","blue"))
 
 
 
-  edgeheads <- c(rule = "curve", value="normal", key="diamond")
+  edgeheads <- c(rule = "curve", value="normal", key="diamond", data="tee", storage="box")
 
   edges <- DiagrammeR::create_edge_df(from=edf$from_id, to=edf$to_id, rel=edf$rel,
                                       penwidth=.5+log(edf$count)*.3,color=edf$color,
@@ -55,11 +61,12 @@ componentsToGraph <- function(comp, links)
 #' Creates a graph from a solution
 #'
 #' @param file solution file
+#' @param showinterfaces if true include interfaces
 #' @export
-solutionToGraph <- function(file)
+solutionToGraph <- function(file,showinterfaces=FALSE)
 {
   cp <- getElementsFromSolutionFile(file)
-  componentsToGraph(cp$components, cp$links)
+  componentsToGraph(cp$components, cp$links,showinterfaces)
 
 }
 

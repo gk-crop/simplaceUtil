@@ -4,10 +4,12 @@
 \alias{solutionToGraph}
 \title{Creates a graph from a solution}
 \usage{
-solutionToGraph(file)
+solutionToGraph(file, showinterfaces = FALSE)
 }
 \arguments{
 \item{file}{solution file}
+
+\item{showinterfaces}{if true include interfaces}
 }
 \description{
 Creates a graph from a solution

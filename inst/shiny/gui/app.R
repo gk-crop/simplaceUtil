@@ -17,19 +17,19 @@ ui <- fluidPage(
 
     sidebarPanel(
 
-      h4("Solution & Project"),
+      h5("Solution & Project"),
       shinyFilesButton('solution', label='Select solution',
                        title='Please select a solution', multiple=FALSE),
       shinyFilesButton('project', label='Select project',
                        title='Please select a project', multiple=FALSE),
 
-      h4("Simplace"),
+      h5("Simplace"),
       fluidRow(
         column(5, shinyDirButton('instdir', label='Simplace Installation', title='Please select simplace installation dir', multiple=FALSE)),
         column(7, uiOutput("dirselect"))
       ),
 
-      h4("Solution Graph & tables"),
+      h5("Solution Graph & tables"),
       selectInput("graphlayout","Graph Layout",choices = c("nicely", "circle", "tree", "kk", "fr"),selected=1),
       uiOutput("componentselect"),
       fluidRow(
@@ -40,12 +40,13 @@ ui <- fluidPage(
                   selected=1))
       ),
 
-      h4("Simulation Runs"),
+      h5("Simulation Runs"),
       uiOutput("memoryoutselect"),
       textOutput("runstatus")
 
-
     ),
+    
+    
     mainPanel(
       tabsetPanel(
         tabPanel("Simplace",
@@ -88,9 +89,17 @@ ui <- fluidPage(
                  plotOutput("plot"),
                  uiOutput("layerplotcontrols"),
                  plotOutput("layerplot")
+                 ),
+        
+        tabPanel("?",
+                 h4("Analyze Solution"),
+                 div("For analyzing a solution one does not need a simplace installation. The structure is derived from the solution xml file."),
+                 h4("Run Simulations"),
+                 div("For running a simulation, one has to specify the simplace installation dir. Please choose a directory that contains the folders simplace_core and simplace_modules."),
+                 div("If one or more simplace installations are automatically detected, they show up in the directory choose dialog as volumes. Workdir and Outputdir are set to it's defaults withint the folder simplace_run. You can change them manually."),
+                 div("Once the simplace installation dir has been set, you can start simplace in the Simplace-Panel and run the simulations (either by running a complete project, or just a standard simulation).")
                  )
-                 
-
+      
       )
     )
 
@@ -126,40 +135,6 @@ server <- function(input, output) {
 
   
   
-  
-  getSimulationResult <- function ()
-  {
-    if(v$simulated && !is.null(input$memoryoutselect))
-    {
-      if(!is.null(v$actsim))
-      {
-        res <- simplace::getResult(v$sp, input$memoryoutselect,v$actsim)
-      }
-      else {
-        res <- simplace::getResult(v$sp, input$memoryoutselect)
-      }
-      v$resultdf <- resultToDataframeExpanded(simplace::resultToList(res, expand=TRUE))
-      sims <- unique(v$resultdf$simulationid)
-      cols <- names(v$resultdf)
-      lcols <- unique(gsub("_[0-9]+$","",cols[grepl("_[0-9]+$",cols)]))
-      mind <- min(v$resultdf$CURRENT.DATE)
-      maxd <- max(v$resultdf$CURRENT.DATE)
-      output$plotcontrols <- renderUI(
-        tagList(fluidRow(
-          column(3,selectInput("simulation", "SimulationId",sims)),
-          column(3,selectInput("columnx", "X-Column",cols, selected="CURRENT.DATE")),
-          column(3,selectInput("columny", "Y-Column",cols, selected="CURRENT.DATE")),
-          column(3,dateRangeInput('daterange',
-                                  label = 'Date range: yyyy-mm-dd',
-                                  min = mind, max=maxd,
-                                  start = mind, end = min(mind+3*356,maxd)
-          ),)
-        ))
-      )
-      output$layerplotcontrols <- renderUI(selectInput("layer","Value",lcols))
-    }
-    
-  }
 
   # File and directory choose
   shinyFileChoose(input, 'solution', roots=vols,
@@ -182,6 +157,7 @@ server <- function(input, output) {
                  allowDirCreate=FALSE)
 
 
+  # Events
   observeEvent(input$solution,
               {
                 v$simulated <- FALSE
@@ -191,7 +167,6 @@ server <- function(input, output) {
                 {
                   v$cmp<-getElementsFromSolutionFile(v$solution)
 
-
                   comps <- unique(v$cmp$components$id)
                   names(comps) <- comps
                   ch_c <- c("All"='all',comps)
@@ -200,21 +175,13 @@ server <- function(input, output) {
                     output$componentselect <-  renderUI(selectInput("componentselect","Select component", choices = ch_c, selected=1,multiple=FALSE))
                   }
 
-                  memid <- getMemoryOutputIds(v$cmp$components)
-                  names(memid)<-memid
-                  ch_m <- memid
-                  if(length(ch_m)>0) {
-                    output$memoryoutselect <-  renderUI(selectInput("memoryoutselect","Select outputs", choices = ch_m, selected=1,multiple=FALSE))
-                  }
-                  else {
-                    output$memoryoutselect <- renderText("")
-                  }
-
                 }
                 output$solutionlabel <- renderText(paste("Solution:",v$solution))
 
               },
               ignoreInit = TRUE)
+  
+  
   observeEvent(input$project,
                {
                  v$simulated <- FALSE
@@ -223,6 +190,7 @@ server <- function(input, output) {
                  output$projectlabel <- renderText(paste("Project:",v$project))
 
                })
+  
 
   observeEvent(input$instdir,
     {
@@ -256,6 +224,7 @@ server <- function(input, output) {
     ignoreInit = TRUE
   )
 
+  
   observeEvent(
     input$workdir,
     {
@@ -264,6 +233,7 @@ server <- function(input, output) {
 
     }
   )
+  
 
   observeEvent(
     input$outputdir,
@@ -273,6 +243,7 @@ server <- function(input, output) {
 
     }
   )
+  
 
   observeEvent(
     input$init,
@@ -296,6 +267,7 @@ server <- function(input, output) {
     {
       try({
         if(!is.null(v$sp) && !is.null(v$solution)) {
+          renderMemoySelect(input, output, v)
           v$simulated <- FALSE
           v$actsim <- NULL
           output$runstatus <- renderText("running simulation in project mode")
@@ -325,6 +297,7 @@ server <- function(input, output) {
     {
       try({
         if(!is.null(v$sp) && !is.null(v$solution)) {
+          renderMemoySelect(input, output, v)
           v$simulated <- FALSE
           simplace::openProject(v$sp,v$solution)
           sim <- simplace::createSimulation(v$sp)
@@ -343,11 +316,11 @@ server <- function(input, output) {
   )
 
   
-  observeEvent(input$memoryoutselect,getSimulationResult())
+  observeEvent(input$memoryoutselect,getSimulationResult(input,output,v))
   observeEvent(v$simulated,{
     if(!v$simulated) {output$runstatus <- renderText("")}
     else {
-      getSimulationResult()
+      getSimulationResult(input,output,v)
     }
   })
 
@@ -444,7 +417,10 @@ server <- function(input, output) {
 
   output$variables <- renderDataTable(
     {
-      v$cmp$variables
+      v$cmp$variables |> dplyr::left_join(
+        v$cmp$links |> dplyr::filter(from =="variables") |> dplyr::group_by(name) |> dplyr::summarise(used=paste(to,collapse=",")),
+        by=c("id"="name")
+      )
     }, options=tableOptions)
 
   output$memoutput <- renderDataTable (
@@ -460,16 +436,31 @@ server <- function(input, output) {
                            v$resultdf$CURRENT.DATE<=input$daterange[2],]
       if(nrow(data)>0)
       {
-        if(mode(data[,input$columnx])!="numeric")
+        if(length(input$columny)==1)
         {
-          data[,input$columnx] <- as.factor(data[,input$columnx])
+          if(mode(data[,input$columnx])!="numeric")
+          {
+            data[,input$columnx] <- as.factor(data[,input$columnx])
+          }
+          if(mode(data[,input$columny])!="numeric")
+          {
+            data[,input$columny] <- as.factor(data[,input$columny])
+          }        
+          plot(data[,input$columnx],data[,input$columny],xlab=input$columnx, ylab=input$columny, pch=20)
         }
-        if(mode(data[,input$columny])!="numeric")
+        else if(mode(data[,input$columnx])=="numeric")
         {
-          data[,input$columny] <- as.factor(data[,input$columny])
+          nc <- sapply(input$columny,\(n)mode(data[,n])=='numeric')
+          cols <- input$columny[nc]
+          if(length(cols)>0)
+          {
+            matplot(data[,input$columnx],
+                    data[,cols],type="l",lty=1,col = 1:length(cols),
+                    ylab="Values",
+                    xlab=input$columnx)
+          }
         }
-
-        plot(data[,input$columnx],data[,input$columny],xlab=input$columnx, ylab=input$columny, pch=20)
+        
       }
     }
   })
@@ -491,9 +482,6 @@ server <- function(input, output) {
         
         mat <- data.matrix(ldata,rownames.force = NA)
         
-       
-       
-        
         filled.contour(
           x = data$CURRENT.DATE,
           y = -(ncol(ldata):1),
@@ -501,10 +489,7 @@ server <- function(input, output) {
           main = input$layer,
           xlab = "Date",
           ylab = "Layer")
-        
-        
-        
-        
+
       }
     }
   })

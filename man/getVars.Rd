@@ -4,10 +4,12 @@
 \alias{getVars}
 \title{Get the variables from source, rule etc. attributes}
 \usage{
-getVars(s)
+getVars(s, ruleonly = FALSE)
 }
 \arguments{
 \item{s}{attribute text (rule)}
+
+\item{ruleonly}{check only for ${} variables}
 }
 \description{
 Get the variables from source, rule etc. attributes

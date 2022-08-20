@@ -15,14 +15,15 @@ mark_variables<-function(v){if(v[2]=="")c("variables",v[1])else v}
 #' Get the variables from source, rule etc. attributes
 #'
 #' @param s attribute text (rule)
-getVars <- function(s)
+#' @param ruleonly check only for ${} variables
+getVars <- function(s, ruleonly=FALSE)
 {
   m <- NULL
   if(stringr::str_detect(s,stringr::fixed("$")))
   {
     m <- stringr::str_match_all(s,pattern=stringr::regex('[$][{]([a-zA-Z0-9_]+)([.]*)([a-zA-Z0-9_]*)[}]'))[[1]][,c(2,4)]
   }
-  else
+  else if(!ruleonly)
   {
     m <- stringr::str_split(s,stringr::fixed('.'),n=2,simplify=TRUE)
   }
@@ -69,6 +70,17 @@ getComponents <- function(x)
 
   df <- rbind(df,data.frame(id="CURRENT",type=("var"),subtype="var",ref="SYSTEM",javaclass=""))
   df <- rbind(df,data.frame(id="variables",type=("var"),subtype="var", ref="User",javaclass=""))
+
+  int_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//interfaces//interface"),'id')
+  int_type<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//interfaces//interface"),'type')
+  int_file <- sapply(int_id, function(oi) xml2::xml_text(xml2::xml_find_all(x,paste0("//solution//interfaces//interface[@id='",oi,"']//filename"))))
+  int_file[lengths(int_file)==0] <- ""
+  int_file <- unlist(int_file)
+
+  if(length(int_id)>0)
+  {
+    df <- rbind(df,data.frame(id=int_id,type="interface",subtype=int_type,ref=int_file,javaclass=""))
+  }
 
   res_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//resources//resource"),'id')
   res_interf<- xml2::xml_attr(xml2::xml_find_all(x,"//solution//resources//resource"),'interface')
@@ -122,6 +134,7 @@ getComponents <- function(x)
   df$type <- as.character(df$type)
   df$subtype <- as.character(df$subtype)
   df$ref <- as.character(df$ref)
+  rownames(df) <- NULL
   df
 }
 
@@ -134,6 +147,8 @@ getLinks <- function(x,df)
 {
 
   vdf_all<-NULL
+  
+  # sim components
   for(i in df[df$type=="simcomponent","id"])
   {
     src = xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//simmodel//simcomponent[@id='",i,"']//input")),'source');
@@ -157,19 +172,51 @@ getLinks <- function(x,df)
       vdf_all<- rbind(vdf_all, vdf)
     }
   }
+  
+  # interfaces
+  dfi <- df[df$type=="interface" & grepl("[$][{}][^}]+[}]",df$ref),]
+  for(j in seq_along(dfi))
+  {
+    i <- dfi[j,"id"]
+    inp <- dfi[j,"ref"]
+    if(length(inp)>0)
+    {
+      l<-lapply(inp,getVars,ruleonly=TRUE)
+      vdf <- (do.call(rbind, l))
+      vdf$to = i
+      vdf$rel="key"
+      vdf_all<- rbind(vdf_all, vdf)
+    }
+  }
+  # resources: interfaces, alias and transformers resource
+  res_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//resources//resource"),'id')
+  res_resources <-  xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//resources//resource")),'interface')
+  if(length(res_resources)>0)
+  {
+    vdf_all <-rbind(vdf_all,data.frame(from=res_resources, to=res_id, name="-",rel="storage"))
+  }
+
   trf_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//resources//transform"),'id')
   trans_resources <-  xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//resources//transform")),'resource')
   if(length(trans_resources)>0)
   {
-    vdf_all <-rbind(vdf_all,data.frame(from=trans_resources, to=trf_id, name="-",rel="value"))
+    vdf_all <-rbind(vdf_all,data.frame(from=trans_resources, to=trf_id, name="-",rel="data"))
   }
 
-
+  als_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//resources//alias"),'id')
+  als_resources <-  xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//resources//alias")),'resource')
+  if(length(als_resources)>0)
+  {
+    vdf_all <-rbind(vdf_all,data.frame(from=als_resources, to=als_id, name="-",rel="data"))
+  }
+  
+  # resources: rules and keys
   for(i in df[df$type=="resource","id"])
   {
     rls <- xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//resources//resource[@id='",i,"']")),'rule')
     trls <- xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//resources//transform[@id='",i,"']")),'rule')
-    inp <- c(rls, trls)
+    arls <- xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//resources//alias[@id='",i,"']")),'rule')
+    inp <- c(rls, trls,arls)
     inp<-unique(inp[!is.na(inp)])
     if(length(inp)>0)
     {
@@ -181,7 +228,8 @@ getLinks <- function(x,df)
     }
     ks <- xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//resources//resource[@id='",i,"']//res")),'key')
     tks <- xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//resources//transform[@id='",i,"']//res")),'key')
-    inp <- c(ks, tks)
+    aks <- xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//resources//alias[@id='",i,"']//res")),'key')
+    inp <- c(ks, tks, aks)
     inp<-unique(inp[!is.na(inp)])
     if(length(inp)>0)
     {
@@ -194,6 +242,15 @@ getLinks <- function(x,df)
 
   }
 
+  # outputs: interfaces
+  out_id<-xml2::xml_attr(xml2::xml_find_all(x,"//solution//outputs//output"),'id')
+  out_resources <-  xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//outputs//output")),'interface')
+  if(length(out_resources)>0)
+  {
+    vdf_all <-rbind(vdf_all,data.frame(from=out_resources, to=out_id, name="-",rel="storage"))
+  }
+  
+  
   for(i in df[df$type=="output","id"])
   {
     rls <- xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//outputs//output[@id='",i,"']")),'rule')
@@ -225,6 +282,7 @@ getLinks <- function(x,df)
     }
 
   }
+  rownames(vdf_all)<-NULL
   vdf_all
 }
 

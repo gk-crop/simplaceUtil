@@ -4,12 +4,14 @@
 \alias{componentsToGraph}
 \title{Creates a graph from component and links dataframe}
 \usage{
-componentsToGraph(comp, links)
+componentsToGraph(comp, links, showinterfaces = FALSE)
 }
 \arguments{
 \item{comp}{components dataframe}
 
 \item{links}{links dataframe}
+
+\item{showinterfaces}{if TRUE, include interfaces in graph}
 }
 \description{
 Creates a graph from component and links dataframe

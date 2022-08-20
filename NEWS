@@ -1,3 +1,9 @@
+Version 0.2.0
+* add interfaces to component and link dataframes
+* optionally display components in graph
+* plot multiple variabel into one diagram
+* add help panel to shiny app
+
 Version 0.1.2
 * select date range for plots
 * plot array values as filled contour
