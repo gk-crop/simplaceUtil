@@ -6,7 +6,7 @@
 \usage{
 parseDate(
   data,
-  newName = "Date",
+  newName = "CURRENT.DATE",
   format = "\%d.\%m.\%Y",
   oldName = "CURRENT.DATE"
 )

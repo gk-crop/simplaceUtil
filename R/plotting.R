@@ -42,24 +42,23 @@ plotScalarOutput <- function (data, column_x, columns_y,
   cols <- unique(c("simulationid",datecol, column_x, columns_y))
   data <- subset(data,TRUE, cols)
   data <- subsetDataForPlot(data, simulationid, date_from, date_to, datecol)
-
   if(nrow(data)>0)
   {
     if(length(columns_y)==1)
     {
-      if(mode(data[,column_x])!="numeric")
+      if(mode(data[[column_x]])!="numeric")
       {
-        data[,column_x] <- as.factor(data[,column_x])
+        data[[column_x]] <- as.factor(data[[column_x]])
       }
-      if(mode(data[,columns_y])!="numeric")
+      if(mode(data[[columns_y]])!="numeric")
       {
-        data[,columns_y] <- as.factor(data[,columns_y])
-      }        
-      plot(data[,column_x],data[,columns_y],xlab=column_x, ylab=columns_y, pch=20)
+        data[[columns_y]] <- as.factor(data[[columns_y]])
+      }       
+      plot(data[[column_x]],data[[columns_y]],xlab=column_x, ylab=columns_y, pch=20)
     }
-    else if(mode(data[,column_x])=="numeric")
+    else if(mode(data[[column_x]])=="numeric")
     {
-      nc <- sapply(columns_y,\(n)mode(data[,n])=='numeric')
+      nc <- sapply(columns_y,\(n)mode(data[[n]])=='numeric')
       cols <- setdiff(columns_y[nc],c(datecol,column_x))
       if(length(cols)>0)
       {

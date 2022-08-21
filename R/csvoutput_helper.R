@@ -20,7 +20,7 @@ transformLayeredData <- function(data)
 #' @param format date format
 #' @param oldName name of the column that holds the date to be transformed
 #' @export
-parseDate <- function(data, newName="Date", format="%d.%m.%Y", oldName ="CURRENT.DATE")
+parseDate <- function(data, newName="CURRENT.DATE", format="%d.%m.%Y", oldName ="CURRENT.DATE")
 {
   data[[newName]] <- as.Date(data[[oldName]],format=format)
   data
