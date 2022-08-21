@@ -1,6 +1,7 @@
 #' Determines the type of sim component by class attribute
 #'
 #' @param s class attribute
+#' @keywords internal
 simComponentType <- function(s) ifelse(s=="net.simplace.sim.components.DefaultManagement","mgm",
                                        ifelse(s=="net.simplace.sim.components.FWSimpleSimComponent","simple",ifelse(s=="net.simplace.sim.model.FWSimComponentGroup","grouped","normal")))
 
@@ -8,7 +9,8 @@ simComponentType <- function(s) ifelse(s=="net.simplace.sim.components.DefaultMa
 #' Add the prefix "variables" if there is none
 #'
 #' @param v vector with prefix and name
-mark_variables<-function(v){if(v[2]=="")c("variables",v[1])else v}
+#' @keywords internal
+markVariables<-function(v){if(v[2]=="")c("variables",v[1])else v}
 
 
 
@@ -16,6 +18,7 @@ mark_variables<-function(v){if(v[2]=="")c("variables",v[1])else v}
 #'
 #' @param s attribute text (rule)
 #' @param ruleonly check only for ${} variables
+#' @keywords internal
 getVars <- function(s, ruleonly=FALSE)
 {
   m <- NULL
@@ -30,11 +33,11 @@ getVars <- function(s, ruleonly=FALSE)
   df<-NULL
   if(is.matrix(m))
   {
-    df<-as.data.frame(t(apply(m,1,mark_variables)),stringsAsFactors=FALSE)
+    df<-as.data.frame(t(apply(m,1,markVariables)),stringsAsFactors=FALSE)
   }
   else
   {
-    v<-mark_variables(m)
+    v<-markVariables(m)
     df<-data.frame(from=v[1],name=v[2],stringsAsFactors=FALSE)
   }
   colnames(df)<-c("from","name")

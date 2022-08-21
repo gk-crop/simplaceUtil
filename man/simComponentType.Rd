@@ -12,3 +12,4 @@ simComponentType(s)
 \description{
 Determines the type of sim component by class attribute
 }
+\keyword{internal}

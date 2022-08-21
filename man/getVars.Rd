@@ -14,3 +14,4 @@ getVars(s, ruleonly = FALSE)
 \description{
 Get the variables from source, rule etc. attributes
 }
+\keyword{internal}

@@ -431,37 +431,11 @@ server <- function(input, output) {
   output$plot <- renderPlot({
     if(v$simulated)
     {
-      data <- v$resultdf[v$resultdf$simulationid==input$simulation &
-                           input$daterange[1]<=v$resultdf$CURRENT.DATE &
-                           v$resultdf$CURRENT.DATE<=input$daterange[2],]
-      if(nrow(data)>0)
-      {
-        if(length(input$columny)==1)
-        {
-          if(mode(data[,input$columnx])!="numeric")
-          {
-            data[,input$columnx] <- as.factor(data[,input$columnx])
-          }
-          if(mode(data[,input$columny])!="numeric")
-          {
-            data[,input$columny] <- as.factor(data[,input$columny])
-          }        
-          plot(data[,input$columnx],data[,input$columny],xlab=input$columnx, ylab=input$columny, pch=20)
-        }
-        else if(mode(data[,input$columnx])=="numeric")
-        {
-          nc <- sapply(input$columny,\(n)mode(data[,n])=='numeric')
-          cols <- input$columny[nc]
-          if(length(cols)>0)
-          {
-            matplot(data[,input$columnx],
-                    data[,cols],type="l",lty=1,col = 1:length(cols),
-                    ylab="Values",
-                    xlab=input$columnx)
-          }
-        }
-        
-      }
+      plotScalarOutput(v$resultdf,  
+                       input$columnx, input$columny, 
+                       input$simulation,
+                       input$daterange[1],
+                       input$daterange[2])
     }
   })
 
@@ -469,28 +443,12 @@ server <- function(input, output) {
   output$layerplot <- renderPlot({
     if(v$simulated)
     {
-      data <- v$resultdf[v$resultdf$simulationid==input$simulation &
-                           input$daterange[1]<=v$resultdf$CURRENT.DATE &
-                           v$resultdf$CURRENT.DATE<=input$daterange[2],]
-      if(nrow(data)>0)
-      {
-        lnames <- names(data)
-        lcols <- substr(lnames,1,nchar(input$layer))
-        lnames <- rev(lnames[lcols==input$layer])
-        
-        ldata <- data[,lnames]
-        
-        mat <- data.matrix(ldata,rownames.force = NA)
-        
-        filled.contour(
-          x = data$CURRENT.DATE,
-          y = -(ncol(ldata):1),
-          z=mat,
-          main = input$layer,
-          xlab = "Date",
-          ylab = "Layer")
-
-      }
+      plotLayeredOutput(v$resultdf,  
+                       input$layer, 
+                       input$simulation,
+                       input$daterange[1],
+                       input$daterange[2])
+      
     }
   })
 

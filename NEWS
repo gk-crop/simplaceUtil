@@ -1,3 +1,7 @@
+Version 0.2.1
+* use ggplot2 for plots
+* refactored code
+
 Version 0.2.0
 * add interfaces to component and link dataframes
 * optionally display components in graph
