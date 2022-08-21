@@ -34,7 +34,7 @@ DiagrammeR::render_graph(new_graph)
 Extract information from Solution to data.frames
 
 ```
-elements <- getElementsFromSolutionFile("f:/java/simplace/CompleteP.sol.xml")
+elements <- getElementsFromSolutionFile("/path/to/mysolution.sol.xml")
 elements$components
 elements$variables
 elements$links

@@ -8,7 +8,7 @@ transformLayeredData <- function(data)
     data,
     dplyr::matches("[a-zA-Z]+_[0-9]+"),
     names_to = c(".value","layer"),
-    names_pattern ="([a-zA-Z]+)_([0-9]+)",
+    names_pattern ="([a-zA-Z_]+)_([0-9]+)$",
     names_transform = list(layer=as.integer)
   )
 }

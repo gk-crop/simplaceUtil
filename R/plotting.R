@@ -126,7 +126,7 @@ plotLayeredOutput <- function(data, column, simulationid = NULL,
                                  fill=.data[[column]])) +
         ggplot2::ylab("Layer") +
         ggplot2::geom_raster() +
-        ggplot2::scale_fill_gradient(low="#ddeeff",high="000055")
+        ggplot2::scale_fill_gradient(low="#ddeeff",high="#000055")
     }
     
   }
