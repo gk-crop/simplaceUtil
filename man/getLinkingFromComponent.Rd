@@ -4,7 +4,13 @@
 \alias{getLinkingFromComponent}
 \title{Get components that are linked from given component}
 \usage{
-getLinkingFromComponent(graph, name, distance = 50, linkage = "allsteps")
+getLinkingFromComponent(
+  graph,
+  name,
+  distance = 50,
+  linkage = "allsteps",
+  type = "all"
+)
 }
 \arguments{
 \item{graph}{graph}
@@ -14,6 +20,8 @@ getLinkingFromComponent(graph, name, distance = 50, linkage = "allsteps")
 \item{distance}{maximum distance from given component}
 
 \item{linkage}{all steps, same step or previous step}
+
+\item{type}{type of component}
 }
 \description{
 Get components that are linked from given component

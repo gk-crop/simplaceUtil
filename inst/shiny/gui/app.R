@@ -33,8 +33,8 @@ ui <- fluidPage(
       selectInput("graphlayout","Graph Layout",choices = c("nicely", "circle", "tree", "kk", "fr"),selected=1),
       uiOutput("componentselect"),
       fluidRow(
-        column(4, selectInput("componenttype","Type",choices = c("all","var", "resource", "simcomponent", "output"),selected=1)),
-        column(3, selectInput("distance","Distance",choices = c(1:10),selected=1)),
+        column(4, selectInput("componenttype","Type",choices = c("all","var", "resource", "simcomponent", "output"),selected="all",multiple=TRUE)),
+        column(3, selectInput("distance","Distance",choices = c(0:10),selected=1)),
         column(5, selectInput("linkage","Linked Values",
                   choices = c("All Timesteps"="allsteps", "Actual Timestep"="samestep", "Previous Timestep"="prevstep"),
                   selected=1))
@@ -124,7 +124,7 @@ server <- function(input, output) {
   v$solution <- NULL
   v$project <- NULL
 
-  v$cmp <- NULL
+  v$elem <- NULL
 
   v$simulated <- FALSE
   v$actsim <- NULL
@@ -165,14 +165,14 @@ server <- function(input, output) {
                 v$solution <- filename(input$solution,vols)
                 if(!is.na(v$solution))
                 {
-                  v$cmp<-getElementsFromSolutionFile(v$solution)
+                  v$elem<-getElementsFromSolutionFile(v$solution)
 
-                  comps <- unique(v$cmp$components$id)
+                  comps <- unique(v$elem$components[v$elem$components$type!="interface",]$id)
                   names(comps) <- comps
                   ch_c <- c("All"='all',comps)
 
                   if(length(ch_c)>0) {
-                    output$componentselect <-  renderUI(selectInput("componentselect","Select component", choices = ch_c, selected=1,multiple=FALSE))
+                    output$componentselect <-  renderUI(selectInput("componentselect","Select components", choices = ch_c, selected="all",multiple=TRUE))
                   }
 
                 }
@@ -324,92 +324,74 @@ server <- function(input, output) {
     }
   })
 
+  
+  
   # outputs
-
-  output$diagram <- DiagrammeR::renderGrViz(try({
-      if(!is.null(v$cmp))
+  
+  output$diagram <- DiagrammeR::renderGrViz(
+    try({
+      if(!is.null(v$elem))
       {
-        cid <- ""
-        dg <- componentsToGraph(v$cmp$components, v$cmp$links) |>
-          filterEdges(input$linkage)
-        if(!is.na(input$componentselect) && !(input$componentselect=='all'))
-        {
-          cid <- input$componentselect
-          dg <- getNeighborhood(dg,cid,input$distance)
-        }
-        if(!is.na(input$componenttype) && !(input$componenttype=='all'))
-        {
-          dg <- dg |>
-            DiagrammeR::select_nodes(
-              conditions = (.data$type==input$componenttype | .data$label==cid)) |>
-            DiagrammeR::invert_selection() |>
-            DiagrammeR::delete_nodes_ws()
-        }
-
+        dg <- componentsToGraph(v$elem$components, v$elem$links) 
+        dg <- getNeighborhood(dg, 
+                              input$componentselect, input$distance,
+                              input$linkage, input$componenttype)
         DiagrammeR::render_graph(dg, layout=input$graphlayout)
       }
     }))
-
-  output$diagram_from <- DiagrammeR::renderGrViz(try({
-    if(!is.null(v$cmp) && !is.na(input$componentselect) && !(input$componentselect=='all'))
-    {
-      cid <- input$componentselect
-      dg <- componentsToGraph(v$cmp$components, v$cmp$links)
-      dg <- getLinkingFromComponent(dg,cid,input$distance, input$linkage)
-
-      if(!is.na(input$componenttype) && !(input$componenttype=='all'))
+  
+  
+  output$diagram_from <- DiagrammeR::renderGrViz(
+    try({
+      if(!is.null(v$elem) && 
+         !all(is.na(input$componentselect)) && 
+         !all(input$componentselect=='all'))
       {
-        dg <- dg |>
-          DiagrammeR::select_nodes(
-            conditions = (.data$type==input$componenttype | .data$label==cid)) |>
-          DiagrammeR::invert_selection() |>
-          DiagrammeR::delete_nodes_ws()
+        dg <- componentsToGraph(v$elem$components, v$elem$links) |>
+          getLinkingFromComponent(input$componentselect,
+                                  input$distance, input$linkage,
+                                  input$componenttype)
+        DiagrammeR::render_graph(dg, layout=input$graphlayout)
       }
-
-      DiagrammeR::render_graph(dg, layout=input$graphlayout)
-    }
-  }))
-
-  output$diagram_to <- DiagrammeR::renderGrViz(try({
-    if(!is.null(v$cmp) && !is.na(input$componentselect) && !(input$componentselect=='all'))
-    {
-      cid <- input$componentselect
-      dg <- componentsToGraph(v$cmp$components, v$cmp$links)
-      dg <- getLinkingToComponent(dg,cid,input$distance, input$linkage)
-
-      if(!is.na(input$componenttype) && !(input$componenttype=='all'))
+    }))
+  
+  
+  output$diagram_to <- DiagrammeR::renderGrViz(
+    try({
+      if(!is.null(v$elem) && 
+         !all(is.na(input$componentselect)) && 
+         !all(input$componentselect=='all'))
       {
-        dg <- dg |>
-          DiagrammeR::select_nodes(
-            conditions = (.data$type==input$componenttype | .data$label==cid)) |>
-          DiagrammeR::invert_selection() |>
-          DiagrammeR::delete_nodes_ws()
+        dg <- componentsToGraph(v$elem$components, v$elem$links) |>
+          getLinkingToComponent(input$componentselect,
+                                input$distance, input$linkage,input$componenttype)
+        
+        DiagrammeR::render_graph(dg, layout=input$graphlayout)
       }
-
-      DiagrammeR::render_graph(dg, layout=input$graphlayout)
-    }
-  }))
-
-
+    }))
+  
+  
   output$components <- renderDataTable(
     {
 
-      t <- v$cmp$components
-      if(!is.na(input$componenttype) && !(input$componenttype=='all'))
+      t <- v$elem$components
+      if(!all(is.na(input$componenttype)) && !all(input$componenttype=='all'))
       {
-        t <- t[t$type==input$componenttype,]
+        t <- t[t$type %in% input$componenttype,]
       }
       t
 
     }, options=tableOptions)
 
+  
   output$links <- renderDataTable(
     {
 
-      t <- v$cmp$links
-      if("componentselect" %in% input && !is.na(input$componentselect) && !(input$componentselect=='all'))
+      t <- v$elem$links
+      
+      if(!all(is.na(input$componentselect)) && !all(input$componentselect=='all'))
       {
-        t <- t[!is.na(t$from) & (t$from==input$componentselect | t$to==input$componentselect),]
+        t <- t[!is.na(t$from) & (t$from %in% input$componentselect | t$to %in% input$componentselect),]
       }
       t
     }, options=tableOptions)
@@ -417,17 +399,22 @@ server <- function(input, output) {
 
   output$variables <- renderDataTable(
     {
-      v$cmp$variables |> dplyr::left_join(
-        v$cmp$links |> dplyr::filter(from =="variables") |> dplyr::group_by(name) |> dplyr::summarise(used=paste(to,collapse=",")),
+      v$elem$variables |> dplyr::left_join(
+        v$elem$links |> 
+          dplyr::filter(from =="variables") |> 
+          dplyr::group_by(name) |> 
+          dplyr::summarise(used=paste(to,collapse=",")),
         by=c("id"="name")
       )
     }, options=tableOptions)
 
+  
   output$memoutput <- renderDataTable (
     {
       v$resultdf
     }, options=tableOptions)
 
+  
   output$plot <- renderPlot({
     if(v$simulated)
     {
@@ -448,10 +435,10 @@ server <- function(input, output) {
                        input$simulation,
                        input$daterange[1],
                        input$daterange[2])
-      
     }
   })
 
+  
 }
 
 # Run the application
