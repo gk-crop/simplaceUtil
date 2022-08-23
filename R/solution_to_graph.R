@@ -96,22 +96,37 @@ filterEdges <- function(graph, linkage="allsteps") {
 #' Get the simcomponent in the neighborhood of given component
 #'
 #' @param graph the solution graph
-#' @param name id of the sim component
+#' @param name ids of the sim components
 #' @param distance maximum number of steps from given component
 #' @param linkage all steps, same step or previous step
 #' @param type type of component
+#' @param set_op "union" - all neighbours of selected components or
+#' "intersect" - common neighbours of all selectected components
 #' @export
 #' @importFrom rlang .data
-getNeighborhood <- function(graph, name, distance=1, linkage="allsteps", type="all")
+getNeighborhood <- function(graph, name, distance=1, linkage="allsteps", type="all", set_op="union")
 {
-  
+
   if(!all(is.na(name)) && !all(name=='all'))
   {
     nodeid <- graph |>
       DiagrammeR::select_nodes(conditions = .data$label %in% name) |>
       DiagrammeR::get_selection()
+
+    if(distance>0)
+    {
+      op <- if(set_op=="intersect") intersect else union
+      neighbourid <- Reduce(op,
+                            lapply(nodeid, \(n) DiagrammeR::select_nodes_in_neighborhood(graph,n,distance=distance)|>
+                                     DiagrammeR::get_selection()))
+      neighbourid <- union(neighbourid, nodeid)
+    }
+    else
+    {
+      neighbourid <- nodeid
+    }
     graph <- graph |>
-      DiagrammeR::select_nodes_in_neighborhood(node = nodeid, distance=distance) |>
+      DiagrammeR::select_nodes_by_id(neighbourid) |>
       DiagrammeR::invert_selection()
 
     if(!all(is.na(DiagrammeR::get_selection(graph))))
@@ -119,15 +134,15 @@ getNeighborhood <- function(graph, name, distance=1, linkage="allsteps", type="a
       graph <- graph |> DiagrammeR::delete_nodes_ws()
     }
   }
-  
-  graph |> 
+
+  graph |>
     filterEdges(linkage) |>
     filterNodeType(name, type) |>
     highlightSelectedNodes(name)
 }
 
 #' @importFrom rlang .data
-filterNodeType <- function(graph, name="all", type="all") 
+filterNodeType <- function(graph, name="all", type="all")
 {
   ctype <- type
   if(!all(is.na(type)) && !all(type=='all'))
@@ -146,7 +161,7 @@ filterNodeType <- function(graph, name="all", type="all")
           conditions = (.data$type %in% ctype)) |>
         DiagrammeR::invert_selection()
     }
-     
+
     if(!all(is.na(DiagrammeR::get_selection(graph))))
     {
       graph <- graph |>
@@ -157,14 +172,14 @@ filterNodeType <- function(graph, name="all", type="all")
 }
 
 #' @importFrom rlang .data
-highlightSelectedNodes <- function(graph, name="all") 
+highlightSelectedNodes <- function(graph, name="all")
 {
   if(!all(is.na(name)) && !all(name=='all'))
   {
     graph <- graph |>
       DiagrammeR::select_nodes(condition = .data$label %in% name) |>
       DiagrammeR::set_node_attrs_ws("color","black")|>
-      DiagrammeR::set_node_attrs_ws("penwidth",1) 
+      DiagrammeR::set_node_attrs_ws("penwidth",1)
   }
   graph
 }
@@ -195,7 +210,7 @@ getConnected <- function(graph, name, distance = 50, linkage = "allsteps", type=
         DiagrammeR::get_selection()
     }
   }
-  
+
   graph <- graph |>
     DiagrammeR::select_nodes_by_id(nodes) |>
     DiagrammeR::invert_selection()
@@ -204,10 +219,10 @@ getConnected <- function(graph, name, distance = 50, linkage = "allsteps", type=
     graph <- graph |>
       DiagrammeR::delete_nodes_ws()
   }
-  graph |> 
+  graph |>
     filterNodeType(name, type) |>
     highlightSelectedNodes(name)
-  
+
 }
 
 #' Get components that link to given component

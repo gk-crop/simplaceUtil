@@ -4,18 +4,28 @@
 \alias{getNeighborhood}
 \title{Get the simcomponent in the neighborhood of given component}
 \usage{
-getNeighborhood(graph, name, distance = 1, linkage = "allsteps", type = "all")
+getNeighborhood(
+  graph,
+  name,
+  distance = 1,
+  linkage = "allsteps",
+  type = "all",
+  set_op = "union"
+)
 }
 \arguments{
 \item{graph}{the solution graph}
 
-\item{name}{id of the sim component}
+\item{name}{ids of the sim components}
 
 \item{distance}{maximum number of steps from given component}
 
 \item{linkage}{all steps, same step or previous step}
 
 \item{type}{type of component}
+
+\item{set_op}{"union" - all neighbours of selected components or
+"intersect" - common neighbours of all selectected components}
 }
 \description{
 Get the simcomponent in the neighborhood of given component
