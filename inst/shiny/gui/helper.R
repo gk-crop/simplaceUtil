@@ -24,7 +24,7 @@ dirname <- function(fl,vol) shinyFiles::parseDirPath(vol,fl)$datapath[1]
 
 renderMemoySelect <- function(input, output, v)
 {
-  memid <- getMemoryOutputIds(v$cmp$components)
+  memid <- getMemoryOutputIds(v$elem$components)
   names(memid)<-memid
   ch_m <- memid
   if(length(ch_m)>0) {
@@ -33,7 +33,7 @@ renderMemoySelect <- function(input, output, v)
   else {
     output$memoryoutselect <- renderText("")
   }
-  
+
 }
 
 
@@ -64,12 +64,12 @@ getSimulationResult <- function (input,output,v)
         fluidRow(
           column(4,selectInput("columnx", "X-Column",cols, selected="CURRENT.DATE")),
           column(8,selectInput("columny", "Y-Column(s)",cols, selected="CURRENT.DATE",width = "100%", multiple=TRUE)),
-          
+
         ))
     )
     output$layerplotcontrols <- renderUI(selectInput("layer","Value",lcols))
   }
-  
+
 }
 
 
