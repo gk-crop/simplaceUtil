@@ -45,8 +45,8 @@ ui <- fluidPage(
       textOutput("runstatus")
 
     ),
-    
-    
+
+
     mainPanel(
       tabsetPanel(
         tabPanel("Simplace",
@@ -90,7 +90,7 @@ ui <- fluidPage(
                  uiOutput("layerplotcontrols"),
                  plotOutput("layerplot")
                  ),
-        
+
         tabPanel("?",
                  h4("Analyze Solution"),
                  div("For analyzing a solution one does not need a simplace installation. The structure is derived from the solution xml file."),
@@ -99,7 +99,7 @@ ui <- fluidPage(
                  div("If one or more simplace installations are automatically detected, they show up in the directory choose dialog as volumes. Workdir and Outputdir are set to it's defaults withint the folder simplace_run. You can change them manually."),
                  div("Once the simplace installation dir has been set, you can start simplace in the Simplace-Panel and run the simulations (either by running a complete project, or just a standard simulation).")
                  )
-      
+
       )
     )
 
@@ -133,8 +133,8 @@ server <- function(input, output) {
 
   v$resultdf <- NULL
 
-  
-  
+
+
 
   # File and directory choose
   shinyFileChoose(input, 'solution', roots=vols,
@@ -180,8 +180,8 @@ server <- function(input, output) {
 
               },
               ignoreInit = TRUE)
-  
-  
+
+
   observeEvent(input$project,
                {
                  v$simulated <- FALSE
@@ -190,13 +190,13 @@ server <- function(input, output) {
                  output$projectlabel <- renderText(paste("Project:",v$project))
 
                })
-  
+
 
   observeEvent(input$instdir,
     {
       d <- paste0(parseDirPath(vols,input$instdir),'/')
       drs <- dir(d)
-      if('simplace_core' %in% drs & 'simplace_modules' %in%drs)
+      if('simplace_core' %in% drs & 'simplace_modules' %in% drs)
       {
         v$simulated <- FALSE
         v$actsim <- NULL
@@ -224,7 +224,7 @@ server <- function(input, output) {
     ignoreInit = TRUE
   )
 
-  
+
   observeEvent(
     input$workdir,
     {
@@ -233,7 +233,7 @@ server <- function(input, output) {
 
     }
   )
-  
+
 
   observeEvent(
     input$outputdir,
@@ -243,7 +243,7 @@ server <- function(input, output) {
 
     }
   )
-  
+
 
   observeEvent(
     input$init,
@@ -315,7 +315,7 @@ server <- function(input, output) {
     }
   )
 
-  
+
   observeEvent(input$memoryoutselect,getSimulationResult(input,output,v))
   observeEvent(v$simulated,{
     if(!v$simulated) {output$runstatus <- renderText("")}
@@ -324,27 +324,27 @@ server <- function(input, output) {
     }
   })
 
-  
-  
+
+
   # outputs
-  
+
   output$diagram <- DiagrammeR::renderGrViz(
     try({
       if(!is.null(v$elem))
       {
-        dg <- componentsToGraph(v$elem$components, v$elem$links) 
-        dg <- getNeighborhood(dg, 
+        dg <- componentsToGraph(v$elem$components, v$elem$links)
+        dg <- getNeighborhood(dg,
                               input$componentselect, input$distance,
                               input$linkage, input$componenttype)
         DiagrammeR::render_graph(dg, layout=input$graphlayout)
       }
     }))
-  
-  
+
+
   output$diagram_from <- DiagrammeR::renderGrViz(
     try({
-      if(!is.null(v$elem) && 
-         !all(is.na(input$componentselect)) && 
+      if(!is.null(v$elem) &&
+         !all(is.na(input$componentselect)) &&
          !all(input$componentselect=='all'))
       {
         dg <- componentsToGraph(v$elem$components, v$elem$links) |>
@@ -354,23 +354,23 @@ server <- function(input, output) {
         DiagrammeR::render_graph(dg, layout=input$graphlayout)
       }
     }))
-  
-  
+
+
   output$diagram_to <- DiagrammeR::renderGrViz(
     try({
-      if(!is.null(v$elem) && 
-         !all(is.na(input$componentselect)) && 
+      if(!is.null(v$elem) &&
+         !all(is.na(input$componentselect)) &&
          !all(input$componentselect=='all'))
       {
         dg <- componentsToGraph(v$elem$components, v$elem$links) |>
           getLinkingToComponent(input$componentselect,
                                 input$distance, input$linkage,input$componenttype)
-        
+
         DiagrammeR::render_graph(dg, layout=input$graphlayout)
       }
     }))
-  
-  
+
+
   output$components <- renderDataTable(
     {
 
@@ -383,12 +383,12 @@ server <- function(input, output) {
 
     }, options=tableOptions)
 
-  
+
   output$links <- renderDataTable(
     {
 
       t <- v$elem$links
-      
+
       if(!all(is.na(input$componentselect)) && !all(input$componentselect=='all'))
       {
         t <- t[!is.na(t$from) & (t$from %in% input$componentselect | t$to %in% input$componentselect),]
@@ -400,45 +400,45 @@ server <- function(input, output) {
   output$variables <- renderDataTable(
     {
       v$elem$variables |> dplyr::left_join(
-        v$elem$links |> 
-          dplyr::filter(from =="variables") |> 
-          dplyr::group_by(name) |> 
+        v$elem$links |>
+          dplyr::filter(from =="variables") |>
+          dplyr::group_by(name) |>
           dplyr::summarise(used=paste(to,collapse=",")),
         by=c("id"="name")
       )
     }, options=tableOptions)
 
-  
+
   output$memoutput <- renderDataTable (
     {
       v$resultdf
     }, options=tableOptions)
 
-  
+
   output$plot <- renderPlot({
     if(v$simulated)
     {
-      plotScalarOutput(v$resultdf,  
-                       input$columnx, input$columny, 
+      plotScalarOutput(v$resultdf,
+                       input$columnx, input$columny,
                        input$simulation,
                        input$daterange[1],
                        input$daterange[2])
     }
   })
 
-  
+
   output$layerplot <- renderPlot({
     if(v$simulated)
     {
-      plotLayeredOutput(v$resultdf,  
-                       input$layer, 
+      plotLayeredOutput(v$resultdf,
+                       input$layer,
                        input$simulation,
                        input$daterange[1],
                        input$daterange[2])
     }
   })
 
-  
+
 }
 
 # Run the application

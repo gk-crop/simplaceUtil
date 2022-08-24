@@ -9,6 +9,7 @@
 /.Rproj.user
 .Rhistory
 /vignettes/log
+/inst/shiny/*/log
 doc
 Meta
 /doc/

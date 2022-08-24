@@ -21,7 +21,7 @@ plotScalarOutput(
 
 \item{columns_y}{column name(s) for y values (vector of names)}
 
-\item{simulationid}{plot only data for simulationid}
+\item{simulationid}{plot only data for simulationids}
 
 \item{date_from}{simulation date from where values are plotted}
 

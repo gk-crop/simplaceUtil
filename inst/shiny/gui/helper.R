@@ -48,7 +48,13 @@ getSimulationResult <- function (input,output,v)
     else {
       res <- simplace::getResult(v$sp, input$memoryoutselect)
     }
-    v$resultdf <- resultToDataframeExpanded(simplace::resultToList(res, expand=TRUE))
+    # units <- simplace::getUnitsOfResult(res)
+    # resl <- simplace::resultToList(res, expand=TRUE)
+    # for(i in seq_along(resl))
+    # {
+    #   attr(resl[[i]], "unit") <- units[[i]]
+    # }
+    v$resultdf <- resultToDataframeExpanded(resl)
     sims <- unique(v$resultdf$simulationid)
     cols <- names(v$resultdf)
     lcols <- unique(gsub("_[0-9]+$","",cols[grepl("_[0-9]+$",cols)]))
@@ -56,7 +62,7 @@ getSimulationResult <- function (input,output,v)
     maxd <- max(v$resultdf$CURRENT.DATE)
     output$plotcontrols <- renderUI(
       tagList(fluidRow(
-        column(7,selectInput("simulation", "SimulationId",sims)),
+        column(7,selectInput("simulation", "SimulationIds",sims, multiple = TRUE, selected = sims[1])),
         column(5,dateRangeInput('daterange',
                                 label = 'Date range to plot',
                                 min = mind, max=maxd,

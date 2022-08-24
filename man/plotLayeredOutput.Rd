@@ -18,7 +18,7 @@ plotLayeredOutput(
 
 \item{column}{column name used for the fill color}
 
-\item{simulationid}{plot only data for simulationid}
+\item{simulationid}{plot only data for simulationids}
 
 \item{date_from}{simulation date from where values are plotted}
 
