@@ -11,6 +11,9 @@ getSolutionInfoAsDataframe(file, workdir)
 
 \item{workdir}{working directory}
 }
+\value{
+data.frame with all solution components as well as meta data for solution file
+}
 \description{
 Get info for a solution
 }

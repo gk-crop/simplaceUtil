@@ -9,6 +9,9 @@ getUserVariables(x)
 \arguments{
 \item{x}{xml object (solution)}
 }
+\value{
+data.frame with the user defined variable
+}
 \description{
 Gets user variables for a solution
 }

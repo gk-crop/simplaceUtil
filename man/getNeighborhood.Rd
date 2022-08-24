@@ -2,11 +2,11 @@
 % Please edit documentation in R/solution_to_graph.R
 \name{getNeighborhood}
 \alias{getNeighborhood}
-\title{Get the simcomponent in the neighborhood of given component}
+\title{Get the simcomponents in the neighborhood of given components}
 \usage{
 getNeighborhood(
   graph,
-  name,
+  names,
   distance = 1,
   linkage = "allsteps",
   type = "all",
@@ -14,9 +14,9 @@ getNeighborhood(
 )
 }
 \arguments{
-\item{graph}{the solution graph}
+\item{graph}{graph object of class \code{dgr_graph}}
 
-\item{name}{ids of the sim components}
+\item{names}{names (id attributes) of the selected sim components}
 
 \item{distance}{maximum number of steps from given component}
 
@@ -27,6 +27,9 @@ getNeighborhood(
 \item{set_op}{"union" - all neighbours of selected components or
 "intersect" - common neighbours of all selectected components}
 }
+\value{
+graph object of class \code{dgr_graph}
+}
 \description{
-Get the simcomponent in the neighborhood of given component
+Get the simcomponents in the neighborhood of given components
 }

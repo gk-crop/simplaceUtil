@@ -9,6 +9,9 @@ getMemoryOutputIds(comp)
 \arguments{
 \item{comp}{components dataframe}
 }
+\value{
+character vector with the memory output ids
+}
 \description{
 Get ids of memory outputs
 }

@@ -4,7 +4,7 @@
 \alias{componentsToGraph}
 \title{Creates a graph from component and links dataframe}
 \usage{
-componentsToGraph(comp, links, showinterfaces = FALSE)
+componentsToGraph(comp, links, showinterfaces = FALSE, ...)
 }
 \arguments{
 \item{comp}{components dataframe}
@@ -12,6 +12,11 @@ componentsToGraph(comp, links, showinterfaces = FALSE)
 \item{links}{links dataframe}
 
 \item{showinterfaces}{if TRUE, include interfaces in graph}
+
+\item{...}{options passed to \code{\link[DiagrammeR:create_graph]{DiagrammeR::create_graph()}}}
+}
+\value{
+graph object of class \code{dgr_graph}
 }
 \description{
 Creates a graph from component and links dataframe

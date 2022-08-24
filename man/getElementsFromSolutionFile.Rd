@@ -9,6 +9,9 @@ getElementsFromSolutionFile(file)
 \arguments{
 \item{file}{solution}
 }
+\value{
+list with solution (xml2 object) and components, links and variables data.frame
+}
 \description{
 Get component and links dataframe from solution file
 }

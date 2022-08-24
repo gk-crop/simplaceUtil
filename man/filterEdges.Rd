@@ -7,9 +7,12 @@
 filterEdges(graph, linkage = "allsteps")
 }
 \arguments{
-\item{graph}{graph}
+\item{graph}{graph object of class \code{dgr_graph}}
 
 \item{linkage}{all steps, same step or previous step}
+}
+\value{
+graph object of class \code{dgr_graph}
 }
 \description{
 Selects edges of specific timestep

@@ -9,6 +9,9 @@ markVariables(v)
 \arguments{
 \item{v}{vector with prefix and name}
 }
+\value{
+vector with prefix and name
+}
 \description{
 Add the prefix "variables" if there is none
 }

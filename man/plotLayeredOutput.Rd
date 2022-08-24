@@ -24,7 +24,7 @@ plotLayeredOutput(
 
 \item{date_to}{simulateon date until values are plotted}
 
-\item{datecol}{column name for date (default CURRENT.DATA)}
+\item{datecol}{column name for date (default CURRENT.DATE)}
 }
 \description{
 Plots layered output

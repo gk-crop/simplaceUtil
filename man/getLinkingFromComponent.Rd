@@ -6,22 +6,25 @@
 \usage{
 getLinkingFromComponent(
   graph,
-  name,
+  names,
   distance = 50,
   linkage = "allsteps",
   type = "all"
 )
 }
 \arguments{
-\item{graph}{graph}
+\item{graph}{graph object of class \code{dgr_graph}}
 
-\item{name}{name of component}
+\item{names}{names (id attributes) of the selected components}
 
-\item{distance}{maximum distance from given component}
+\item{distance}{maximum distance from given components}
 
 \item{linkage}{all steps, same step or previous step}
 
-\item{type}{type of component}
+\item{type}{type of components}
+}
+\value{
+graph object of class \code{dgr_graph}
 }
 \description{
 Get components that are linked from given component

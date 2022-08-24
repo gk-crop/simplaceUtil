@@ -12,3 +12,4 @@ isSolution(file)
 \description{
 Determines the solution by it's file extension
 }
+\keyword{internal}

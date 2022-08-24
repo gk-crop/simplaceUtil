@@ -9,6 +9,9 @@ simComponentType(s)
 \arguments{
 \item{s}{class attribute}
 }
+\value{
+type of sim component
+}
 \description{
 Determines the type of sim component by class attribute
 }

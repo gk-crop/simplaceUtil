@@ -2,7 +2,7 @@
 % Please edit documentation in R/csvoutput_helper.R
 \name{parseDate}
 \alias{parseDate}
-\title{Converts date from output file to date object}
+\title{Converts date (class \code{character}) column from output file to column of class \code{Date}}
 \usage{
 parseDate(
   data,
@@ -12,7 +12,7 @@ parseDate(
 )
 }
 \arguments{
-\item{data}{dataframe}
+\item{data}{data.frame}
 
 \item{newName}{name of the transformed date column}
 
@@ -20,6 +20,9 @@ parseDate(
 
 \item{oldName}{name of the column that holds the date to be transformed}
 }
+\value{
+data.frame with date column of class \code{Date}
+}
 \description{
-Converts date from output file to date object
+Converts date (class \code{character}) column from output file to column of class \code{Date}
 }

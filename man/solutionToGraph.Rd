@@ -4,12 +4,17 @@
 \alias{solutionToGraph}
 \title{Creates a graph from a solution}
 \usage{
-solutionToGraph(file, showinterfaces = FALSE)
+solutionToGraph(file, showinterfaces = FALSE, ...)
 }
 \arguments{
 \item{file}{solution file}
 
 \item{showinterfaces}{if true include interfaces}
+
+\item{...}{options passed to DiagrammeR::create_graph()}
+}
+\value{
+graph object of class \code{dgr_graph}
 }
 \description{
 Creates a graph from a solution

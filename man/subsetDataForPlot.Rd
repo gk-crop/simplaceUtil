@@ -21,7 +21,10 @@ subsetDataForPlot(
 
 \item{date_to}{simulateon date until values are taken}
 
-\item{datecol}{column name for date (default CURRENT.DATA)}
+\item{datecol}{column name for date  (default CURRENT.DATE)}
+}
+\value{
+data.frame that contains only values needed for plotting
 }
 \description{
 Subsets data for plotting

@@ -13,12 +13,13 @@ transformLayeredData <- function(data)
   )
 }
 
-#' Converts date from output file to date object
+#' Converts date (class `character`) column from output file to column of class `Date`
 #'
-#' @param data dataframe
+#' @param data data.frame
 #' @param newName name of the transformed date column
 #' @param format date format
 #' @param oldName name of the column that holds the date to be transformed
+#' @return data.frame with date column of class `Date`
 #' @export
 parseDate <- function(data, newName="CURRENT.DATE", format="%d.%m.%Y", oldName ="CURRENT.DATE")
 {
@@ -43,6 +44,7 @@ transdf <- function(l, n)
 
 #' converts expanded resultlist to dataframe in wide format
 #' @param reslist result list from simplace simulation
+#' @return data.frame with layered values (wide format)
 #' @export
 resultToDataframeExpanded <- function(reslist) {
   df<-do.call(cbind,lapply(names(reslist),\(n)transdf(reslist[[n]], n)))

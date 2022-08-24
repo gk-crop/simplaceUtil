@@ -9,7 +9,10 @@ getLinks(x, df)
 \arguments{
 \item{x}{xml object (solution)}
 
-\item{df}{dataframe of components}
+\item{df}{data.frame of components}
+}
+\value{
+data.frame with the linked variables between components
 }
 \description{
 Get the dataframe of links between components

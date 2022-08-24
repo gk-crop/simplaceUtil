@@ -1,3 +1,6 @@
+Version 0.3.2
+* updated documentation
+
 Version 0.3.1
 * get correct neighbourhood for multiple components
 * option to take the union or intersection of neighbourhoods

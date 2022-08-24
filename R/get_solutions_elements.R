@@ -1,6 +1,7 @@
 #' Determines the type of sim component by class attribute
 #'
 #' @param s class attribute
+#' @return type of sim component
 #' @keywords internal
 simComponentType <- function(s) ifelse(s=="net.simplace.sim.components.DefaultManagement","mgm",
                                        ifelse(s=="net.simplace.sim.components.FWSimpleSimComponent","simple",ifelse(s=="net.simplace.sim.model.FWSimComponentGroup","grouped","normal")))
@@ -9,6 +10,7 @@ simComponentType <- function(s) ifelse(s=="net.simplace.sim.components.DefaultMa
 #' Add the prefix "variables" if there is none
 #'
 #' @param v vector with prefix and name
+#' @return vector with prefix and name
 #' @keywords internal
 markVariables<-function(v){if(v[2]=="")c("variables",v[1])else v}
 
@@ -47,6 +49,7 @@ getVars <- function(s, ruleonly=FALSE)
 #' Gets user variables for a solution
 #'
 #' @param x xml object (solution)
+#' @return data.frame with the user defined variable
 #' @export
 getUserVariables <- function(x)
 {
@@ -66,6 +69,7 @@ getUserVariables <- function(x)
 #' Gets components for a solution
 #'
 #' @param x xml object (solution)
+#' @return data.frame with the solution components (resources, sim components, outputs)
 #' @export
 getComponents <- function(x)
 {
@@ -144,7 +148,8 @@ getComponents <- function(x)
 #' Get the dataframe of links between components
 #'
 #' @param x xml object (solution)
-#' @param df dataframe of components
+#' @param df data.frame of components
+#' @return data.frame with the linked variables between components
 #' @export
 getLinks <- function(x,df)
 {
@@ -293,6 +298,7 @@ getLinks <- function(x,df)
 #' Get component and links dataframe from solution file
 #'
 #' @param file solution
+#' @return list with solution (xml2 object) and components, links and variables data.frame
 #' @export
 getElementsFromSolutionFile <- function(file)
 {
@@ -305,6 +311,7 @@ getElementsFromSolutionFile <- function(file)
 
 #' Get ids of memory outputs
 #' @param comp components dataframe
+#' @return character vector with the memory output ids
 #' @export
 getMemoryOutputIds <- function(comp) {
   comp[!is.na(comp$ref) & substr(comp$ref,nchar(comp$ref)-7,nchar(comp$ref))=="[MEMORY]", "id"]
@@ -313,6 +320,7 @@ getMemoryOutputIds <- function(comp) {
 #' Determines the solution by it's file extension
 #'
 #' @param file filename
+#' @keywords internal
 isSolution <-function(file) {
   substr(file, nchar(file)-7, nchar(file)) == ".sol.xml"
 }
@@ -322,6 +330,7 @@ isSolution <-function(file) {
 #'
 #' @param file filename (full path)
 #' @param workdir working directory path
+#' @keywords internal
 getMetadataForFile <- function(file, workdir)
 {
   part <- gsub(paste0(workdir,"/"),"",file)
@@ -337,6 +346,7 @@ getMetadataForFile <- function(file, workdir)
 #'
 #' @param file solution file
 #' @param workdir working directory
+#' @return data.frame with all solution components as well as meta data for solution file
 #' @export
 getSolutionInfoAsDataframe <- function (file, workdir)
 {

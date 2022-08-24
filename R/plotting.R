@@ -4,7 +4,8 @@
 #' @param simulationid get data only for simulationid
 #' @param date_from simulation date from where values are taken
 #' @param date_to simulateon date until values are taken
-#' @param datecol column name for date (default CURRENT.DATA)
+#' @param datecol column name for date  (default CURRENT.DATE)
+#' @return data.frame that contains only values needed for plotting
 #' @keywords internal
 subsetDataForPlot <-function(data, simulationid=NULL, date_from=NULL, 
                              date_to=NULL, datecol="CURRENT.DATE")
@@ -32,7 +33,7 @@ subsetDataForPlot <-function(data, simulationid=NULL, date_from=NULL,
 #' @param simulationid plot only data for simulationid
 #' @param date_from simulation date from where values are plotted
 #' @param date_to simulateon date until values are plotted
-#' @param datecol column name for date (default CURRENT.DATA)
+#' @param datecol column name for date (default CURRENT.DATE)
 #' @export 
 #' @importFrom rlang .data
 plotScalarOutput <- function (data, column_x, columns_y, 
@@ -90,7 +91,7 @@ plotScalarOutput <- function (data, column_x, columns_y,
 #' @param date_from simulation date from where values are plotted
 #' @param date_to simulation date until values are plotted
 #' @param date_to simulateon date until values are plotted
-#' @param datecol column name for date (default CURRENT.DATA)
+#' @param datecol column name for date (default CURRENT.DATE)
 #' @export 
 #' @importFrom rlang .data
 plotLayeredOutput <- function(data, column, simulationid = NULL,  

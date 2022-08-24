@@ -3,9 +3,11 @@
 #' @param comp components dataframe
 #' @param links links dataframe
 #' @param showinterfaces if TRUE, include interfaces in graph
+#' @param ... options passed to [DiagrammeR::create_graph()]
+#' @return graph object of class `dgr_graph`
 #' @export
 #' @importFrom rlang .data
-componentsToGraph <- function(comp, links, showinterfaces=FALSE)
+componentsToGraph <- function(comp, links, showinterfaces=FALSE, ...)
 {
 
 
@@ -51,7 +53,7 @@ componentsToGraph <- function(comp, links, showinterfaces=FALSE)
                                       style="solid",
                                       arrowsize=.5,
                                       tooltip = edf$rel)
-  graph <- DiagrammeR::create_graph(nodes_df=nodes, edges_df = edges)
+  graph <- DiagrammeR::create_graph(nodes_df=nodes, edges_df = edges, ...)
   graph
 }
 
@@ -62,18 +64,21 @@ componentsToGraph <- function(comp, links, showinterfaces=FALSE)
 #'
 #' @param file solution file
 #' @param showinterfaces if true include interfaces
+#' @param ... options passed to DiagrammeR::create_graph()
+#' @return graph object of class `dgr_graph`
 #' @export
-solutionToGraph <- function(file,showinterfaces=FALSE)
+solutionToGraph <- function(file,showinterfaces=FALSE,...)
 {
   cp <- getElementsFromSolutionFile(file)
-  componentsToGraph(cp$components, cp$links,showinterfaces)
+  componentsToGraph(cp$components, cp$links,showinterfaces,...)
 
 }
 
 #' Selects edges of specific timestep
 #'
-#' @param graph graph
+#' @param graph graph object of class `dgr_graph`
 #' @param linkage all steps, same step or previous step
+#' @return graph object of class `dgr_graph`
 #' @export
 #' @importFrom rlang .data
 filterEdges <- function(graph, linkage="allsteps") {
@@ -93,24 +98,25 @@ filterEdges <- function(graph, linkage="allsteps") {
 }
 
 
-#' Get the simcomponent in the neighborhood of given component
+#' Get the simcomponents in the neighborhood of given components
 #'
-#' @param graph the solution graph
-#' @param name ids of the sim components
+#' @param graph graph object of class `dgr_graph`
+#' @param names names (id attributes) of the selected sim components
 #' @param distance maximum number of steps from given component
 #' @param linkage all steps, same step or previous step
 #' @param type type of component
 #' @param set_op "union" - all neighbours of selected components or
 #' "intersect" - common neighbours of all selectected components
+#' @return graph object of class `dgr_graph`
 #' @export
 #' @importFrom rlang .data
-getNeighborhood <- function(graph, name, distance=1, linkage="allsteps", type="all", set_op="union")
+getNeighborhood <- function(graph, names, distance=1, linkage="allsteps", type="all", set_op="union")
 {
 
-  if(!all(is.na(name)) && !all(name=='all'))
+  if(!all(is.na(names)) && !all(names=='all'))
   {
     nodeid <- graph |>
-      DiagrammeR::select_nodes(conditions = .data$label %in% name) |>
+      DiagrammeR::select_nodes(conditions = .data$label %in% names) |>
       DiagrammeR::get_selection()
 
     if(distance>0)
@@ -137,21 +143,21 @@ getNeighborhood <- function(graph, name, distance=1, linkage="allsteps", type="a
 
   graph |>
     filterEdges(linkage) |>
-    filterNodeType(name, type) |>
-    highlightSelectedNodes(name)
+    filterNodeType(names, type) |>
+    highlightSelectedNodes(names)
 }
 
 #' @importFrom rlang .data
-filterNodeType <- function(graph, name="all", type="all")
+filterNodeType <- function(graph, names="all", type="all")
 {
   ctype <- type
   if(!all(is.na(type)) && !all(type=='all'))
   {
-    if(!all(is.na(name)) && !all(name=='all'))
+    if(!all(is.na(names)) && !all(names=='all'))
     {
       graph <- graph |>
         DiagrammeR::select_nodes(
-          conditions = (.data$type %in% ctype | .data$label %in% name)) |>
+          conditions = (.data$type %in% ctype | .data$label %in% names)) |>
         DiagrammeR::invert_selection()
     }
     else
@@ -172,12 +178,12 @@ filterNodeType <- function(graph, name="all", type="all")
 }
 
 #' @importFrom rlang .data
-highlightSelectedNodes <- function(graph, name="all")
+highlightSelectedNodes <- function(graph, names="all")
 {
-  if(!all(is.na(name)) && !all(name=='all'))
+  if(!all(is.na(names)) && !all(names=='all'))
   {
     graph <- graph |>
-      DiagrammeR::select_nodes(condition = .data$label %in% name) |>
+      DiagrammeR::select_nodes(condition = .data$label %in% names) |>
       DiagrammeR::set_node_attrs_ws("color","black")|>
       DiagrammeR::set_node_attrs_ws("penwidth",1)
   }
@@ -185,7 +191,7 @@ highlightSelectedNodes <- function(graph, name="all")
 }
 
 #' @importFrom rlang .data
-getConnected <- function(graph, name, distance = 50, linkage = "allsteps", type="all", dir=1)
+getConnected <- function(graph, names, distance = 50, linkage = "allsteps", type="all", dir=1)
 {
 
   fun <- if(dir==1) DiagrammeR::trav_in else DiagrammeR::trav_out
@@ -194,7 +200,7 @@ getConnected <- function(graph, name, distance = 50, linkage = "allsteps", type=
 
 
   nodes <- graph |>
-    DiagrammeR::select_nodes(conditions = .data$label %in% name) |>
+    DiagrammeR::select_nodes(conditions = .data$label %in% names) |>
     DiagrammeR::get_selection()
 
   if(nrow(graph$edges_df)>0)
@@ -220,35 +226,37 @@ getConnected <- function(graph, name, distance = 50, linkage = "allsteps", type=
       DiagrammeR::delete_nodes_ws()
   }
   graph |>
-    filterNodeType(name, type) |>
-    highlightSelectedNodes(name)
+    filterNodeType(names, type) |>
+    highlightSelectedNodes(names)
 
 }
 
-#' Get components that link to given component
+#' Get components that link to given components
 #'
-#' @param graph graph
-#' @param name name of component
-#' @param distance maximum distance from given component
+#' @param graph graph object of class `dgr_graph`
+#' @param names names (id attributes) of selected components
+#' @param distance maximum distance from given components
 #' @param linkage all steps, same step or previous step
-#' @param type type of component
+#' @param type type of components
+#' @return graph object of class `dgr_graph`
 #' @export
-getLinkingToComponent <- function(graph, name, distance = 50, linkage = "allsteps", type="all")
+getLinkingToComponent <- function(graph, names, distance = 50, linkage = "allsteps", type="all")
 {
-  getConnected(graph, name, distance, linkage, type, dir=1)
+  getConnected(graph, names, distance, linkage, type, dir=1)
 }
 
 #' Get components that are linked from given component
 #'
-#' @param graph graph
-#' @param name name of component
-#' @param distance maximum distance from given component
+#' @param graph graph object of class `dgr_graph`
+#' @param names  names (id attributes) of the selected components
+#' @param distance maximum distance from given components
 #' @param linkage all steps, same step or previous step
-#' @param type type of component
+#' @param type type of components
+#' @return graph object of class `dgr_graph`
 #' @export
 
-getLinkingFromComponent <- function(graph, name, distance = 50, linkage = "allsteps", type="all")
+getLinkingFromComponent <- function(graph, names, distance = 50, linkage = "allsteps", type="all")
 {
-  getConnected(graph, name, distance, linkage, type, dir=-1)
+  getConnected(graph, names, distance, linkage, type, dir=-1)
 }
 

@@ -9,6 +9,9 @@ resultToDataframeExpanded(reslist)
 \arguments{
 \item{reslist}{result list from simplace simulation}
 }
+\value{
+data.frame with layered values (wide format)
+}
 \description{
 converts expanded resultlist to dataframe in wide format
 }

@@ -14,3 +14,4 @@ getMetadataForFile(file, workdir)
 \description{
 Get metadata from file
 }
+\keyword{internal}

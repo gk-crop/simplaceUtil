@@ -2,7 +2,30 @@
 % Please edit documentation in R/simplaceUtil.R
 \name{simplaceUtil}
 \alias{simplaceUtil}
-\title{Simplace utility functions}
+\title{Package with utility function for working with Simplace}
 \description{
-Simplace utility functions
+Provides functions to work with the modeling framework Simplace
+}
+\details{
+\itemize{
+\item get elements of a simplace solution as dataframes
+\item visualise the structure of a solution as a graph
+\item helper functions for transforming output data
+\item simplified plot functions for simulation output variables
+\item shinyApp to visualise graphs, run simulations and plot results
+}
+}
+\examples{
+\dontrun{
+# run the GUI
+runSimplaceGuiApp()
+
+# visualise the solution structure as graph
+graph <- solutionToGraph("/path/to/mysolution.sol.xml")
+DiagrammeR::render_graph(graph)
+}
+
+}
+\author{
+{Gunther Krauss}
 }

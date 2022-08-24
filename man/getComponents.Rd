@@ -9,6 +9,9 @@ getComponents(x)
 \arguments{
 \item{x}{xml object (solution)}
 }
+\value{
+data.frame with the solution components (resources, sim components, outputs)
+}
 \description{
 Gets components for a solution
 }
