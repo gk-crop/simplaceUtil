@@ -66,6 +66,20 @@ getUserVariables <- function(x)
   data.frame(id,value, unit, datatype, kind)
 }
 
+#' Replaces variables with content
+#'
+#' @param text text to replace
+#' @param variables variables dataframe
+#' @param additional additional variables as named vector c("var1"="value1", ...)
+#' @export
+replaceVariablesWithValues <- function(text, variables, additional)
+{
+  repl <- c(variables$value, additional)
+  names(repl) <- paste0("${",c(variables$id,names(additional)),"}")
+  stringr::str_replace_all(text,stringr::fixed(repl))
+}
+
+
 #' Gets components for a solution
 #'
 #' @param x xml object (solution)
@@ -155,7 +169,7 @@ getLinks <- function(x,df)
 {
 
   vdf_all<-NULL
-  
+
   # sim components
   for(i in df[df$type=="simcomponent","id"])
   {
@@ -180,13 +194,14 @@ getLinks <- function(x,df)
       vdf_all<- rbind(vdf_all, vdf)
     }
   }
-  
+
   # interfaces
   dfi <- df[df$type=="interface" & grepl("[$][{}][^}]+[}]",df$ref),]
   for(j in seq_along(dfi))
   {
     i <- dfi[j,"id"]
     inp <- dfi[j,"ref"]
+    inp <- unique(inp[!is.na(inp)])
     if(length(inp)>0)
     {
       l<-lapply(inp,getVars,ruleonly=TRUE)
@@ -217,7 +232,7 @@ getLinks <- function(x,df)
   {
     vdf_all <-rbind(vdf_all,data.frame(from=als_resources, to=als_id, name="-",rel="data"))
   }
-  
+
   # resources: rules and keys
   for(i in df[df$type=="resource","id"])
   {
@@ -257,8 +272,8 @@ getLinks <- function(x,df)
   {
     vdf_all <-rbind(vdf_all,data.frame(from=out_resources, to=out_id, name="-",rel="storage"))
   }
-  
-  
+
+
   for(i in df[df$type=="output","id"])
   {
     rls <- xml2::xml_attr(xml2::xml_find_all(x,paste0("//solution//outputs//output[@id='",i,"']")),'rule')

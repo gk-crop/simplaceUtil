@@ -22,39 +22,77 @@ filename <- function(fl,vol) shinyFiles::parseFilePaths(vol,fl)$datapath[1]
 
 dirname <- function(fl,vol) shinyFiles::parseDirPath(vol,fl)$datapath[1]
 
-renderMemoySelect <- function(input, output, v)
+renderOutputSelect <- function(input, output, v)
 {
-  memid <- getMemoryOutputIds(v$elem$components)
-  names(memid)<-memid
-  ch_m <- memid
+  ch_m <- c(getMemoryOutputIds(v$elem$components),names(v$outputfiles))
+  names(ch_m)<-ch_m
   if(length(ch_m)>0) {
-    output$memoryoutselect <-  renderUI(selectInput("memoryoutselect","Select outputs", choices = ch_m, selected=1,multiple=FALSE))
+    output$outselect <-  renderUI(selectInput("outselect","Select outputs", choices = ch_m, selected=1,multiple=FALSE))
   }
   else {
-    output$memoryoutselect <- renderText("")
+    output$outselect <- renderText("")
   }
 
+}
+
+getFileOutputList <- function(v)
+{
+  l <- character(0)
+  if(v$simulated)
+  {
+    outp <- v$elem$component |>
+      dplyr::filter(type=="output") |>
+      dplyr::mutate(file=replaceVariablesWithValues(
+        gsub("[^\\[]+\\[(.+)\\]","\\1",ref),
+          v$elem$variables,
+          c("_WORKDIR_"=v$workdir,"_OUTPUTDIR_"=v$outputdir)
+        )
+      ) |>
+      dplyr::filter(file.exists(file))
+    if(nrow(outp)>0){
+      l <- outp$file
+      names(l)<-outp$id
+    }
+
+  }
+  l
 }
 
 
 getSimulationResult <- function (input,output,v)
 {
-  if(v$simulated && !is.null(input$memoryoutselect))
+  if(v$simulated && !is.null(input$outselect))
   {
-    if(!is.null(v$actsim))
+    if(input$outselect %in% names(v$outputfiles))
     {
-      res <- simplace::getResult(v$sp, input$memoryoutselect,v$actsim)
+      l <- readLines(v$outputfiles[input$outselect], n=1)
+      pos <- nchar("projectid")
+      if(substr(l,1,pos)=="projectid")
+      {
+        del = substr(l,pos+1, pos+1)
+        v$resultdf <- readr::read_delim(v$outputfiles[input$outselect],delim=del) |>
+          parseDate()
+      }
     }
-    else {
-      res <- simplace::getResult(v$sp, input$memoryoutselect)
+    else
+    {
+      if(!is.null(v$actsim))
+      {
+        res <- simplace::getResult(v$sp, input$outselect,v$actsim)
+      }
+      else {
+        res <- simplace::getResult(v$sp, input$outselect)
+      }
+      resl <- simplace::resultToList(res, expand=TRUE)
+      # units <- simplace::getUnitsOfResult(res)
+      # for(i in seq_along(resl))
+      # {
+      #   attr(resl[[i]], "unit") <- units[[i]]
+      # }
+      v$resultdf <- resultToDataframeExpanded(resl)
     }
-    # units <- simplace::getUnitsOfResult(res)
-    # resl <- simplace::resultToList(res, expand=TRUE)
-    # for(i in seq_along(resl))
-    # {
-    #   attr(resl[[i]], "unit") <- units[[i]]
-    # }
-    v$resultdf <- resultToDataframeExpanded(resl)
+
+
     sims <- unique(v$resultdf$simulationid)
     cols <- names(v$resultdf)
     lcols <- unique(gsub("_[0-9]+$","",cols[grepl("_[0-9]+$",cols)]))

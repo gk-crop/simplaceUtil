@@ -1,3 +1,6 @@
+Version 0.3.4
+* include CSV outputs for display / plot (if files exist)
+
 Version 0.3.3
 * plot multiple simulation ids
 * check if layered values exist before layer plot

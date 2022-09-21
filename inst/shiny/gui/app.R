@@ -41,7 +41,7 @@ ui <- fluidPage(
       ),
 
       h5("Simulation Runs"),
-      uiOutput("memoryoutselect"),
+      uiOutput("outselect"),
       textOutput("runstatus")
 
     ),
@@ -81,8 +81,8 @@ ui <- fluidPage(
         tabPanel("User Variables",
                  dataTableOutput("variables")),
 
-        tabPanel("Mem Output",
-                 dataTableOutput("memoutput")),
+        tabPanel("Output",
+                 dataTableOutput("output")),
 
         tabPanel("Plots",
                  uiOutput("plotcontrols"),
@@ -133,7 +133,7 @@ server <- function(input, output) {
 
   v$resultdf <- NULL
 
-
+  v$outputfiles <- NULL
 
 
   # File and directory choose
@@ -267,9 +267,9 @@ server <- function(input, output) {
     {
       try({
         if(!is.null(v$sp) && !is.null(v$solution)) {
-          renderMemoySelect(input, output, v)
           v$simulated <- FALSE
           v$actsim <- NULL
+          v$outputfiles <- NULL
           output$runstatus <- renderText("running simulation in project mode")
           if(is.null(v$project))
           {
@@ -283,7 +283,8 @@ server <- function(input, output) {
           simplace::runProject(v$sp)
           simplace::closeProject(v$sp)
           v$simulated <- TRUE
-
+          v$outputfiles <- getFileOutputList(v)
+          renderOutputSelect(input, output, v)
           output$runstatus <- renderText("ended simulation")
         }
       }
@@ -297,7 +298,6 @@ server <- function(input, output) {
     {
       try({
         if(!is.null(v$sp) && !is.null(v$solution)) {
-          renderMemoySelect(input, output, v)
           v$simulated <- FALSE
           simplace::openProject(v$sp,v$solution)
           sim <- simplace::createSimulation(v$sp)
@@ -307,7 +307,8 @@ server <- function(input, output) {
           output$runstatus<-renderText(paste("ended simulation",sim))
           v$actsim <- sim
           v$simulated <- TRUE
-
+          v$outputfiles <- getFileOutputList(v)
+          renderOutputSelect(input, output, v)
         }
       }
       )
@@ -316,7 +317,7 @@ server <- function(input, output) {
   )
 
 
-  observeEvent(input$memoryoutselect,getSimulationResult(input,output,v))
+  observeEvent(input$outselect,getSimulationResult(input,output,v))
   observeEvent(v$simulated,{
     if(!v$simulated) {output$runstatus <- renderText("")}
     else {
@@ -409,7 +410,7 @@ server <- function(input, output) {
     }, options=tableOptions)
 
 
-  output$memoutput <- renderDataTable (
+  output$output <- renderDataTable (
     {
       v$resultdf
     }, options=tableOptions)
