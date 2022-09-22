@@ -1,3 +1,6 @@
+Version 0.3.5
+* avoid errors during plots when switching output
+
 Version 0.3.4
 * include CSV outputs for display / plot (if files exist)
 

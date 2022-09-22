@@ -1,3 +1,4 @@
+#' get list of volumes for file dialogs
 my_volumes <- function()
 {
   dirs <- simplace::findSimplaceInstallations()
@@ -17,17 +18,20 @@ my_volumes <- function()
 
 }
 
-
+#' extract filename from file dialog results
 filename <- function(fl,vol) shinyFiles::parseFilePaths(vol,fl)$datapath[1]
 
+#' extract filename from directory dialog results
 dirname <- function(fl,vol) shinyFiles::parseDirPath(vol,fl)$datapath[1]
 
+#' render list of available outputs
 renderOutputSelect <- function(input, output, v)
 {
   ch_m <- c(getMemoryOutputIds(v$elem$components),names(v$outputfiles))
   names(ch_m)<-ch_m
   if(length(ch_m)>0) {
-    output$outselect <-  renderUI(selectInput("outselect","Select outputs", choices = ch_m, selected=1,multiple=FALSE))
+    output$outselect <-  renderUI(selectInput("outselect","Select outputs",
+                              choices = ch_m, selected=1,multiple=FALSE))
   }
   else {
     output$outselect <- renderText("")
@@ -35,6 +39,7 @@ renderOutputSelect <- function(input, output, v)
 
 }
 
+#' get list of available csv output files
 getFileOutputList <- function(v)
 {
   l <- character(0)
@@ -58,7 +63,7 @@ getFileOutputList <- function(v)
   l
 }
 
-
+#' fetch simulation result (from memory or from file)
 getSimulationResult <- function (input,output,v)
 {
   if(v$simulated && !is.null(input$outselect))
@@ -70,7 +75,8 @@ getSimulationResult <- function (input,output,v)
       if(substr(l,1,pos)=="projectid")
       {
         del = substr(l,pos+1, pos+1)
-        v$resultdf <- readr::read_delim(v$outputfiles[input$outselect],delim=del) |>
+        v$resultdf <- readr::read_delim(v$outputfiles[input$outselect],
+                                        delim=del, show_col_types = FALSE) |>
           parseDate()
       }
     }
@@ -100,14 +106,17 @@ getSimulationResult <- function (input,output,v)
     maxd <- max(v$resultdf$CURRENT.DATE)
     output$plotcontrols <- renderUI(
       tagList(fluidRow(
-        column(7,selectInput("simulation", "SimulationIds",sims, multiple = TRUE, selected = sims[1])),
+        column(7,selectInput("simulation", "SimulationIds",sims, multiple = TRUE,
+                    selected = sims[1])),
         column(5,dateRangeInput('daterange',
                                 label = 'Date range to plot',
                                 min = mind, max=maxd,
                                 start = mind, end = min(mind+4*365+1,maxd)))),
         fluidRow(
-          column(4,selectInput("columnx", "X-Column",cols, selected="CURRENT.DATE")),
-          column(8,selectInput("columny", "Y-Column(s)",cols, selected="CURRENT.DATE",width = "100%", multiple=TRUE)),
+          column(4,selectInput("columnx", "X-Column",cols,
+                    selected="CURRENT.DATE")),
+          column(8,selectInput("columny", "Y-Column(s)",cols,
+                    selected="CURRENT.DATE",width = "100%", multiple=TRUE)),
 
         ))
     )

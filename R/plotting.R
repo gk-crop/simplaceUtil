@@ -40,6 +40,7 @@ plotScalarOutput <- function (data, column_x, columns_y,
                               simulationid=NULL, date_from=NULL, date_to=NULL,
                               datecol="CURRENT.DATE")
 {
+  columns_y <- intersect(columns_y, names(data))
   cols <- unique(c("simulationid",datecol, column_x, columns_y))
   if(length(cols)>1)
   {

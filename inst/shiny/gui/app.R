@@ -17,19 +17,19 @@ ui <- fluidPage(
 
     sidebarPanel(
 
-      h5("Solution & Project"),
+      h4("Solution & Project"),
       shinyFilesButton('solution', label='Select solution',
                        title='Please select a solution', multiple=FALSE),
       shinyFilesButton('project', label='Select project',
                        title='Please select a project', multiple=FALSE),
 
-      h5("Simplace"),
+      h4("Simplace"),
       fluidRow(
         column(5, shinyDirButton('instdir', label='Simplace Installation', title='Please select simplace installation dir', multiple=FALSE)),
         column(7, uiOutput("dirselect"))
       ),
 
-      h5("Solution Graph & tables"),
+      h4("Solution Graph & tables"),
       selectInput("graphlayout","Graph Layout",choices = c("nicely", "circle", "tree", "kk", "fr"),selected=1),
       uiOutput("componentselect"),
       fluidRow(
@@ -40,7 +40,7 @@ ui <- fluidPage(
                   selected=1))
       ),
 
-      h5("Simulation Runs"),
+      h4("Simulation Runs"),
       uiOutput("outselect"),
       textOutput("runstatus")
 

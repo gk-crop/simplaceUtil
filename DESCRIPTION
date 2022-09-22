@@ -1,7 +1,7 @@
 Package: simplaceUtil
 Title: Provides Utility Functions and ShinyApps to work with Simplace
-Version: 0.3.4
-Date: 2022-09-21
+Version: 0.3.5
+Date: 2022-09-22
 Authors@R: 
     person("Gunther", "Krauss", , "guntherkrauss@uni-bonn.de", role = c("aut", "cre"))
 Description: Provides Utility Functions and ShinyApps to work with Simplace. It visualises components of a solution, runs simulations and displays results.
