@@ -278,3 +278,50 @@ replaceVariable <- function(sol, oldid, newid) {
 
   x
 }
+
+
+#' Sets the value of an input for a given parent element
+#'
+#' @param sol solution object
+#' @param parentid id of input parent
+#' @param id id of the input
+#' @param value new value
+#' @return modified solution object
+#'
+#' @export
+setInputValue <- function(sol, parentid, id, value) {
+  x <- xml2::xml_new_root(sol)
+
+  parent <- xml2::xml_find_first(x,paste0('/solution//*[@id="',parentid,'"]'))
+
+  inp <- xml2::xml_find_first(parent,paste0('//input[@id="',id,'"]'))
+
+  xml2::xml_attr(inp, "source") <- NULL
+  xml2::xml_text(inp) <- as.character(value)
+  x
+}
+
+#' Sets the value of an input in all elements of the given category
+#'
+#' It's main use is to change consistently inputs of all transformers,
+#' e.g. `layerthickness`. It can also be used to set sim component inputs
+#' to a fixed value.
+#'
+#' @param sol solution object
+#' @param category tag of categories containing inputs, e.g. `transform` or `simcomponent`
+#' @param id id of the input
+#' @param value new value
+#' @return modified solution object
+#'
+#' @export
+setInputValueForCategory <- function(sol, category, id, value) {
+  x <- xml2::xml_new_root(sol)
+
+  parent <- xml2::xml_find_all(x,paste0('/solution//',category,''))
+
+  inp <- xml2::xml_find_all(parent,paste0('//input[@id="',id,'"]'))
+
+  xml2::xml_attr(inp, "source") <- NULL
+  xml2::xml_text(inp) <- as.character(value)
+  x
+}
