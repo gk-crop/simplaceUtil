@@ -55,6 +55,7 @@ getSolutionFromText <- function(text) {
 addMemoryOutput <- function(sol, outputid, frequence="DAILY", rule=NULL, resetrule=NULL) {
   x <- xml2::xml_new_root(sol)
   x <- removeOutput(x,outputid)
+
   intfs <- xml2::xml_find_first(x, '/solution/interfaces')
   xml2::xml_add_child(intfs, "interface", id=paste0(outputid,"_meminterface"),type="MEMORY")
   intf <- xml2::xml_find_first(x, paste0('/solution/interfaces/interface[@id="',outputid,'_meminterface"]'))
@@ -70,6 +71,10 @@ addMemoryOutput <- function(sol, outputid, frequence="DAILY", rule=NULL, resetru
   if(!is.null(resetrule)) {
     xml2::xml_attr(out,"rule")<-resetrule
   }
+
+  desc <- xml2::xml_find_first(x,"/solution/description")
+  xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added memory output ",outputid)
+
   x
 }
 
@@ -85,11 +90,20 @@ addMemoryOutput <- function(sol, outputid, frequence="DAILY", rule=NULL, resetru
 #' @export
 removeOutput <- function(sol, outputid) {
   x <- xml2::xml_new_root(sol)
+
+
   out <- xml2::xml_find_first(x, paste0('/solution/outputs/output[@id="',outputid,'"]'))
-  intfid <- xml2::xml_attr(out,"interface")
-  intf <- xml2::xml_find_first(x, paste0('/solution/interfaces/interface[@id="',intfid,'"]'))
-  xml2::xml_remove(out)
-  xml2::xml_remove(intf)
+  if(length(out)>0)
+  {
+    intfid <- xml2::xml_attr(out,"interface")
+    intf <- xml2::xml_find_first(x, paste0('/solution/interfaces/interface[@id="',intfid,'"]'))
+    xml2::xml_remove(out)
+    xml2::xml_remove(intf)
+
+    desc <- xml2::xml_find_first(x,"/solution/description")
+    xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* removed output ",outputid,"")
+
+  }
   x
 }
 
@@ -104,12 +118,20 @@ removeOutput <- function(sol, outputid) {
 #' @export
 removeNonMemoryOutputs <- function(sol) {
   x <- xml2::xml_new_root(sol)
+
+
   intfs <- xml2::xml_attr(xml2::xml_find_all(x, '/solution/interfaces/interface[@type!="MEMORY"]'),"id")
   outs <- xml2::xml_attr(xml2::xml_find_all(x, '/solution/outputs/output'),"interface")
   to_remove <- intersect(intfs, outs)
-  for(intf in to_remove) {
-    xml2::xml_remove(xml2::xml_find_first(x, paste0('/solution/interfaces/interface[@id="',intf,'"]')))
-    xml2::xml_remove(xml2::xml_find_first(x, paste0('/solution/outputs/output[@interface="',intf,'"]')))
+  if(length(to_remove)>0)
+  {
+    for(intf in to_remove) {
+      xml2::xml_remove(xml2::xml_find_first(x, paste0('/solution/interfaces/interface[@id="',intf,'"]')))
+      xml2::xml_remove(xml2::xml_find_first(x, paste0('/solution/outputs/output[@interface="',intf,'"]')))
+    }
+
+    desc <- xml2::xml_find_first(x,"/solution/description")
+    xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* removed non-memory outputs for interfaces",paste(to_remove,collapse=", "))
   }
   x
 }
@@ -132,6 +154,7 @@ addOutputVariable <- function(sol, outputid, id, rule, datatype, mode=NULL,
 
   x <- xml2::xml_new_root(sol)
   x <- removeOutputVariable(x, outputid, id)
+
   cmp <- xml2::xml_find_first(x,paste0('/solution/outputs/output[@id="',outputid,'"]/header'))
   xml2::xml_add_child(cmp,'out', id=id, rule=rule, datatype=datatype)
   md <- xml2::xml_find_first(x,paste0('/solution/outputs/output[@id="',outputid,'"]/header/out[@id="',id,'"]'))
@@ -144,6 +167,10 @@ addOutputVariable <- function(sol, outputid, id, rule, datatype, mode=NULL,
   if(!is.null(description)) {
     xml2::xml_attr(md,"description") <- description
   }
+
+  desc <- xml2::xml_find_first(x,"/solution/description")
+  xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added output variable",id," to output ",outputid,"")
+
   x
 
 }
@@ -157,10 +184,16 @@ addOutputVariable <- function(sol, outputid, id, rule, datatype, mode=NULL,
 #'
 #' @export
 removeOutputVariable <- function(sol, outputid, id) {
-
   x <- xml2::xml_new_root(sol)
+
+
   outp <- xml2::xml_find_all(x,paste0('/solution/outputs/output[@id="',outputid,'"]/header/out[@id="',id,'"]'))
-  xml2::xml_remove(outp)
+  if(length(outp)>0) {
+    xml2::xml_remove(outp)
+
+    desc <- xml2::xml_find_first(x,"/solution/description")
+    xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* removed output variable",id,"from output",outputid)
+  }
   x
 }
 
@@ -177,9 +210,13 @@ removeOutputVariable <- function(sol, outputid, id) {
 #' @export
 addUserVariable <- function(sol, id, value, datatype, unit="", description="") {
   x <- xml2::xml_new_root(sol)
+
   vars <- xml2::xml_find_first(x,"/solution/variables")
   pos <- length(xml2::xml_find_all(vars,"/solution/variables/var"))
   xml2::xml_add_child(vars,'var', value, id=id, datatype=datatype, unit=unit, description=description, .where=pos)
+
+  desc <- xml2::xml_find_first(x,"/solution/description")
+  xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added user variable",id)
 
   x
 }
@@ -206,6 +243,8 @@ addUserVariable <- function(sol, id, value, datatype, unit="", description="") {
 addComponentInput <- function(sol, componentid, id, source=NULL, value=NULL, datatype=NULL, unit=NULL, description=NULL) {
   x <- xml2::xml_new_root(sol)
   x <- removeComponentInput(x, componentid, id)
+
+
   cmp <- xml2::xml_find_first(x,paste0('/solution/simmodel/simcomponent[@id="',componentid,'"]'))
   if(!is.null(source)) {
     xml2::xml_add_child(cmp,'input', id=id, source=source)
@@ -223,6 +262,10 @@ addComponentInput <- function(sol, componentid, id, source=NULL, value=NULL, dat
   if(!is.null(description)) {
     xml2::xml_attr(md,"description") <- description
   }
+
+  desc <- xml2::xml_find_first(x,"/solution/description")
+  xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added input ",id,"to component",componentid)
+
   x
 }
 
@@ -236,8 +279,17 @@ addComponentInput <- function(sol, componentid, id, source=NULL, value=NULL, dat
 #' @export
 removeComponentInput <- function(sol, componentid, id) {
   x <- xml2::xml_new_root(sol)
+
+
   inp <- xml2::xml_find_all(x,paste0('/solution/simmodel/simcomponent[@id="',componentid,'"]/input[@id="',id,'"]'))
-  xml2::xml_remove(inp)
+
+  if(length(inp)>0) {
+    xml2::xml_remove(inp)
+
+    desc <- xml2::xml_find_first(x,"/solution/description")
+    xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* removed input ",id,"from component",componentid)
+  }
+
   x
 }
 
@@ -258,6 +310,12 @@ replaceVariable <- function(sol, oldid, newid) {
   # make a copy of the root node
   x <- xml2::xml_new_root(sol)
 
+  # save description, so that text is not affected by replacements
+  olddesc <- xml2::xml_find_first(x,"/solution/description")
+  desc <- xml2::xml_new_root(olddesc)
+  xml2::xml_remove(olddesc)
+
+
   # replace literal values in node text
   tl <- xml2::xml_find_all(x,paste0('/solution//*[.="',oldid,'"]'))
   xml2::xml_text(tl) <- gsub(oldid, newid, xml2::xml_text(tl), fixed=TRUE)
@@ -276,6 +334,8 @@ replaceVariable <- function(sol, oldid, newid) {
     xml2::xml_attr(tl, att) <- gsub(oldid, newid, xml2::xml_attr(tl,att), fixed=TRUE)
   }
 
+  xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* replaced",oldid,"with",newid)
+  xml2::xml_add_child(x,desc,.where=1)
   x
 }
 
@@ -296,8 +356,14 @@ setInputValue <- function(sol, parentid, id, value) {
 
   inp <- xml2::xml_find_first(parent,paste0('//input[@id="',id,'"]'))
 
-  xml2::xml_attr(inp, "source") <- NULL
-  xml2::xml_text(inp) <- as.character(value)
+  if (length(inp)>0) {
+    xml2::xml_attr(inp, "source") <- NULL
+    xml2::xml_text(inp) <- as.character(value)
+
+    desc <- xml2::xml_find_first(x,"/solution/description")
+    xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* set input",id,"in",parentid,"to",as.character(value))
+  }
+
   x
 }
 
@@ -321,7 +387,43 @@ setInputValueForCategory <- function(sol, category, id, value) {
 
   inp <- xml2::xml_find_all(parent,paste0('//input[@id="',id,'"]'))
 
-  xml2::xml_attr(inp, "source") <- NULL
-  xml2::xml_text(inp) <- as.character(value)
+  if (length(inp)>0) {
+    xml2::xml_attr(inp, "source") <- NULL
+    xml2::xml_text(inp) <- as.character(value)
+
+
+  }
+  x
+}
+
+#' Swaps the order of SimComponents in the solution
+#'
+#' Rearranges the order of SimComponents. All components that are mentioned in
+#' the vector order will be rearranged according to their position in the order
+#' vector. All other components remain on the same position.
+#' E. g. an order of `c(5,6,1,3)` will put components on position 1,3,5,6 to
+#' position 5, 6, 1, 3.
+#'
+#'
+#' @param sol solution object
+#' @param order a vector of component positions
+#' @return modified solution object
+#'
+#' @export
+swapComponents <-function(sol, order) {
+  x <- xml2::xml_new_root(sol)
+  sc <- xml2::xml_find_all(x,"/solution/simmodel/simcomponent")
+  order <- order[order <= length(sc)]
+  sorder <- sort(order)
+  if(length(order)>0 && any(sorder !=order))
+  {
+    sc2 <- sc
+    sc2[sorder] <- sc[order]
+    xml2::xml_replace(sc,sc2)
+    desc <- xml2::xml_find_first(x,"/solution/description")
+    xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* changed order of components ",paste(sorder,collapse=","),"to",paste(order,collapse=","))
+
+  }
+
   x
 }
