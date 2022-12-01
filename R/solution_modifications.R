@@ -213,10 +213,13 @@ addUserVariable <- function(sol, id, value, datatype, unit="", description="") {
 
   vars <- xml2::xml_find_first(x,"/solution/variables")
   pos <- length(xml2::xml_find_all(vars,"/solution/variables/var"))
+  if(length(value)>1) {
+    value <- paste0("[",paste(value, collapse=", "),"]")
+  }
   xml2::xml_add_child(vars,'var', value, id=id, datatype=datatype, unit=unit, description=description, .where=pos)
 
   desc <- xml2::xml_find_first(x,"/solution/description")
-  xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added user variable",id)
+  xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added user variable",id,"with value",paste(value,collapse=","))
 
   x
 }
@@ -246,25 +249,42 @@ addComponentInput <- function(sol, componentid, id, source=NULL, value=NULL, dat
 
 
   cmp <- xml2::xml_find_first(x,paste0('/solution/simmodel/simcomponent[@id="',componentid,'"]'))
-  if(!is.null(source)) {
-    xml2::xml_add_child(cmp,'input', id=id, source=source)
 
-  } else {
-    xml2::xml_add_child(cmp,'input', id=id, value)
-  }
-  md <- xml2::xml_find_first(x,paste0('/solution/simmodel/simcomponent[@id="',componentid,'"]/input[@id="',id,'"]'))
-  if(!is.null(datatype)) {
-    xml2::xml_attr(md,"datatype") <- datatype
-  }
-  if(!is.null(unit)) {
-    xml2::xml_attr(md,"unit") <- unit
-  }
-  if(!is.null(description)) {
-    xml2::xml_attr(md,"description") <- description
-  }
+  if(length(cmp)>0)
+  {
+    xml2::xml_add_child(cmp,'input', id=id)
+    md <- xml2::xml_find_first(x,paste0('/solution/simmodel/simcomponent[@id="',componentid,'"]/input[@id="',id,'"]'))
+    if(!is.null(source)) {
+      xml2::xml_attr(md,"source") <- source
+    }
+    else {
+      if(length(value)>1) {
+        for(v in value) xml2::xml_add_child(md, "value",v)
+      }
+      else {
+        xml2::xml_text(md) <- as.character(value)
+      }
+    }
+    if(!is.null(datatype)) {
+      xml2::xml_attr(md,"datatype") <- datatype
+    }
+    if(!is.null(unit)) {
+      xml2::xml_attr(md,"unit") <- unit
+    }
+    if(!is.null(description)) {
+      xml2::xml_attr(md,"description") <- description
+    }
+    valtxt <- ""
+    if(!is.null(source)) {
+      valtxt <- paste("with source",source)
+    }
+    else if (!is.null(value)) {
+      valtxt <- paste("with value",paste(value, collapse=","))
+    }
+    desc <- xml2::xml_find_first(x,"/solution/description")
+    xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added input ",id,"to component",componentid,valtxt)
 
-  desc <- xml2::xml_find_first(x,"/solution/description")
-  xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added input ",id,"to component",componentid)
+  }
 
   x
 }
@@ -325,8 +345,7 @@ replaceVariable <- function(sol, oldid, newid) {
   xml2::xml_text(tl) <- gsub(paste0('${',oldid,'}'),paste0('${',newid,'}'),xml2::xml_text(tl),fixed = TRUE)
 
   attlist <- c("source", "rule", "key", "resetrule")
-  for(att in attlist)
-  {
+  for(att in attlist) {
     tl <- xml2::xml_find_all(x,paste0('/solution//*[@',att,'="',oldid,'"]'))
     xml2::xml_attr(tl, att) <- newid
 
@@ -335,7 +354,7 @@ replaceVariable <- function(sol, oldid, newid) {
   }
 
   xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* replaced",oldid,"with",newid)
-  xml2::xml_add_child(x,desc,.where=1)
+  xml2::xml_add_child(x,desc,.where=0)
   x
 }
 
@@ -346,10 +365,11 @@ replaceVariable <- function(sol, oldid, newid) {
 #' @param parentid id of input parent
 #' @param id id of the input
 #' @param value new value
+#' @param datatype datatype (optional)
 #' @return modified solution object
 #'
 #' @export
-setInputValue <- function(sol, parentid, id, value) {
+setInputValue <- function(sol, parentid, id, value, datatype=NULL) {
   x <- xml2::xml_new_root(sol)
 
   parent <- xml2::xml_find_first(x,paste0('/solution//*[@id="',parentid,'"]'))
@@ -358,10 +378,19 @@ setInputValue <- function(sol, parentid, id, value) {
 
   if (length(inp)>0) {
     xml2::xml_attr(inp, "source") <- NULL
-    xml2::xml_text(inp) <- as.character(value)
+    if(length(value)>1) {
+      for(v in value) xml2::xml_add_child(inp, "value",v)
+    }
+    else {
+      xml2::xml_text(inp) <- as.character(value)
+    }
+
+    if(!is.null(datatype)) {
+      xml2::xml_attr(inp,"datatype") <- datatype
+    }
 
     desc <- xml2::xml_find_first(x,"/solution/description")
-    xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* set input",id,"in",parentid,"to",as.character(value))
+    xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* set input",id,"in",parentid,"to",paste(value,collapse=","))
   }
 
   x
@@ -377,10 +406,11 @@ setInputValue <- function(sol, parentid, id, value) {
 #' @param category tag of categories containing inputs, e.g. `transform` or `simcomponent`
 #' @param id id of the input
 #' @param value new value
+#' @param datatype datatype (optional)
 #' @return modified solution object
 #'
 #' @export
-setInputValueForCategory <- function(sol, category, id, value) {
+setInputValueForCategory <- function(sol, category, id, value, datatype=NULL) {
   x <- xml2::xml_new_root(sol)
 
   parent <- xml2::xml_find_all(x,paste0('/solution//',category,''))
@@ -389,10 +419,19 @@ setInputValueForCategory <- function(sol, category, id, value) {
 
   if (length(inp)>0) {
     xml2::xml_attr(inp, "source") <- NULL
-    xml2::xml_text(inp) <- as.character(value)
-
-
+    if(length(value)>1) {
+      for(v in value) xml2::xml_add_child(inp, "value",v)
+    }
+    else {
+      xml2::xml_text(inp) <- as.character(value)
+    }
+    if(!is.null(datatype)) {
+      xml2::xml_attr(inp,"datatype") <- datatype
+    }
+    desc <- xml2::xml_find_first(x,"/solution/description")
+    xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* set input",id,"in category",category,"to",paste(value,collapse=","))
   }
+
   x
 }
 

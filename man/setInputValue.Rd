@@ -4,7 +4,7 @@
 \alias{setInputValue}
 \title{Sets the value of an input for a given parent element}
 \usage{
-setInputValue(sol, parentid, id, value)
+setInputValue(sol, parentid, id, value, datatype = NULL)
 }
 \arguments{
 \item{sol}{solution object}
@@ -14,6 +14,8 @@ setInputValue(sol, parentid, id, value)
 \item{id}{id of the input}
 
 \item{value}{new value}
+
+\item{datatype}{datatype (optional)}
 }
 \value{
 modified solution object

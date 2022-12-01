@@ -1,3 +1,7 @@
+Version 0.4.3
+* variable and input values can be arrays
+* bugfix in description modifications
+
 Version 0.4.2
 * modification are recorded in the description tag
 * added function to swap sim components

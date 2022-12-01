@@ -4,7 +4,7 @@
 \alias{setInputValueForCategory}
 \title{Sets the value of an input in all elements of the given category}
 \usage{
-setInputValueForCategory(sol, category, id, value)
+setInputValueForCategory(sol, category, id, value, datatype = NULL)
 }
 \arguments{
 \item{sol}{solution object}
@@ -14,6 +14,8 @@ setInputValueForCategory(sol, category, id, value)
 \item{id}{id of the input}
 
 \item{value}{new value}
+
+\item{datatype}{datatype (optional)}
 }
 \value{
 modified solution object
