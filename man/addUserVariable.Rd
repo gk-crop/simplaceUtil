@@ -4,7 +4,7 @@
 \alias{addUserVariable}
 \title{Adds an user variable to the \code{variables} section}
 \usage{
-addUserVariable(sol, id, value, datatype, unit = "", description = "")
+addUserVariable(sol, id, value, datatype, unit = NULL, description = NULL)
 }
 \arguments{
 \item{sol}{solution object}

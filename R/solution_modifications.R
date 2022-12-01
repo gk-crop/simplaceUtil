@@ -1,3 +1,8 @@
+xml_clone <- function(doc) {
+  xml2::read_xml(as.character(doc))
+}
+
+
 #' Reads a solution from file
 #'
 #' @param file filename of the solution
@@ -53,7 +58,7 @@ getSolutionFromText <- function(text) {
 #'
 #' @export
 addMemoryOutput <- function(sol, outputid, frequence="DAILY", rule=NULL, resetrule=NULL) {
-  x <- xml2::xml_new_root(sol)
+  x <- xml2::read_xml(as.character(sol))
   x <- removeOutput(x,outputid)
 
   intfs <- xml2::xml_find_first(x, '/solution/interfaces')
@@ -89,7 +94,7 @@ addMemoryOutput <- function(sol, outputid, frequence="DAILY", rule=NULL, resetru
 #'
 #' @export
 removeOutput <- function(sol, outputid) {
-  x <- xml2::xml_new_root(sol)
+  x <- xml2::read_xml(as.character(sol))
 
 
   out <- xml2::xml_find_first(x, paste0('/solution/outputs/output[@id="',outputid,'"]'))
@@ -117,7 +122,7 @@ removeOutput <- function(sol, outputid) {
 #'
 #' @export
 removeNonMemoryOutputs <- function(sol) {
-  x <- xml2::xml_new_root(sol)
+  x <- xml2::read_xml(as.character(sol))
 
 
   intfs <- xml2::xml_attr(xml2::xml_find_all(x, '/solution/interfaces/interface[@type!="MEMORY"]'),"id")
@@ -152,7 +157,7 @@ removeNonMemoryOutputs <- function(sol) {
 addOutputVariable <- function(sol, outputid, id, rule, datatype, mode=NULL,
                               unit=NULL, description=NULL) {
 
-  x <- xml2::xml_new_root(sol)
+  x <- xml2::read_xml(as.character(sol))
   x <- removeOutputVariable(x, outputid, id)
 
   cmp <- xml2::xml_find_first(x,paste0('/solution/outputs/output[@id="',outputid,'"]/header'))
@@ -184,7 +189,7 @@ addOutputVariable <- function(sol, outputid, id, rule, datatype, mode=NULL,
 #'
 #' @export
 removeOutputVariable <- function(sol, outputid, id) {
-  x <- xml2::xml_new_root(sol)
+  x <- xml2::read_xml(as.character(sol))
 
 
   outp <- xml2::xml_find_all(x,paste0('/solution/outputs/output[@id="',outputid,'"]/header/out[@id="',id,'"]'))
@@ -208,16 +213,22 @@ removeOutputVariable <- function(sol, outputid, id) {
 #' @return modified solution object
 #'
 #' @export
-addUserVariable <- function(sol, id, value, datatype, unit="", description="") {
-  x <- xml2::xml_new_root(sol)
+addUserVariable <- function(sol, id, value, datatype, unit=NULL, description=NULL) {
+  x <- xml2::read_xml(as.character(sol))
 
   vars <- xml2::xml_find_first(x,"/solution/variables")
   pos <- length(xml2::xml_find_all(vars,"/solution/variables/var"))
   if(length(value)>1) {
     value <- paste0("[",paste(value, collapse=", "),"]")
   }
-  xml2::xml_add_child(vars,'var', value, id=id, datatype=datatype, unit=unit, description=description, .where=pos)
-
+  xml2::xml_add_child(vars,'var', value, id=id, datatype=datatype, .where=pos)
+  var <- xml2::xml_find_first(x,paste0('/solution/variables/var[@id="',id,'"]'))
+  if(!is.null(unit)) {
+    xml2::xml_attr(var,"unit") <- unit
+  }
+  if(!is.null(description)) {
+    xml2::xml_attr(var,"description") <- description
+  }
   desc <- xml2::xml_find_first(x,"/solution/description")
   xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added user variable",id,"with value",paste(value,collapse=","))
 
@@ -244,7 +255,7 @@ addUserVariable <- function(sol, id, value, datatype, unit="", description="") {
 #'
 #' @export
 addComponentInput <- function(sol, componentid, id, source=NULL, value=NULL, datatype=NULL, unit=NULL, description=NULL) {
-  x <- xml2::xml_new_root(sol)
+  x <- xml2::read_xml(as.character(sol))
   x <- removeComponentInput(x, componentid, id)
 
 
@@ -298,7 +309,7 @@ addComponentInput <- function(sol, componentid, id, source=NULL, value=NULL, dat
 #'
 #' @export
 removeComponentInput <- function(sol, componentid, id) {
-  x <- xml2::xml_new_root(sol)
+  x <- xml2::read_xml(as.character(sol))
 
 
   inp <- xml2::xml_find_all(x,paste0('/solution/simmodel/simcomponent[@id="',componentid,'"]/input[@id="',id,'"]'))
@@ -328,7 +339,7 @@ removeComponentInput <- function(sol, componentid, id) {
 #' @export
 replaceVariable <- function(sol, oldid, newid) {
   # make a copy of the root node
-  x <- xml2::xml_new_root(sol)
+  x <- xml2::read_xml(as.character(sol))
 
   # save description, so that text is not affected by replacements
   olddesc <- xml2::xml_find_first(x,"/solution/description")
@@ -370,7 +381,7 @@ replaceVariable <- function(sol, oldid, newid) {
 #'
 #' @export
 setInputValue <- function(sol, parentid, id, value, datatype=NULL) {
-  x <- xml2::xml_new_root(sol)
+  x <- xml2::read_xml(as.character(sol))
 
   parent <- xml2::xml_find_first(x,paste0('/solution//*[@id="',parentid,'"]'))
 
@@ -411,7 +422,7 @@ setInputValue <- function(sol, parentid, id, value, datatype=NULL) {
 #'
 #' @export
 setInputValueForCategory <- function(sol, category, id, value, datatype=NULL) {
-  x <- xml2::xml_new_root(sol)
+  x <- xml2::read_xml(as.character(sol))
 
   parent <- xml2::xml_find_all(x,paste0('/solution//',category,''))
 
@@ -450,7 +461,7 @@ setInputValueForCategory <- function(sol, category, id, value, datatype=NULL) {
 #'
 #' @export
 swapComponents <-function(sol, order) {
-  x <- xml2::xml_new_root(sol)
+  x <- xml2::read_xml(as.character(sol))
   sc <- xml2::xml_find_all(x,"/solution/simmodel/simcomponent")
   order <- order[order <= length(sc)]
   sorder <- sort(order)

@@ -1,3 +1,7 @@
+Version 0.4.4
+* preserve DOCTYPE of sol.xml
+* units and description are optional for user variables
+
 Version 0.4.3
 * variable and input values can be arrays
 * bugfix in description modifications
