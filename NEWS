@@ -1,3 +1,6 @@
+Version 0.5.0
+* function to create XML and Java code stubs from variables table
+
 Version 0.4.4
 * preserve DOCTYPE of sol.xml
 * units and description are optional for user variables
