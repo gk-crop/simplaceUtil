@@ -529,7 +529,8 @@ addTimingSimComponent <- function(sol, filename=NULL, componentlist = NULL,
   out <- xml2::xml_find_first(x, paste0('/solution/outputs/output[@id="',outputid,'"]'))
   hd <- xml2::xml_add_child(out,"header")
 
-  nr <- length(xml2::xml_find_all(x,"//transform"))+
+  nr <- length(xml2::xml_find_all(x,"//resource"))+
+    length(xml2::xml_find_all(x,"//transform"))+
     length(xml2::xml_find_all(x,"//simcomponent"))
 
   if(length(componentlist)>0) {
