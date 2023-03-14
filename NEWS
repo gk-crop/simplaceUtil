@@ -1,3 +1,6 @@
+Version 0.5.1
+* function to add timing elements to a solution
+
 Version 0.5.0
 * function to create XML and Java code stubs from variables table
 

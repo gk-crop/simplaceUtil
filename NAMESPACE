@@ -3,6 +3,7 @@
 export(addComponentInput)
 export(addMemoryOutput)
 export(addOutputVariable)
+export(addTimingSimComponent)
 export(addUserVariable)
 export(componentsToGraph)
 export(createCodeStubsForSimVariables)

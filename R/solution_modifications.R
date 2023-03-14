@@ -477,3 +477,74 @@ swapComponents <-function(sol, order) {
 
   x
 }
+
+
+#' Adds elements for timing the execution time of sim components (and transformers)
+#'
+#' @param sol solution object
+#' @param filename optional filename to write the timing information to csv file
+#' @param componentlist optional list of component ids (if empty, all components will be timed)
+#' @param interfaceid id for the interface (optional)
+#' @param outputid  id for the output (optional)
+#' @param simcomponentid id for the timing simcomponent (optional)
+#'
+#' @export
+addTimingSimComponent <- function(sol, filename=NULL, componentlist = NULL,
+                                  interfaceid = "automatic_timing_interface",
+                                  outputid = "automatic_timing_output",
+                                  simcomponentid = "AutomaticTiming") {
+  x <- xml2::read_xml(as.character(sol))
+
+
+
+  itype = ifelse(is.null(filename),"MEMORY","CSV")
+
+  x <- removeOutput(x,outputid)
+
+  intfs <- xml2::xml_find_first(x, '/solution/interfaces')
+  xml2::xml_add_child(intfs, "interface", id=interfaceid,type=itype)
+  intf <- xml2::xml_find_first(x, paste0('/solution/interfaces/interface[@id="',interfaceid,'"]'))
+  xml2::xml_add_child(intf,"poolsize",20000)
+  if(!is.null(filename))
+  {
+    xml2::xml_add_child(intf,"divider",",")
+    xml2::xml_add_child(intf,"filename",filename)
+  }
+
+
+  sims <- xml2::xml_find_first(x,'/solution/simmodel')
+  sc <- xml2::xml_add_child(sims,"simcomponent",
+                      id=simcomponentid,
+                      class="net.simplace.sim.components.FWAnalyticsSimComponent")
+  pc <- xml2::xml_add_child(sc,'process')
+  xml2::xml_add_child(pc,'var',id="iHeader", datatype="CHARARRAY")
+  xml2::xml_add_child(pc,'var',id="iValues", datatype="INTARRAY")
+  for(cmp in componentlist) {
+    xml2::xml_add_child(pc,"var",id=cmp,datatype="CHAR")
+  }
+
+  outs <- xml2::xml_find_first(x, '/solution/outputs')
+  xml2::xml_add_child(outs, "output", id=outputid, interface=paste0(interfaceid),
+                      frequence="END")
+  out <- xml2::xml_find_first(x, paste0('/solution/outputs/output[@id="',outputid,'"]'))
+  hd <- xml2::xml_add_child(out,"header")
+
+  nr <- length(xml2::xml_find_all(x,"//transform"))+
+    length(xml2::xml_find_all(x,"//simcomponent"))
+
+  if(length(componentlist)>0) {
+    nr <- length(componentlist)
+    for(cmp in componentlist) {
+      xml2::xml_add_child(hd, "out", id=cmp, rule=paste0(simcomponentid, ".",cmp),datatype="INT", mode="SUM")
+
+    }
+
+  }
+  xml2::xml_add_child(hd, "out", id=paste0("iHeader|1-",nr), rule=paste0(simcomponentid, ".iHeader"),datatype="CHARARRAY")
+  xml2::xml_add_child(hd, "out", id=paste0("iValues|1-",nr), rule=paste0(simcomponentid, ".iValues"), datatype="INTARRAY",mode="SUM")
+
+  desc <- xml2::xml_find_first(x,"/solution/description")
+  xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added timing elements",outputid)
+
+  x
+}
