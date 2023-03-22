@@ -2,7 +2,7 @@
 my_volumes <- function()
 {
   dirs <- simplace::findSimplaceInstallations()
-  if(length(dirs)>0)
+  if(!is.na(dirs) && length(dirs)>0)
   {
     if(length(dirs)>1){
        names(dirs) <-paste0("simplace (",c("default",2:length(dirs)),")")

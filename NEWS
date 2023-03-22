@@ -1,3 +1,6 @@
+Version 0.5.2
+* bugfix in shiny app when no standard installation dir found
+
 Version 0.5.1
 * function to add timing elements to a solution
 
