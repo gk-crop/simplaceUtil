@@ -1,23 +1,23 @@
 ---
 title: "simplaceUtil"
 author: "Gunther Krauss"
-date: "`r Sys.setlocale('LC_ALL','English.UTF-8');format(Sys.Date(),format='%B %d, %Y')`"
-output: 
-  pdf_document: 
+date: "`r Sys.setlocale('LC_ALL','English.UTF-8');format(Sys.Date(),format='%B %d,
+  %Y')`"
+output:
+  rmarkdown::html_vignette:
+    number_sections: yes
+    fig-width: 10
+    fig-height: 8
+    toc: yes
+    df_print: kable
+  pdf_document:
     number_sections: yes
     df_print: kable
     toc: yes
-  rmarkdown::html_vignette:
-    number_sections: yes
-    fig-width: 7
-    fig-height: 6
-  
-
 vignette: >
   %\VignetteIndexEntry{simplaceUtil}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-
 ---
 
 ```{r setup, include=FALSE}
@@ -27,6 +27,18 @@ vignette: >
 # })
 
 knitr::opts_chunk$set(echo = TRUE)
+
+includeGraphic <- function(gr,nr=0) {
+  
+    type <- ifelse(knitr::is_latex_output(),'pdf','png')
+    fn <- knitr::fig_path(type,number=nr)
+    dir.create(dirname(fn),recursive = TRUE, showWarnings = FALSE)
+    DiagrammeR::export_graph(gr, fn, width = 2000)
+    knitr::include_graphics(fn)
+  
+}
+
+
 ```
 
 # Exploring solutions
@@ -157,7 +169,12 @@ A graph showing components and links can be created from a solution file:
 
 ```{r}
 graph <- solutionToGraph(solfile)
+```
+```{r eval=FALSE}
 DiagrammeR::render_graph(graph)
+```
+```{r echo=FALSE, out.width="100%"}
+includeGraphic(graph,1)
 ```
 
 We can restrict the graph to specific component types and the neighborhood of
@@ -166,7 +183,12 @@ selected components:
 ```{r}
 subgraph <- getNeighborhood(graph, c("SlimWater","SlimRoots"),
                             distance=1, type="simcomponent")
+```
+```{r eval=FALSE}
 DiagrammeR::render_graph(subgraph)
+```
+```{r echo=FALSE, out.width="100%"}
+includeGraphic(subgraph,2)
 ```
 
 
@@ -213,13 +235,32 @@ writeSolutionToFile(newsol, solution_modified)
 
 # Standard transformation and visualisation of outputs
 
+With `parseDate` the standard Date column of Simplace output files is converted to Date.
+
 ```{r}
 outfile <- system.file("output","water.csv",
                        package="simplaceUtil")
 water <- read.csv(outfile, header=TRUE, sep=";")
 water <- parseDate(water)
+```
+
+
+Multiple scalar values can be plotted in a common diagram.
+
+```{r fig.width=7, fig.height=5}
 plotScalarOutput(water,"CURRENT.DATE",c("Evaporation","Transpiration"))
+```
+
+Default plot for layered values.
+
+```{r fig.width=7, fig.height=5}
 plotLayeredOutput(water,"RetainedWater")
+```
+
+
+Transform dataframe from wide format to long format.
+
+```{r}
 water_long <- transformLayeredData(water)
 head(water_long[,c(2,9:11)])
 ```
