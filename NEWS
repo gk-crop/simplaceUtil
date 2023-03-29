@@ -1,3 +1,6 @@
+Version 0.6.0
+* first draft of a vignette
+
 Version 0.5.2
 * bugfix in shiny app when no standard installation dir found
 

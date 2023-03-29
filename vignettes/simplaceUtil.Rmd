@@ -1,0 +1,233 @@
+---
+title: "simplaceUtil"
+author: "Gunther Krauss"
+date: "`r Sys.setlocale('LC_ALL','English.UTF-8');format(Sys.Date(),format='%B %d, %Y')`"
+output: 
+  pdf_document: 
+    number_sections: yes
+    df_print: kable
+    toc: yes
+  rmarkdown::html_vignette:
+    number_sections: yes
+    fig-width: 7
+    fig-height: 6
+  
+
+vignette: >
+  %\VignetteIndexEntry{simplaceUtil}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+
+---
+
+```{r setup, include=FALSE}
+# withSimplace <- FALSE
+# try({
+#   withSimplace <- !is.na(simplace::findFirstSimplaceInstallation())
+# })
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exploring solutions
+
+## Fetch information from solution
+
+
+```{r}
+library(simplaceUtil)
+```
+
+We can read a solution xml file via `getSolutionFromFile` and get its content as an `xml_document` object. From the xml object we can get the components, user variables and links between components as dataframes.
+
+```{r}
+solfile <- system.file("solution","Complete.sol.xml",
+                       package="simplaceUtil")
+
+sol <- getSolutionFromFile(solfile)
+components <- getComponents(sol)
+variables <- getUserVariables(sol)
+links <- getLinks(sol, components)
+```
+
+
+As a shorthand we can use `getElementsFromSolutionFile`, which returns the xml object as well as the dataframes in a list.
+
+```{r}
+el <- getElementsFromSolutionFile(solfile)
+sol <- el$solution
+components <- el$components
+variables <- el$variables
+links <- el$links
+```
+
+The components dataframe contains not only sim components, but also interfaces, resources and outputs.
+```{r, echo=FALSE}
+components$ref <- gsub('$', '\\$', components$ref, fixed = TRUE)
+```
+
+```{r}
+components[c(1:3,30:31,42:44),c("id","type","subtype","nr")]
+```
+
+
+The links dataframe contains the links between resources, simcomponents, outputs, but also dependencies via key variables or via variables used in rules. Relationships between resources and transformers are included too.
+
+```{r}
+links[c(1:2,23,300,313,322,325),]
+```
+
+
+User variables show the values as defined in the solution. Notice that user variables can be changed when running a solution in project mode.
+
+```{r}
+variables[c(1:5,18:20),]
+```
+
+```{r}
+head(components[,c("id","ref")])
+```
+
+
+```{r, echo=FALSE}
+components$ref <- gsub('\\$', '$', components$ref, fixed = TRUE)
+```
+
+
+```{r}
+components$ref <- replaceVariablesWithValues(
+  components$ref,
+  variables, 
+  additional=c("_WORKDIR_"="~"))
+head(components[,c("id","ref")])
+```
+
+
+
+
+## Working with component and links dataframe
+
+Subsetting the components dataframe to get only normal components
+
+```{r}
+ncomp <- components[components$type=="simcomponent" & components$subtype=="normal",]
+ncomp$id
+```
+
+Getting only links between normal components
+
+```{r}
+nlinks <- links[links$from %in% ncomp$id & links$to %in% ncomp$id,]
+head(nlinks)
+```
+
+Counting the links between components
+
+```{r}
+nlinks <- aggregate(name ~ from + to , data=nlinks, length)
+nlinks <- nlinks[order(-nlinks$name),]
+head(nlinks,10)
+```
+
+
+
+
+
+## Get Metadata about solution
+
+`getSolutionInfoAsDataframe` gives information about the solutions content 
+(simcomponents) as well as the solution itself (filename, modification date and
+possibly simulation experiment information derived from folder structure).
+
+
+```{r}
+wd <- system.file(package="simplaceUtil")
+solfiles <- list.files(wd,pattern=".sol.xml",recursive=TRUE,full.names = TRUE)
+
+df <- do.call(rbind,
+        lapply(solfiles,getSolutionInfoAsDataframe,workdir=wd))
+df$file <- basename(df$file)
+df[df$type=="simcomponent",c("id","file")] 
+```
+
+
+# Visualising solution structure
+
+A graph showing components and links can be created from a solution file:
+
+```{r}
+graph <- solutionToGraph(solfile)
+DiagrammeR::render_graph(graph)
+```
+
+We can restrict the graph to specific component types and the neighborhood of
+selected components:
+
+```{r}
+subgraph <- getNeighborhood(graph, c("SlimWater","SlimRoots"),
+                            distance=1, type="simcomponent")
+DiagrammeR::render_graph(subgraph)
+```
+
+
+# Modifying solutions
+
+A solution can be modified on the fly to meet requirements for sensitivity analysis or calibration  by
+
+- removing non-memory outputs for performance reasons
+- adding memory outputs with target variables
+- adding user variables for parameters that will be varied
+- replacing variables from resource by user variables
+
+
+\footnotesize
+```{r}
+solution_candidate <- system.file("solution","Yield.sol.xml",
+                       package="simplaceUtil")
+sol <- getSolutionFromFile(solution_candidate)
+newsol <- sol |>
+  removeNonMemoryOutputs() |>
+  addMemoryOutput("Yields",frequence = "YEARLY") |>
+  addOutputVariable("Yields","Year","CURRENT.YEAR","INT") |>
+  addOutputVariable("Yields", "ClimateZone","vClimateZone","CHAR") |>
+  addOutputVariable("Yields", "Yield","LintulBiomass.sWSO","DOUBLE","MAX") |>
+  addUserVariable("vLUE",3.0,"DOUBLE") |>
+  addUserVariable("vSLA",0.02,"DOUBLE") |>
+  addUserVariable("vRGRL",0.009,"DOUBLE") |>
+  replaceVariable("crop.LUE","vLUE") |>
+  replaceVariable("crop.SLA","vSLA") |>
+  replaceVariable("crop.RGRL","vRGRL")
+
+soltext <- getTextFromSolution(newsol)
+
+cat(paste(substr(soltext,1,1500),"..."))
+```
+
+The solution can be saved as xml file:
+
+```{r eval=FALSE}
+solution_modified <- "simulation/solution/YieldModified.sol.xml"  
+writeSolutionToFile(newsol, solution_modified) 
+```
+
+
+# Standard transformation and visualisation of outputs
+
+```{r}
+outfile <- system.file("output","water.csv",
+                       package="simplaceUtil")
+water <- read.csv(outfile, header=TRUE, sep=";")
+water <- parseDate(water)
+plotScalarOutput(water,"CURRENT.DATE",c("Evaporation","Transpiration"))
+plotLayeredOutput(water,"RetainedWater")
+water_long <- transformLayeredData(water)
+head(water_long[,c(2,9:11)])
+```
+
+
+# Simple GUI as Shiny App
+
+```{r eval=FALSE}
+runSimplaceGuiApp()
+```
+

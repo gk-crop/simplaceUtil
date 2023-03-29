@@ -1,0 +1,982 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE solution PUBLIC "-//SIMPLACE/DTD SOL 1.0//EN" "http://simplace.net/dtd/SimSolution_3_3.dtd">
+<solution version="4.1" check="LAZY">
+  <description title="Complete" author="G. Krauss" qualitylevel="I">WIKI_START
+=== Purpose ===
+TECHNIAL TEST SOLUTION: PLEASE DON'T USE THIS SOLUTION FOR SCIENTIFIC SIMULATIONS!
+
+=== References ===
+
+=== Data ===
+
+=== Remarks ===
+
+=== Usage ===
+
+WIKI_END</description>
+  <variables>
+    <var id="vCLIMATEZONE" datatype="CHAR">00002</var>
+    <var id="vSoiltype" datatype="CHAR">sandy loam</var>
+    <var id="vTempLimit" datatype="DOUBLE">35</var>
+    <var id="vTempSlopeAboveLimit" datatype="DOUBLE">7</var>
+    <var id="vBaseLUE" datatype="DOUBLE">3.0</var>
+    <var id="vBaseTempBeforeAnt" datatype="DOUBLE">3.0</var>
+    <var id="vBaseTempAfterAnt" datatype="DOUBLE">3.0</var>
+    <var id="vFirstDayMeanTemp" datatype="DOUBLE">2.2000000178813934</var>
+    <var id="vCarbonContent" datatype="DOUBLE">0.77</var>
+    <var id="vRunNr" datatype="INT">1</var>
+    <var id="vGrainToCropMaxNitrogen" datatype="DOUBLE">0.4</var>
+    <var id="vGrainToCropDailyNitrogen" datatype="DOUBLE">0.02</var>
+    <var id="vGrainToCropDevStage" datatype="DOUBLE">0.01</var>
+    <dyn id="vFileName" description="Weatherdata file" datatype="FILE">${_WORKDIR_}/gk/data/lintul/00002Weather.txt</dyn>
+    <dyn id="vCropName" description="Name of crop modeled" datatype="CHAR">winter wheat</dyn>
+    <dyn id="vAverageGroundTemperature" description="Daily average Temp 2cm" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" min="-5" max="35" datatype="DOUBLE">9.50977253442255</dyn>
+    <dyn id="vAverageBulkDensity" description="Bulk density of soil" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre" min="0.5" max="3.5" datatype="DOUBLE">1.0975000000000001</dyn>
+    <dyn id="vCO2StartYear" description="Base year of CO2 development" min="1900" max="2020" datatype="INT">2000</dyn>
+    <dyn id="startdate" description="Start date of simulation" datatype="DATE">01.01.1991</dyn>
+    <dyn id="enddate" description="End date of simulation" datatype="DATE">31.12.2004</dyn>
+  </variables>
+  <interfaces default="simpool">
+    <interface id="compare" type="CSV">
+      <poolsize>2</poolsize>
+      <divider>;</divider>
+      <filename>${_WORKDIR_}/gk/data/lintul/compare/compare_Complete.csv</filename>
+    </interface>
+    <interface id="weatherfile" type="CSV">
+      <poolsize>20</poolsize>
+      <divider/>
+      <filename>${vFileName}</filename>
+    </interface>
+    <interface id="phenologyfile" type="CSV">
+      <poolsize>10</poolsize>
+      <filename>${_WORKDIR_}/gk/data/lintul/LintulPhenologyObservations.csv</filename>
+    </interface>
+    <interface id="cropfile" type="XML">
+      <poolsize>10</poolsize>
+      <filename>${_WORKDIR_}/gk/data/lintul/CropPropertiesLintulWaterstress.xml</filename>
+    </interface>
+    <interface id="soilfile" type="CSV">
+      <poolsize>10</poolsize>
+      <divider>;</divider>
+      <filename>${_WORKDIR_}/gk/data/slim/SoilPropertiesSlim.csv</filename>
+    </interface>
+    <interface id="SlimAlfaFile" type="CSV">
+      <poolsize>10</poolsize>
+      <divider>;</divider>
+      <filename>${_WORKDIR_}/gk/data/slim/SlimAlfa.csv</filename>
+    </interface>
+    <interface id="slimfile" type="XML">
+      <poolsize>10</poolsize>
+      <divider/>
+      <filename>${_WORKDIR_}/gk/data/slim/SLIMProperties_ln92i13.xml</filename>
+    </interface>
+    <interface id="carbonfile" type="XML">
+      <poolsize>10</poolsize>
+      <divider/>
+      <filename>${_WORKDIR_}/gk/data/soilcn/Carbon.xml</filename>
+    </interface>
+    <interface id="nitrogenfile" type="XML">
+      <poolsize>10</poolsize>
+      <divider/>
+      <filename>${_WORKDIR_}/gk/data/soilcn/Nitrogen.xml</filename>
+    </interface>
+    <interface id="soilcropfile" type="XML">
+      <poolsize>10</poolsize>
+      <divider/>
+      <filename>${_WORKDIR_}/gk/data/soilcn/Crop.xml</filename>
+    </interface>
+    <interface id="initfile" type="XML">
+      <poolsize>10</poolsize>
+      <divider/>
+      <filename>${_WORKDIR_}/gk/data/soilcn/Init.xml</filename>
+    </interface>
+    <interface id="auxfile" type="XML">
+      <poolsize>10</poolsize>
+      <divider/>
+      <filename>${_WORKDIR_}/gk/data/soilcn/Auxiliary.xml</filename>
+    </interface>
+    <interface id="ndemandfile" type="XML">
+      <poolsize>10</poolsize>
+      <divider/>
+      <filename>${_WORKDIR_}/gk/data/ndemand/NitrogenDemandProperties.xml</filename>
+    </interface>
+    <interface id="sumyieldout" type="CSV">
+      <poolsize>1000</poolsize>
+      <divider>;</divider>
+      <filename>${_OUTPUTDIR_}/gk/complete/yieldsummary.csv</filename>
+    </interface>
+    <interface id="biomassout" type="CSV">
+      <poolsize>1000</poolsize>
+      <divider>;</divider>
+      <filename>${_OUTPUTDIR_}/gk/complete/biomass_${projectid}.csv</filename>
+    </interface>
+    <interface id="waterout" type="CSV">
+      <poolsize>1000</poolsize>
+      <divider>;</divider>
+      <filename>${_OUTPUTDIR_}/gk/complete/water.csv</filename>
+    </interface>
+    <interface id="stmpout" type="CSV">
+      <poolsize>1000</poolsize>
+      <divider>;</divider>
+      <filename>${_OUTPUTDIR_}/gk/complete/soiltemp.csv</filename>
+    </interface>
+    <interface id="soilcnout" type="CSV">
+      <poolsize>1000</poolsize>
+      <divider>;</divider>
+      <filename>${_OUTPUTDIR_}/gk/complete/soilcn.csv</filename>
+    </interface>
+    <interface id="plantnitrogenout" type="CSV">
+      <poolsize>1000</poolsize>
+      <divider>;</divider>
+      <filename>${_OUTPUTDIR_}/gk/complete/plantnitrogen.csv</filename>
+    </interface>
+    <interface id="miscout" type="CSV">
+      <poolsize>1000</poolsize>
+      <divider>;</divider>
+      <filename>${_OUTPUTDIR_}/gk/complete/misc.csv</filename>
+    </interface>
+    <interface id="diagramout" type="MEMORY">
+      <poolsize>20000</poolsize>
+    </interface>
+  </interfaces>
+  <resources>
+    <resource id="referencedata" interface="compare" frequence="DAILY">
+      <header>
+        <res id="CURRENTDATE" datatype="DATE" key="CURRENT.DATE"/>
+        <res id="yield" datatype="DOUBLE"/>
+      </header>
+    </resource>
+    <resource id="weather" interface="weatherfile" frequence="DAILY">
+      <header>
+        <res id="KeyValue" datatype="CHAR"/>
+        <res id="PolygonCode" datatype="CHAR"/>
+        <res id="CURRENTDATE" datatype="DATE" key="CURRENT.DATE"/>
+        <res id="Rain" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" description="Rainfall" datatype="DOUBLE"/>
+        <res id="AirTemperatureMax" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
+        <res id="AirTemperatureMin" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
+        <res id="GlobalSolarRadiation" unit="http://www.wurvoc.org/vocabularies/om-1.8/megajoule_per_square_metre" datatype="DOUBLE"/>
+        <res id="WindSpeed" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre_per_second-time" datatype="DOUBLE"/>
+        <res id="ReferenceEvapotranspiration" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+      </header>
+    </resource>
+    <resource id="phenology" interface="phenologyfile" frequence="COMPLEX" rule="${DefaultManagement.DoHarvest}">
+      <header>
+        <res id="number" datatype="INT" key="LintulPhenology.CropCycleCount"/>
+        <res id="crop" datatype="CHAR"/>
+        <res id="year" unit="http://www.wurvoc.org/vocabularies/om-1.8/year" datatype="INT"/>
+        <res id="sowingdoy" unit="http://www.wurvoc.org/vocabularies/om-1.8/day" datatype="INT"/>
+        <res id="emergencedoy" unit="http://www.wurvoc.org/vocabularies/om-1.8/day" datatype="INT"/>
+        <res id="maturitydoy" unit="http://www.wurvoc.org/vocabularies/om-1.8/day" datatype="INT"/>
+        <res id="yield" datatype="DOUBLE"/>
+        <res id="reldem" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="INT"/>
+      </header>
+    </resource>
+    <resource id="soil" interface="soilfile" frequence="YEARLY">
+      <header>
+        <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
+        <res id="dampingdepth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="soilwater_fc_global" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLE"/>
+        <res id="soilwater_sat_global" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLE"/>
+        <res id="drainage_rate" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
+        <res id="soilwater_fc" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
+        <res id="soilwater_red" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
+        <res id="soilwater_wp" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
+        <res id="soilwater_sat" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
+        <res id="soilwater_res" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
+        <res id="soilwater_init" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
+        <res id="bulkdensity" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
+        <res id="clay" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
+        <res id="carbon" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
+        <res id="ammonium" unit="http://www.wurvoc.org/vocabularies/om-1.8/milligram_per_kilogram" datatype="DOUBLEARRAY"/>
+        <res id="nitrate" unit="http://www.wurvoc.org/vocabularies/om-1.8/milligram_per_kilogram" datatype="DOUBLEARRAY"/>
+        <res id="sand" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
+      </header>
+    </resource>
+    <resource id="slimalfa" interface="SlimAlfaFile" frequence="YEARLY">
+      <header>
+        <res id="runnr" datatype="INT" key="vRunNr"/>
+        <res id="ALFA" unit="" datatype="DOUBLEARRAY"/>
+      </header>
+    </resource>
+    <resource id="slim" interface="slimfile" frequence="YEARLY">
+      <header>
+        <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
+        <res id="THICKL" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="SEEDD" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="MaxSoilEvaporationDepth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="MT" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="INT"/>
+        <res id="MY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="INT"/>
+        <res id="MD" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="INT"/>
+        <res id="WMGENT" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="WRGENT" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="WMGENS" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="WRGENS" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="IFWGEN" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="BOOLEAN"/>
+        <res id="ALFA" unit="" datatype="DOUBLE"/>
+        <res id="DP" datatype="DOUBLE"/>
+        <res id="WALIQ" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="WM1S" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="WRST" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="WRSS" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="SMD" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="AREA" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre" datatype="DOUBLE"/>
+        <res id="BGEN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_square_metre" datatype="DOUBLE"/>
+        <res id="ELIM" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="SCONC" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_metre" datatype="DOUBLE"/>
+        <res id="SEEDD" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="AX" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="AMEQ" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="SCMIN" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="TEMCO1" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="TEMCO2" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="FLOWNR" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="AMR2" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="AMR1" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="HBT" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="HBS" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="CalculateRunoffWater" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="BOOLEAN"/>
+        <res id="BulkDensityThresholdLower" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre" datatype="DOUBLE"/>
+        <res id="BulkDensityThresholdMiddle" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre" datatype="DOUBLE"/>
+        <res id="BulkDensityThresholdUpper" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre" datatype="DOUBLE"/>
+        <res id="MinimalBDSeminalRootReductionFactor" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="SoilStrengthParameter" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="MaximalSeminalRootLengthPerDay" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="DeadRootsDevStage" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="DailyDeadRootsRate" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+      </header>
+    </resource>
+    <resource id="crop" interface="cropfile" frequence="COMPLEX" rule="${DefaultManagement.DoSow}">
+      <header>
+        <res id="CROPNAME" datatype="CHAR" key="vCropName"/>
+        <res id="AirTemperatureSumAnthesis" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius_day" datatype="DOUBLE"/>
+        <res id="AirTemperatureSumMilkripeness" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius_day" datatype="DOUBLE"/>
+        <res id="AirTemperatureSumMaturity" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius_day" datatype="DOUBLE"/>
+        <res id="RelativeDayOfEmergence" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="INT"/>
+        <res id="DroughtTolerance" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="BaseTempBeforeAnt" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
+        <res id="BaseTempAfterAnt" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
+        <res id="LUE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="SLA" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_square_metre" datatype="DOUBLE"/>
+        <res id="RGRL" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="LaiNStressReduction" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="LueNStressReduction" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="SlaNStressReduction" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="PartitioningNStressReduction" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="LaiCritical" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_square_metre" datatype="DOUBLE"/>
+        <res id="TRANCO" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="RDRSHM" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="RDRL" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="RDRNS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="K" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="VernalDaysMax" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="INT"/>
+        <res id="VernalisationTLow" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
+        <res id="VernalisationTHigh" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
+        <res id="Latitude" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree" datatype="DOUBLE"/>
+        <res id="ROOTDI" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="ROOTDM" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="RRDMAX" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="RDRLeavesTableMeanTemperature" datatype="DOUBLEARRAY" description="Daily mean temperature for relative death rate of leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius"/>
+        <res id="RDRLeavesTableRelativeRate" datatype="DOUBLEARRAY" description="Relative death rate of leaves as a function of daily mean temperature" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="RootsPartitioningTableDVS" datatype="DOUBLEARRAY" description="DVS for fraction of total dry matter to roots" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="RootsPartitioningTableFraction" datatype="DOUBLEARRAY" description="Fraction of total dry matter to roots as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="LeavesPartitioningTableDVS" datatype="DOUBLEARRAY" description="DVS for fraction of total dry matter to leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="LeavesPartitioningTableFraction" datatype="DOUBLEARRAY" description="Fraction of total dry matter to leaves as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="StemsPartitioningTableDVS" datatype="DOUBLEARRAY" description="DVS for fraction of total dry matter to stems" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="StemsPartitioningTableFraction" datatype="DOUBLEARRAY" description="Fraction of total dry matter to stems as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="StorageOrgansPartitioningTableDVS" datatype="DOUBLEARRAY" description="DVS for fraction of total dry matter to storage organs" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="StorageOrgansPartitioningTableFraction" datatype="DOUBLEARRAY" description="Fraction of total dry matter to storage organs as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+      </header>
+    </resource>
+    <resource id="ndemand" interface="ndemandfile" frequence="COMPLEX" rule="${DefaultManagement.DoSow}">
+      <header>
+        <res id="CropName" datatype="CHAR" key="vCropName"/>
+        <res id="NonTranslocateableResidualNConcentrationsLeaves" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
+        <res id="NonTranslocateableResidualNConcentrationsStem" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
+        <res id="NonTranslocateableResidualNConcentrationsRoot" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
+        <res id="FractionMaxNConcentrationStemNConcentrationLeaves" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
+        <res id="FractionMaxNConcentrationRootsNConcentrationLeaves" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
+        <res id="NMaxConcentrationStorageOrgans" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
+        <res id="NoptimalFraction" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
+        <res id="TimeCoefficientNUptakeMassflow" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
+        <res id="TranslocationNTimeCoefficient" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
+        <res id="DevelopmentStageNUptakeStops" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description=""/>
+        <res id="ANLVI" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
+        <res id="ANSTI" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
+        <res id="ANRTI" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
+        <res id="DELT" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description=""/>
+        <res id="NMaxTableDVS" datatype="DOUBLEARRAY" description="DVS for maximum N concentration in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="NMaxTableConcentration" datatype="DOUBLEARRAY" description="Maximum N concentration in leaves as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="NAbsorptionTableNNI" datatype="DOUBLEARRAY" description="NNI for absorption reduction factor" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="NAbsorptionTableFactor" datatype="DOUBLEARRAY" description="Absorption reduction factor as function of NNI" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+      </header>
+    </resource>
+    <resource id="carbon" interface="carbonfile" frequence="YEARLY">
+      <header>
+        <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
+        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
+        <res id="Lignfct" unit="" datatype="DOUBLE"/>
+        <res id="Brabove" unit="" datatype="DOUBLE"/>
+        <res id="Fmicrolab" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Li" unit="" datatype="DOUBLE"/>
+        <res id="Ymin" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp1" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp2" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp3" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp4" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp5" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp6" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp7" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp8" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp9" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp10" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp11" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp12" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp13" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp14" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp15" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="MineralisationDepth" unit="" datatype="DOUBLE"/>
+      </header>
+    </resource>
+    <resource id="nitrogen" interface="nitrogenfile" frequence="YEARLY">
+      <header>
+        <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
+        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
+        <res id="FracNH4Volat" unit="" datatype="DOUBLE"/>
+        <res id="Bactnc" unit="" datatype="DOUBLE"/>
+        <res id="Critinflow" unit="" datatype="DOUBLE"/>
+        <res id="Fungnc" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Ligncmax" unit="" datatype="DOUBLE"/>
+        <res id="Ligncmin" unit="" datatype="DOUBLE"/>
+        <res id="Minncact" unit="" datatype="DOUBLE"/>
+        <res id="Ncsommicro" unit="" datatype="DOUBLE"/>
+        <res id="Ninorgcrit" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="Ratemicrobup" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+      </header>
+    </resource>
+    <resource id="soilcrop" interface="soilcropfile" frequence="YEARLY">
+      <header>
+        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
+        <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
+        <res id="Celroot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Celshoot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Ligbranch" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Ligroot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Ligshoot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Ligstem" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+      </header>
+    </resource>
+    <resource id="aux" interface="auxfile" frequence="YEARLY">
+      <header>
+        <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
+        <res id="WaterEffectSwitch" datatype="CHAR"/>
+        <res id="TimeDiv" unit="" datatype="DOUBLE"/>
+      </header>
+    </resource>
+    <resource id="init" interface="initfile" frequence="YEARLY">
+      <header>
+        <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
+        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
+        <res id="CelloseSurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="CellosesurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="LigncellosesurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="LigncellosesurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="BranchsurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="BranchsurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="StemsurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="StemsurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="MetabsurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="MetabsurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="CellosesoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="CellosesoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="LigncellosesoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="LigncellosesoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="RootsoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="RootsoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="MetabsoilC" unit="" datatype="DOUBLEARRAY"/>
+        <res id="MetabsoilN" unit="" datatype="DOUBLEARRAY"/>
+        <res id="microLabCN" unit="" datatype="DOUBLE"/>
+        <res id="microLabFrac" unit="" datatype="DOUBLE"/>
+        <res id="microRstCN" unit="" datatype="DOUBLE"/>
+        <res id="microRstFrac" unit="" datatype="DOUBLE"/>
+        <res id="OldSOMCN" unit="" datatype="DOUBLE"/>
+        <res id="YoungSOMCN" unit="" datatype="DOUBLE"/>
+      </header>
+    </resource>
+    <transform id="weather_transform" frequence="DAILY" class="net.simplace.sim.transformers.DefaultSQLStatementTransformer">
+      <header>
+        <res id="CURRENTDATE" datatype="DATE" key="CURRENT.DATE"/>
+        <res id="AirTemperatureMean" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
+        <res id="EffectiveTempRateBeforeAnt" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
+        <res id="EffectiveTempRateAfterAnt" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
+      </header>
+      <input id="statement">SELECT
+				CURRENTDATE,
+				AirTemperatureMean,
+				CASE WHEN EffectiveTempRateBeforeAnt &gt; 0 THEN EffectiveTempRateBeforeAnt ELSE 0 END AS EffectiveTempRateBeforeAnt,
+				CASE WHEN EffectiveTempRateAfterAnt &gt; 0 THEN EffectiveTempRateAfterAnt ELSE 0 END AS EffectiveTempRateAfterAnt
+				FROM (SELECT
+				CURRENTDATE,
+				AirTemperatureMean,
+				CASE WHEN AirTemperatureMean &gt; ${vTempLimit} THEN TempRateBeforeAnt - ${vTempSlopeAboveLimit} * (AirTemperatureMean - ${vTempLimit})
+				ELSE TempRateBeforeAnt END AS EffectiveTempRateBeforeAnt,
+				CASE WHEN AirTemperatureMean &gt; ${vTempLimit} THEN TempRateAfterAnt - ${vTempSlopeAboveLimit} * (AirTemperatureMean - ${vTempLimit})
+				ELSE TempRateAfterAnt END AS EffectiveTempRateAfterAnt
+				FROM (SELECT
+				CURRENTDATE,
+				AirTemperatureMin,
+				(AirTemperatureMin+AirTemperatureMax)* 0.5 AS AirTemperatureMean,
+				(AirTemperatureMin+AirTemperatureMax)* 0.5 - ${vBaseTempBeforeAnt} AS TempRateBeforeAnt,
+				(AirTemperatureMin+AirTemperatureMax)* 0.5 - ${vBaseTempAfterAnt} AS TempRateAfterAnt
+				FROM weather))</input>
+    </transform>
+    <transform id="soil_transform" resource="soil" frequence="YEARLY" class="net.simplace.sim.transformers.SoilLayerTransformer">
+      <header>
+        <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
+        <res id="dampingdepth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="soilwater_fc_global" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLE"/>
+        <res id="soilwater_sat_global" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLE"/>
+        <res id="drainage_rate" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
+        <res id="soilwater_fc" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
+        <res id="soilwater_red" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
+        <res id="soilwater_wp" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
+        <res id="soilwater_sat" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
+        <res id="soilwater_res" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
+        <res id="soilwater_init" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
+        <res id="bulkdensity" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
+        <res id="clay" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
+        <res id="carbon" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
+        <res id="ammonium" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
+        <res id="nitrate" unit="http://www.wurvoc.org/vocabularies/om-1.8/milligram_per_kilogram" datatype="DOUBLEARRAY"/>
+        <res id="sand" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
+      </header>
+      <input id="layercount"/>
+      <input id="layerthickness">0.03</input>
+      <input id="depthfieldid">depth</input>
+    </transform>
+    <transform id="carbon_transform" resource="carbon" frequence="YEARLY" class="net.simplace.sim.transformers.SoilLayerTransformer">
+      <header>
+        <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
+        <res id="depth" datatype="DOUBLEARRAY"/>
+        <res id="Lignfct" unit="" datatype="DOUBLE"/>
+        <res id="Brabove" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Fmicrolab" unit="" datatype="DOUBLE"/>
+        <res id="Li" unit="" datatype="DOUBLE"/>
+        <res id="Ymin" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp1" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp2" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp3" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp4" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp5" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp6" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp7" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp8" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp9" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp10" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp11" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp12" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp13" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp14" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="Kdecomp15" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="MineralisationDepth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+      </header>
+      <input id="layercount"/>
+      <input id="layerthickness">0.03</input>
+      <input id="depthfieldid">depth</input>
+    </transform>
+    <transform id="nitrogen_transform" resource="nitrogen" frequence="YEARLY" class="net.simplace.sim.transformers.SoilLayerTransformer">
+      <header>
+        <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
+        <res id="depth" datatype="DOUBLEARRAY"/>
+        <res id="FracNH4Volat" unit="" datatype="DOUBLE"/>
+        <res id="Bactnc" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Critinflow" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Fungnc" unit="" datatype="DOUBLE"/>
+        <res id="Ligncmax" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Ligncmin" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Minncact" unit="" datatype="DOUBLE"/>
+        <res id="Ncsommicro" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Ninorgcrit" unit="" datatype="DOUBLE"/>
+        <res id="Ratemicrobup" unit="" datatype="DOUBLEARRAY"/>
+      </header>
+      <input id="layercount"/>
+      <input id="layerthickness">0.03</input>
+      <input id="depthfieldid">depth</input>
+    </transform>
+    <transform id="soilcrop_transform" resource="soilcrop" frequence="YEARLY" class="net.simplace.sim.transformers.SoilLayerTransformer">
+      <header>
+        <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
+        <res id="Celroot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Celshoot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Ligbranch" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Ligroot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Ligshoot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Ligstem" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+      </header>
+      <input id="layercount"/>
+      <input id="layerthickness">0.03</input>
+      <input id="depthfieldid">depth</input>
+    </transform>
+    <transform id="init_transform" resource="init" frequence="YEARLY" class="net.simplace.sim.transformers.SoilLayerTransformer">
+      <header>
+        <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
+        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
+        <res id="CelloseSurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="CellosesurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="LigncellosesurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="LigncellosesurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="BranchsurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="BranchsurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="StemsurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="StemsurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="MetabsurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="MetabsurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
+        <res id="CellosesoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="CellosesoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="LigncellosesoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="LigncellosesoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="RootsoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="RootsoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="MetabsoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="MetabsoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
+        <res id="microLabCN" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="microLabFrac" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="microRstCN" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="microRstFrac" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="OldSOMCN" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="YoungSOMCN" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+      </header>
+      <input id="layercount"/>
+      <input id="layerthickness">0.03</input>
+      <input id="depthfieldid">depth</input>
+    </transform>
+  </resources>
+  <simmodel>
+    <simcomponent id="DefaultManagement" class="net.simplace.sim.components.DefaultManagement">
+      <action rule="${CURRENT.DOY}==${phenology.emergencedoy}">
+        <mgm id="DoSow" datatype="BOOLEAN" default="false" rule="true"/>
+        <mgm id="Crop" datatype="CHAR" rule="${vCropName}"/>
+      </action>
+      <action rule="${LintulPhenology.sDevStage} + 0.023 &gt;=2">
+        <mgm id="DoHarvest" datatype="BOOLEAN" default="false" rule="true"/>
+        <mgm id="Crop" datatype="CHAR"/>
+      </action>
+      <action rule="${LintulPhenology.sDevStage}&gt;0 &amp;&amp; ${LintulPhenology.sDevStage} + 0.023 &lt; 2">
+        <mgm id="WithCrop" datatype="BOOLEAN" default="false" rule="true"/>
+      </action>
+    </simcomponent>
+    <simcomponent id="EvapTranDemand" class="net.simplace.sim.components.models.lintul.EvapTranDemand">
+      <input id="iRadiation" source="weather.GlobalSolarRadiation"/>
+      <input id="iRAIN" source="weather.Rain"/>
+      <input id="iWindspeed" source="weather.WindSpeed"/>
+      <input id="iAirTemperatureMean" source="weather_transform.AirTemperatureMean"/>
+      <input id="iOpenPanEvaporation" source="weather.ReferenceEvapotranspiration"/>
+      <input id="iLAI" source="LintulBiomass.sLAI"/>
+    </simcomponent>
+    <simcomponent id="Co2InfluenceOnLUE" class="net.simplace.sim.components.crop.co2.Co2InfluenceOnLUE">
+      <input id="cStartYear" source="vCO2StartYear"/>
+      <input id="cReferenceLueValue" source="vBaseLUE"/>
+    </simcomponent>
+    <simcomponent id="Co2InfluenceOnTranspiration" class="net.simplace.sim.components.crop.co2.Co2InfluenceOnTranspiration">
+      <input id="cStartYear" source="vCO2StartYear"/>
+      <input id="iTranspiration" source="SlimWater.ActualTranspiration"/>
+    </simcomponent>
+    <simcomponent id="LintulPhenology" class="net.simplace.sim.components.models.lintul.LintulPhenology">
+      <input id="cAirTemperatureSumAnthesis" source="crop.AirTemperatureSumAnthesis"/>
+      <input id="cAirTemperatureSumMilkripeness" source="crop.AirTemperatureSumMilkripeness"/>
+      <input id="cAirTemperatureSumMaturity" source="crop.AirTemperatureSumMaturity"/>
+      <input id="cRelativeDayOfEmergence" source="phenology.reldem"/>
+      <input id="iRTEFFAnt" source="VernalisationAndPhotoresponse.RTSUM"/>
+      <input id="iRTEFFMat" source="VernalisationAndPhotoresponse.RTSUM"/>
+      <input id="iDoSow" source="DefaultManagement.DoSow"/>
+      <input id="iDoHarvest" source="DefaultManagement.DoHarvest"/>
+    </simcomponent>
+    <simcomponent id="VernalisationAndPhotoresponse" class="net.simplace.sim.components.crop.VernalisationAndPhotoresponse">
+      <input id="cVernalDaysMax" source="crop.VernalDaysMax"/>
+      <input id="cApplyVernalisation">true</input>
+      <input id="cApplyPhotoresponse">true</input>
+      <input id="cThigh" source="crop.VernalisationTHigh"/>
+      <input id="cTlow" source="crop.VernalisationTLow"/>
+      <input id="cLatitude" source="crop.Latitude"/>
+      <input id="iDAVTMP" source="weather_transform.AirTemperatureMean"/>
+      <input id="iTSumBaseAnt" source="weather_transform.EffectiveTempRateBeforeAnt"/>
+      <input id="iTSumBaseMat" source="weather_transform.EffectiveTempRateAfterAnt"/>
+      <input id="iDevStage" source="LintulPhenology.sDevStage"/>
+    </simcomponent>
+    <simcomponent id="SlimRoots" class="net.simplace.sim.components.soil.slim.SlimRoots">
+      <input id="cSoilLayerDepth" source="soil_transform.depth"/>
+      <input id="cBulkDensity" source="soil_transform.bulkdensity"/>
+      <input id="cSEEDD" source="slim.SEEDD"/>
+      <input id="cMaximalSeminalRootLengthPerDay" source="slim.MaximalSeminalRootLengthPerDay"/>
+      <input id="cDeadRootsDevStage" source="slim.DeadRootsDevStage"/>
+      <input id="cDailyDeadRootsRate" source="slim.DailyDeadRootsRate"/>
+      <input id="cBulkDensityThresholdLower" source="slim.BulkDensityThresholdLower"/>
+      <input id="cBulkDensityThresholdMiddle" source="slim.BulkDensityThresholdMiddle"/>
+      <input id="cBulkDensityThresholdUpper" source="slim.BulkDensityThresholdUpper"/>
+      <input id="cMinimalBDSeminalRootReductionFactor" source="slim.MinimalBDSeminalRootReductionFactor"/>
+      <input id="cSoilStrengthParameter" source="slim.SoilStrengthParameter"/>
+      <input id="cSandPercentage" source="soil_transform.sand"/>
+      <input id="iSoilTemperature" source="STMPsimCalculator.SoilTempArray"/>
+      <input id="iDryFactor" source="SlimWater.DRYFAC"/>
+      <input id="iTMIN" source="weather.AirTemperatureMin"/>
+      <input id="iTMAX" source="weather.AirTemperatureMax"/>
+      <input id="iDevStage" source="LintulPhenology.sDevStage"/>
+      <input id="iRWRT" source="LintulBiomass.rRWRT"/>
+      <input id="iIsHarvest" source="DefaultManagement.DoHarvest"/>
+    </simcomponent>
+    <simcomponent id="SlimWater" class="net.simplace.sim.components.soil.slim.SlimWater">
+      <input id="cSoilLayerDepth" source="soil_transform.depth"/>
+      <input id="cSoilWaterFieldCapacity" source="soil_transform.soilwater_fc"/>
+      <input id="cSoilWaterReducedThreshold" source="soil_transform.soilwater_red"/>
+      <input id="cSoilWaterWiltingPoint" source="soil_transform.soilwater_wp"/>
+      <input id="cSoilWaterSaturation" source="soil_transform.soilwater_sat"/>
+      <input id="cSoilWaterInitial" source="soil_transform.soilwater_init"/>
+      <input id="cMT" source="slim.MT"/>
+      <input id="cMD" source="slim.MD"/>
+      <input id="cDP" source="slim.DP"/>
+      <input id="cALFA" source="slimalfa.ALFA"/>
+      <input id="cWALIQ" source="slim.WALIQ"/>
+      <input id="cWM1S" source="slim.WM1S"/>
+      <input id="cWRST" source="slim.WRST"/>
+      <input id="cWRSS" source="slim.WRSS"/>
+      <input id="cSMD" source="slim.SMD"/>
+      <input id="cSEEDD" source="slim.SEEDD"/>
+      <input id="cCalculateRunoffWater" source="slim.CalculateRunoffWater"/>
+      <input id="cWMGENT" source="slim.WMGENT"/>
+      <input id="cWRGENT" source="slim.WRGENT"/>
+      <input id="cWMGENS" source="slim.WMGENS"/>
+      <input id="cWRGENS" source="slim.WRGENS"/>
+      <input id="cIFWGEN" source="slim.IFWGEN"/>
+      <input id="cELIM" source="slim.ELIM"/>
+      <input id="cMaxSoilEvaporationDepth" source="slim.MaxSoilEvaporationDepth"/>
+      <input id="iWithCrop" source="DefaultManagement.WithCrop"/>
+      <input id="iPotentialTranspiration" source="EvapTranDemand.PotentialTranspiration"/>
+      <input id="iRAIN" source="weather.Rain"/>
+      <input id="iReferenceCropEvapotranspiration" source="weather.ReferenceEvapotranspiration"/>
+      <input id="iFRR" source="SlimRoots.RootRestrictionFactor"/>
+      <input id="iMD95" source="SlimRoots.MD95"/>
+    </simcomponent>
+    <simcomponent id="SlimNitrogen" class="net.simplace.sim.components.soil.slim.SlimNitrogen">
+      <input id="cSoilLayerDepth" source="soil_transform.depth"/>
+      <input id="cBulkDensity" source="soil_transform.bulkdensity"/>
+      <input id="cSoilWaterFieldCapacity" source="soil_transform.soilwater_fc"/>
+      <input id="cSoilWaterReducedThreshold" source="soil_transform.soilwater_red"/>
+      <input id="cSoilWaterWiltingPoint" source="soil_transform.soilwater_wp"/>
+      <input id="cSoilWaterSaturation" source="soil_transform.soilwater_sat"/>
+      <input id="cSoilWaterInitial" source="soil_transform.soilwater_init"/>
+      <input id="cSoilWaterResidual" source="soil_transform.soilwater_res"/>
+      <input id="cCNO3" source="soil_transform.nitrate"/>
+      <input id="cCNH4" source="soil_transform.ammonium"/>
+      <input id="cMT" source="slim.MT"/>
+      <input id="cSCONC" source="slim.SCONC"/>
+      <input id="cDP" source="slim.DP"/>
+      <input id="cSCMIN" source="slim.SCMIN"/>
+      <input id="cFLOWNR" source="slim.FLOWNR"/>
+      <input id="cAMR1" source="slim.AMR1"/>
+      <input id="cAMR2" source="slim.AMR2"/>
+      <input id="cTEMCO1" source="slim.TEMCO1"/>
+      <input id="cTEMCO2" source="slim.TEMCO2"/>
+      <input id="cAX" source="slim.AX"/>
+      <input id="cAREA" source="slim.AREA"/>
+      <input id="cBGEN" source="slim.BGEN"/>
+      <input id="cAMEQ" source="slim.AMEQ"/>
+      <input id="cWRST" source="slim.WRST"/>
+      <input id="cWRSS" source="slim.WRSS"/>
+      <input id="cSMD" source="slim.SMD"/>
+      <input id="cWMGENT" source="slim.WMGENT"/>
+      <input id="cWRGENT" source="slim.WRGENT"/>
+      <input id="cWMGENS" source="slim.WMGENS"/>
+      <input id="cWRGENS" source="slim.WRGENS"/>
+      <input id="cIFWGEN" source="slim.IFWGEN"/>
+      <input id="iSoilTemperature" source="STMPsimCalculator.SoilTempArray"/>
+      <input id="iNDemand" source="NitrogenDemand.NitrogenDemandTotal"/>
+      <input id="iWithCrop" source="DefaultManagement.WithCrop"/>
+      <input id="iRAIN" source="weather.Rain"/>
+      <input id="iActualTranspiration" source="SlimWater.ActualTranspiration"/>
+      <input id="iRetainedWater" source="SlimWater.sWR"/>
+      <input id="iMobileWater" source="SlimWater.sWM"/>
+      <input id="iLessMobileWater" source="SlimWater.sWLM"/>
+      <input id="iPercolatingWater" source="SlimWater.sW_out"/>
+      <input id="iTotalWater" source="SlimWater.TotalWaterContentPerLayer"/>
+      <input id="iWHT15R" source="SlimWater.sWHT15R"/>
+      <input id="iDrynessFactor" source="SlimWater.DRYFAC"/>
+      <input id="iWFAST" source="SlimWater.WFAST"/>
+      <input id="iRootLength" source="SlimRoots.TotalRootLengthPerLayer"/>
+      <input id="iMD95" source="SlimRoots.MD95"/>
+      <input id="iNinorg" source="SoilCN.Ninorg"/>
+    </simcomponent>
+    <simcomponent id="LintulWaterStress" class="net.simplace.sim.components.models.lintul.LintulWaterStress">
+      <input id="cDroughtTolerance" source="crop.DroughtTolerance"/>
+      <input id="iPotentialTranspiration" source="SlimWater.PotentialTranspiration"/>
+      <input id="iActualTranspiration" source="SlimWater.ActualTranspiration"/>
+    </simcomponent>
+    <simcomponent id="LintulPartitioning" class="net.simplace.sim.components.models.lintul.LintulPartitioning">
+      <input id="cPartitionNStressReduction" source="crop.PartitioningNStressReduction"/>
+      <input id="cRootsPartitioningTableDVS" source="crop.RootsPartitioningTableDVS"/>
+      <input id="cRootsPartitioningTableFraction" source="crop.RootsPartitioningTableFraction"/>
+      <input id="cLeavesPartitioningTableDVS" source="crop.LeavesPartitioningTableDVS"/>
+      <input id="cLeavesPartitioningTableFraction" source="crop.LeavesPartitioningTableFraction"/>
+      <input id="cStemsPartitioningTableDVS" source="crop.StemsPartitioningTableDVS"/>
+      <input id="cStemsPartitioningTableFraction" source="crop.StemsPartitioningTableFraction"/>
+      <input id="cStorageOrgansPartitioningTableDVS" source="crop.StorageOrgansPartitioningTableDVS"/>
+      <input id="cStorageOrgansPartitioningTableFraction" source="crop.StorageOrgansPartitioningTableFraction"/>
+      <input id="iTRANRF" source="LintulWaterStress.TRANRF"/>
+      <input id="iNitrogenNutritionIndex" source="NitrogenDemand.NitrogenNutritionIndex"/>
+      <input id="iDevStage" source="LintulPhenology.sDevStage"/>
+      <input id="iDoSow" source="DefaultManagement.DoSow"/>
+    </simcomponent>
+    <simcomponent id="LintulBiomass" class="net.simplace.sim.components.models.lintul.LintulBiomass">
+      <input id="cK" source="crop.K"/>
+      <input id="cLaiCritical" source="crop.LaiCritical"/>
+      <input id="cRDRSHM" source="crop.RDRSHM"/>
+      <input id="cRDRNS" source="crop.RDRNS"/>
+      <input id="cRDRL" source="crop.RDRL"/>
+      <input id="cRGRL" source="crop.RGRL"/>
+      <input id="cSLA" source="crop.SLA"/>
+      <input id="cLaiNStressReduction" source="crop.LaiNStressReduction"/>
+      <input id="cLueNStressReduction" source="crop.LueNStressReduction"/>
+      <input id="cSlaNStressReduction" source="crop.SlaNStressReduction"/>
+      <input id="cRDRLeavesTableMeanTemperature" source="crop.RDRLeavesTableMeanTemperature"/>
+      <input id="cRDRLeavesTableRelativeRate" source="crop.RDRLeavesTableRelativeRate"/>
+      <input id="cRelativeDayOfEmergence" source="phenology.reldem"/>
+      <input id="iDoSow" source="DefaultManagement.DoSow"/>
+      <input id="iDoHarvest" source="DefaultManagement.DoHarvest"/>
+      <input id="iUnusedRootBiomass" source="SlimRoots.UnusedRootBiomass"/>
+      <input id="iNitrogenNutritionIndex" source="NitrogenDemand.NitrogenNutritionIndex"/>
+      <input id="iEffectiveTempRateBeforeAnt" source="weather_transform.EffectiveTempRateBeforeAnt"/>
+      <input id="iEffectiveTempRateAfterAnt" source="weather_transform.EffectiveTempRateAfterAnt"/>
+      <input id="iAirTemperatureMean" source="weather_transform.AirTemperatureMean"/>
+      <input id="iRadiation" source="weather.GlobalSolarRadiation"/>
+      <input id="iDevStage" source="LintulPhenology.sDevStage"/>
+      <input id="iCropAvailWaterContent" source="SlimWater.sCAWT"/>
+      <input id="iTRANRF" source="LintulWaterStress.TRANRF"/>
+      <input id="iPartRootFactor" source="LintulPartitioning.FractionRoot"/>
+      <input id="iPartStemsFactor" source="LintulPartitioning.FractionStems"/>
+      <input id="iPartStorageOrgansFactor" source="LintulPartitioning.FractionStorageOrgans"/>
+      <input id="iPartLeavesFactor" source="LintulPartitioning.FractionLeaves"/>
+      <input id="iLUE" source="vBaseLUE"/>
+    </simcomponent>
+    <simcomponent id="NitrogenDemand" class="net.simplace.sim.components.models.lintul.NitrogenDemand">
+      <input id="cNonTranslocateableResidualNConcentrationsLeaves" source="ndemand.NonTranslocateableResidualNConcentrationsLeaves"/>
+      <input id="cNonTranslocateableResidualNConcentrationsStem" source="ndemand.NonTranslocateableResidualNConcentrationsStem"/>
+      <input id="cNonTranslocateableResidualNConcentrationsRoot" source="ndemand.NonTranslocateableResidualNConcentrationsRoot"/>
+      <input id="cFractionMaxNConcentrationStemNConcentrationLeaves" source="ndemand.FractionMaxNConcentrationStemNConcentrationLeaves"/>
+      <input id="cFractionMaxNConcentrationRootsNConcentrationLeaves" source="ndemand.FractionMaxNConcentrationRootsNConcentrationLeaves"/>
+      <input id="cNMaxConcentrationStorageOrgans" source="ndemand.NMaxConcentrationStorageOrgans"/>
+      <input id="cNoptimalFraction" source="ndemand.NoptimalFraction"/>
+      <input id="cTimeCoefficientNUptakeMassflow" source="ndemand.TimeCoefficientNUptakeMassflow"/>
+      <input id="cTranslocationNTimeCoefficient" source="ndemand.TranslocationNTimeCoefficient"/>
+      <input id="cGrainToCropDailyNitrogen" source="vGrainToCropDailyNitrogen"/>
+      <input id="cGrainToCropMaxNitrogen" source="vGrainToCropMaxNitrogen"/>
+      <input id="cGrainToCropDevStage" source="vGrainToCropDevStage"/>
+      <input id="cANLVI" source="ndemand.ANLVI"/>
+      <input id="cANSTI" source="ndemand.ANSTI"/>
+      <input id="cANRTI" source="ndemand.ANRTI"/>
+      <input id="cDELT" source="ndemand.DELT"/>
+      <input id="cDevelopmentStageNUptakeStops" source="ndemand.DevelopmentStageNUptakeStops"/>
+      <input id="cNMaxTableDVS" source="ndemand.NMaxTableDVS"/>
+      <input id="cNMaxTableConcentration" source="ndemand.NMaxTableConcentration"/>
+      <input id="cNAbsorptionTableNNI" source="ndemand.NAbsorptionTableNNI"/>
+      <input id="cNAbsorptionTableFactor" source="ndemand.NAbsorptionTableFactor"/>
+      <input id="cRootsPartitioningTableDVS" source="crop.RootsPartitioningTableDVS"/>
+      <input id="cRootsPartitioningTableFraction" source="crop.RootsPartitioningTableFraction"/>
+      <input id="iWithCrop" source="DefaultManagement.WithCrop"/>
+      <input id="iDoHarvest" source="DefaultManagement.DoHarvest"/>
+      <input id="iPlantNitrogenUptake" source="SlimNitrogen.NUptake"/>
+      <input id="iTRANRF" source="LintulWaterStress.TRANRF"/>
+      <input id="iDevStage" source="LintulPhenology.sDevStage"/>
+      <input id="iWeightGreenLeaves" source="LintulBiomass.sWLVG"/>
+      <input id="iWeightStems" source="LintulBiomass.sWST"/>
+      <input id="iWeightRoots" source="LintulBiomass.sWRT"/>
+      <input id="iWeightStorageOrgans" source="LintulBiomass.sWSO"/>
+      <input id="iRateofChangeWeightDeadLeaves" source="LintulBiomass.rDeadLeaves"/>
+    </simcomponent>
+    <simcomponent id="SoilCN" class="net.simplace.sim.components.soil.soilcn.SoilCN">
+      <input id="cLignfct" source="carbon_transform.Lignfct"/>
+      <input id="cBrabove" source="carbon_transform.Brabove"/>
+      <input id="cFmicrolab" source="carbon_transform.Fmicrolab"/>
+      <input id="cLi" source="carbon_transform.Li"/>
+      <input id="cYmin" source="carbon_transform.Ymin"/>
+      <input id="cKdecomp1" source="carbon_transform.Kdecomp1"/>
+      <input id="cKdecomp2" source="carbon_transform.Kdecomp2"/>
+      <input id="cKdecomp3" source="carbon_transform.Kdecomp3"/>
+      <input id="cKdecomp4" source="carbon_transform.Kdecomp4"/>
+      <input id="cKdecomp5" source="carbon_transform.Kdecomp5"/>
+      <input id="cKdecomp6" source="carbon_transform.Kdecomp6"/>
+      <input id="cKdecomp10" source="carbon_transform.Kdecomp10"/>
+      <input id="cKdecomp11" source="carbon_transform.Kdecomp11"/>
+      <input id="cKdecomp12" source="carbon_transform.Kdecomp12"/>
+      <input id="cKdecomp13" source="carbon_transform.Kdecomp13"/>
+      <input id="cMineralisationDepth" source="carbon_transform.MineralisationDepth"/>
+      <input id="cFracNH4Volat" source="nitrogen.FracNH4Volat"/>
+      <input id="cBactnc" source="nitrogen.Bactnc"/>
+      <input id="cCritinflow" source="nitrogen.Critinflow"/>
+      <input id="cFungnc" source="nitrogen.Fungnc"/>
+      <input id="cLigncmax" source="nitrogen.Ligncmax"/>
+      <input id="cLigncmin" source="nitrogen.Ligncmin"/>
+      <input id="cMinncact" source="nitrogen.Minncact"/>
+      <input id="cNcsommicro" source="nitrogen.Ncsommicro"/>
+      <input id="cNinorgcrit" source="nitrogen.Ninorgcrit"/>
+      <input id="cRatemicrobup" source="nitrogen_transform.Ratemicrobup"/>
+      <input id="cBotDepth" source="soil_transform.depth"/>
+      <input id="cSoilFieldCapacity" source="soil_transform.soilwater_fc"/>
+      <input id="cSoilWiltingPoint" source="soil_transform.soilwater_wp"/>
+      <input id="cBulkDensity" source="soil_transform.bulkdensity"/>
+      <input id="cClay" source="soil_transform.clay"/>
+      <input id="cOrganicCarbon" source="soil_transform.carbon"/>
+      <input id="cAmmonia" source="soil_transform.ammonium"/>
+      <input id="cNitrate" source="soil_transform.nitrate"/>
+      <input id="cSand" source="soil_transform.sand"/>
+      <input id="cCelroot" source="soilcrop.Celroot"/>
+      <input id="cCelshoot" source="soilcrop.Celshoot"/>
+      <input id="cLigbranch" source="soilcrop.Ligbranch"/>
+      <input id="cLigroot" source="soilcrop.Ligroot"/>
+      <input id="cLigshoot" source="soilcrop.Ligshoot"/>
+      <input id="cLigstem" source="soilcrop.Ligstem"/>
+      <input id="cCellosesoilC" source="init_transform.CellosesoilC"/>
+      <input id="cCellosesoilN" source="init_transform.CellosesoilN"/>
+      <input id="cLigncellosesoilC" source="init_transform.LigncellosesoilC"/>
+      <input id="cLigncellosesoilN" source="init_transform.LigncellosesoilN"/>
+      <input id="cRootsoilC" source="init_transform.RootsoilC"/>
+      <input id="cRootsoilN" source="init_transform.RootsoilN"/>
+      <input id="cMetabsoilC" source="init_transform.MetabsoilC"/>
+      <input id="cMetabsoilN" source="init_transform.MetabsoilN"/>
+      <input id="cCelloseSurfC" source="init_transform.CelloseSurfC"/>
+      <input id="cCellosesurfN" source="init_transform.CellosesurfN"/>
+      <input id="cLigncellosesurfC" source="init_transform.LigncellosesurfC"/>
+      <input id="cLigncellosesurfN" source="init_transform.LigncellosesurfN"/>
+      <input id="cBranchsurfC" source="init_transform.BranchsurfC"/>
+      <input id="cBranchsurfN" source="init_transform.BranchsurfN"/>
+      <input id="cStemsurfC" source="init_transform.StemsurfC"/>
+      <input id="cStemsurfN" source="init_transform.StemsurfN"/>
+      <input id="cMetabsurfC" source="init_transform.MetabsurfC"/>
+      <input id="cMetabsurfN" source="init_transform.MetabsurfN"/>
+      <input id="cmicroLabCN" source="init_transform.microLabCN"/>
+      <input id="cmicroLabFrac" source="init_transform.microLabFrac"/>
+      <input id="cmicroRstCN" source="init_transform.microRstCN"/>
+      <input id="cmicroRstFrac" source="init_transform.microRstFrac"/>
+      <input id="cOldSOMCN" source="init_transform.OldSOMCN"/>
+      <input id="cYoungSOMCN" source="init_transform.YoungSOMCN"/>
+      <input id="iSoilTemp" source="STMPsimCalculator.SoilTempArray"/>
+      <input id="iSoilWC" source="SlimWater.TotalCropAvailVolumetricWaterContentPerLayer"/>
+      <input id="iDeadRoots" source="SlimRoots.DeadRootRatePerLayer"/>
+      <input id="iDeadLeaves" source="LintulBiomass.rDeadLeaves"/>
+      <input id="iDeadStems" source="LintulBiomass.rDeadStems"/>
+      <input id="iNinorg" source="SlimNitrogen.Ninorg"/>
+    </simcomponent>
+    <simcomponent id="SnowCoverCalculator" class="net.simplace.sim.components.soil.temperature.SnowCoverCalculator">
+      <input id="cCarbonContent" source="vCarbonContent"/>
+      <input id="iTempMax" source="weather.AirTemperatureMax"/>
+      <input id="iTempMin" source="weather.AirTemperatureMin"/>
+      <input id="iRadiation" source="weather.GlobalSolarRadiation"/>
+      <input id="iRAIN" source="weather.Rain"/>
+      <input id="iCropResidues" source="LintulBiomass.AboveGroundBiomass"/>
+      <input id="iPotentialSoilEvaporation" source="SlimWater.PotentialSoilEvaporation"/>
+      <input id="iLeafAreaIndex" source="LintulBiomass.sLAI"/>
+      <input id="iSoilTempArray" source="STMPsimCalculator.SoilTempArray"/>
+    </simcomponent>
+    <simcomponent id="STMPsimCalculator" class="net.simplace.sim.components.soil.temperature.STMPsimCalculator">
+      <input id="cSoilLayerDepth" source="soil_transform.depth"/>
+      <input id="cFirstDayMeanTemp" source="vFirstDayMeanTemp"/>
+      <input id="cAVT" source="vAverageGroundTemperature"/>
+      <input id="cABD" source="vAverageBulkDensity"/>
+      <input id="cDampingDepth" source="soil_transform.dampingdepth"/>
+      <input id="iSoilSurfaceTemperature" source="SnowCoverCalculator.SoilSurfaceTemperature"/>
+      <input id="iSoilWaterContent" source="SlimWater.TLW"/>
+    </simcomponent>
+  </simmodel>
+  <outputs>
+    <output id="LintulBiomassOut" interface="biomassout" frequence="DAILY" cachesize="10">
+      <header>
+        <out id="DevStage" datatype="DOUBLE" rule="LintulPhenology.sDevStage"/>
+        <out id="TSUM" datatype="DOUBLE" rule="LintulPhenology.sTSUM"/>
+        <out id="LAI" datatype="DOUBLE" rule="LintulBiomass.sLAI"/>
+        <out id="Yield" datatype="DOUBLE" rule="LintulBiomass.sWSO"/>
+        <out id="AGBm" datatype="DOUBLE" rule="LintulBiomass.AboveGroundBiomass"/>
+        <out id="SeminalRoots|1-40" datatype="DOUBLEARRAY" rule="SlimRoots.sSeminalRootLength"/>
+        <out id="LateralRoots|1-40" datatype="DOUBLEARRAY" rule="SlimRoots.sLateralRootLength"/>
+        <out id="FRR|1-40" datatype="DOUBLEARRAY" rule="SlimRoots.RootRestrictionFactor"/>
+        <out id="UnusedRootBM" datatype="DOUBLE" rule="SlimRoots.UnusedRootBiomass"/>
+        <out id="MaxRootLayer" datatype="INT" rule="SlimRoots.MD95"/>
+        <out id="GrowingPeriod" datatype="INT" rule="LintulPhenology.CropCycleCount"/>
+      </header>
+    </output>
+    <output id="WaterOut" interface="waterout" frequence="DAILY" cachesize="10">
+      <header>
+        <out id="Evaporation" datatype="DOUBLE" rule="SlimWater.ActualSoilEvaporation"/>
+        <out id="Transpiration" datatype="DOUBLE" rule="SlimWater.ActualTranspiration"/>
+        <out id="CropAvailWater" datatype="DOUBLE" rule="SlimWater.TotalCropAvailWaterContent"/>
+        <out id="EvapoTranspiration" datatype="DOUBLE" rule="SlimWater.ActualEvapotranspiration"/>
+        <out id="WaterStress" datatype="DOUBLE" rule="LintulWaterStress.TRANRF"/>
+        <out id="MobileWater|1-40" datatype="DOUBLEARRAY" rule="SlimWater.sWM"/>
+        <out id="RetainedWater|1-40" datatype="DOUBLEARRAY" rule="SlimWater.sWR"/>
+        <out id="Dryfactor|1-40" datatype="DOUBLEARRAY" rule="SlimWater.DRYFAC"/>
+      </header>
+    </output>
+    <output id="SCNOut" interface="soilcnout" frequence="DAILY" cachesize="10">
+      <header>
+        <out id="SCNNinorg|1-40" datatype="DOUBLEARRAY" rule="SoilCN.Ninorg"/>
+        <out id="SLIMNinorg|1-40" datatype="DOUBLEARRAY" rule="SlimNitrogen.Ninorg"/>
+        <out id="AMM|1-40" datatype="DOUBLEARRAY" rule="SlimNitrogen.Ammonium"/>
+        <out id="SM|1-40" datatype="DOUBLEARRAY" rule="SlimNitrogen.MobileNitrate"/>
+        <out id="ST|1-40" datatype="DOUBLEARRAY" rule="SlimNitrogen.RetainedNitrate"/>
+        <out id="CummulatedRainN" datatype="DOUBLE" rule="SlimNitrogen.CummulatedRainN"/>
+        <out id="CummulatedSeepN" datatype="DOUBLE" rule="SlimNitrogen.CummulatedSeepN"/>
+        <out id="CummulatedDrainN" datatype="DOUBLE" rule="SlimNitrogen.CummulatedDrainN"/>
+        <out id="CummulatedRunoffN" datatype="DOUBLE" rule="SlimNitrogen.CummulatedRunoffN"/>
+        <out id="CummulatedFertilizerN" datatype="DOUBLE" rule="SlimNitrogen.CummulatedFertilizerN"/>
+        <out id="CummulatedUptakeN" datatype="DOUBLE" rule="SlimNitrogen.CummulatedUptakeN"/>
+        <out id="CummulatedMineralizedN" datatype="DOUBLE" rule="SlimNitrogen.CummulatedMineralizedN"/>
+        <out id="CummulatedDeadPlantN" datatype="DOUBLE" rule="SoilCN.CummulatedDeadPlantN"/>
+        <out id="CummulatedLossMineralN" datatype="DOUBLE" rule="SoilCN.CummulatedLossMineralN"/>
+        <out id="sTotalN" datatype="DOUBLE" rule="SoilCN.sTotalN"/>
+        <out id="PercolatingNitrogen|1-40" datatype="DOUBLEARRAY" rule="SlimNitrogen.PercolatingNitrogen"/>
+      </header>
+    </output>
+    <output id="NdemandOut" interface="plantnitrogenout" frequence="DAILY" cachesize="10">
+      <header>
+        <out id="NUptake" datatype="DOUBLE" rule="SlimNitrogen.NUptake"/>
+        <out id="NAbsorbed" datatype="DOUBLE" rule="NitrogenDemand.NitrogenAbsorbed"/>
+        <out id="NDemand" datatype="DOUBLE" rule="NitrogenDemand.NitrogenDemandTotal"/>
+        <out id="NNI" datatype="DOUBLE" rule="NitrogenDemand.NitrogenNutritionIndex"/>
+        <out id="GrainToCropTotalN" datatype="DOUBLE" rule="NitrogenDemand.sGrainToCropTotalNitrogen"/>
+        <out id="Leaves" datatype="DOUBLE" rule="NitrogenDemand.sAmountNitrogenLeaves"/>
+        <out id="Stem" datatype="DOUBLE" rule="NitrogenDemand.sAmountNitrogenStems"/>
+        <out id="Root" datatype="DOUBLE" rule="NitrogenDemand.sAmountNitrogenRoots"/>
+        <out id="SO" datatype="DOUBLE" rule="NitrogenDemand.sAmountNitrogenStorageOrgans"/>
+      </header>
+    </output>
+    <output id="LintulYieldOut" interface="sumyieldout" frequence="YEARLY" cachesize="2">
+      <header>
+        <out id="TSUM" datatype="DOUBLE" mode="MAX" rule="LintulPhenology.sTSUM"/>
+        <out id="LAI" datatype="DOUBLE" mode="MAX" rule="LintulBiomass.sLAI"/>
+        <out id="Yield" datatype="DOUBLE" mode="MAX" rule="LintulBiomass.sWSO"/>
+        <out id="Yield_res" datatype="DOUBLE" mode="MAX" rule="referencedata.yield"/>
+        <out id="AGBm" datatype="DOUBLE" mode="MAX" rule="LintulBiomass.AboveGroundBiomass"/>
+        <out id="MobileWater|1-7" mode="MAX" datatype="DOUBLEARRAY" rule="SlimWater.sWM"/>
+      </header>
+      <statistic prefix="stat_">
+        <stat id="YIELD_RMSE" mode="RMSE" simulated="Yield" observed="Yield_res"/>
+        <stat id="YIELD_Bias" mode="Bias" simulated="Yield" observed="Yield_res"/>
+        <stat id="YIELD_MAE" mode="MAE" simulated="Yield" observed="Yield_res"/>
+        <stat id="YIELD_RMAE" mode="RMAE" simulated="Yield" observed="Yield_res"/>
+        <stat id="YIELD_MSE" mode="MSE" simulated="Yield" observed="Yield_res"/>
+      </statistic>
+    </output>
+    <output id="DIAGRAM_OUT" interface="diagramout" frequence="DAILY" cachesize="10">
+      <header>
+        <out id="TOP_LINE_Leaves" datatype="DOUBLE" rule="LintulBiomass.sWLVG"/>
+        <out id="TOP_LINE_Stems" datatype="DOUBLE" rule="LintulBiomass.sWST"/>
+        <out id="TOP_LINE_Roots" datatype="DOUBLE" rule="LintulBiomass.sWRT"/>
+        <out id="TOP_LINE_StorageOrgans" datatype="DOUBLE" rule="LintulBiomass.sWSO"/>
+        <out id="CENTER_LINE_LAI" datatype="DOUBLE" description="Leaf Area Index" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_square_metre" rule="LintulBiomass.sLAI"/>
+        <out id="CENTER_BAR_Rainfall" datatype="DOUBLE" rule="weather.Rain"/>
+        <out id="BOTTOM_ARRAY_VolumetricWaterContent|1-40" datatype="DOUBLEARRAY" description="Volumetric water content" rule="SlimWater.TotalVolumetricWaterContentPerLayer"/>
+        <out id="BOTTOM_LINE_RootDepth" datatype="DOUBLE" description="Root depth" rule="SlimRoots.sSeminalRootDepth"/>
+        <out id="TRANRF" datatype="DOUBLE" rule="LintulWaterStress.TRANRF"/>
+        <out id="NNI" datatype="DOUBLE" rule="NitrogenDemand.NitrogenNutritionIndex"/>
+      </header>
+    </output>
+  </outputs>
+</solution>
