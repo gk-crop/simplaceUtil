@@ -20,7 +20,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, error=FALSE}
 # withSimplace <- FALSE
 # try({
 #   withSimplace <- !is.na(simplace::findFirstSimplaceInstallation())
@@ -35,8 +35,7 @@ includeGraphic <- function(gr,nr=0) {
     type <- ifelse(knitr::is_latex_output(),'.pdf','.png')
     fn <- tempfile(fileext = type)
     DiagrammeR::export_graph(gr, fn, width = 2000)
-    knitr::include_graphics(fn)
-  
+    try(knitr::include_graphics(fn), silent=TRUE)
 }
 
 
