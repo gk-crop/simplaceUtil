@@ -4,19 +4,19 @@ author: "Gunther Krauss"
 date: "`r Sys.setlocale('LC_ALL','English.UTF-8');format(Sys.Date(),format='%B %d,
   %Y')`"
 output:
-  pdf_document:
-    number_sections: yes
-    df_print: kable
-    toc: yes
   rmarkdown::html_vignette:
     number_sections: yes
     fig-width: 10
     fig-height: 8
     toc: yes
     df_print: kable
+  pdf_document:
+    number_sections: yes
+    df_print: kable
+    toc: yes
 vignette: >
-  %\VignetteIndexEntry{simplaceUtil}
-  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{simplaceUtil} 
+  %\VignetteEncoding{UTF-8} 
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
@@ -30,11 +30,16 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 
-includeGraphic <- function(gr,nr=0) {
+includeGraphic <- function(gr,name) {
   
     type <- ifelse(knitr::is_latex_output(),'.pdf','.png')
     fn <- tempfile(fileext = type)
     DiagrammeR::export_graph(gr, fn, width = 2000)
+    fn <- "a"
+    if(!file.exists(fn))
+    {
+      fn <- system.file("img",paste0(name,type),package="simplaceUtil")
+    }
     try(knitr::include_graphics(fn), silent=TRUE)
 }
 
@@ -174,7 +179,7 @@ graph <- solutionToGraph(solfile)
 DiagrammeR::render_graph(graph)
 ```
 ```{r echo=FALSE, out.width="100%"}
-includeGraphic(graph,1)
+includeGraphic(graph,"graph")
 ```
 
 We can restrict the graph to specific component types and the neighborhood of
@@ -188,7 +193,7 @@ subgraph <- getNeighborhood(graph, c("SlimWater","SlimRoots"),
 DiagrammeR::render_graph(subgraph)
 ```
 ```{r echo=FALSE, out.width="100%"}
-includeGraphic(subgraph,2)
+includeGraphic(subgraph,"subgraph")
 ```
 
 
