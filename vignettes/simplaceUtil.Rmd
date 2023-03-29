@@ -32,9 +32,8 @@ knitr::opts_chunk$set(warning = FALSE)
 
 includeGraphic <- function(gr,nr=0) {
   
-    type <- ifelse(knitr::is_latex_output(),'pdf','png')
-    fn <- knitr::fig_path(type,number=nr)
-    dir.create(dirname(fn),recursive = TRUE, showWarnings = FALSE)
+    type <- ifelse(knitr::is_latex_output(),'.pdf','.png')
+    fn <- tempfile(fileext = type)
     DiagrammeR::export_graph(gr, fn, width = 2000)
     knitr::include_graphics(fn)
   
