@@ -221,9 +221,9 @@ A solution can be modified on the fly to meet requirements for sensitivity analy
 
 
 ```{r}
-solution_candidate <- system.file("solution","Yield.sol.xml",
+solfile <- system.file("solution","Yield.sol.xml",
                        package="simplaceUtil")
-sol <- getSolutionFromFile(solution_candidate)
+sol <- getSolutionFromFile(solfile)
 newsol <- sol |>
   removeNonMemoryOutputs() |>
   addMemoryOutput("Yields",frequence = "YEARLY") |>
@@ -271,9 +271,9 @@ As the order of SimComponents can have a considerable impact, one can generate
 random orders of components and run the reordered solutions to analyse the impact.
 
 ```{r}
-solution_candidate <- system.file("solution","Yield.sol.xml",
+solfile <- system.file("solution","Yield.sol.xml",
                        package="simplaceUtil")
-sol <- getSolutionFromFile(solution_candidate)
+sol <- getSolutionFromFile(solfile)
 
 cmp <- getComponents(sol)
 cmp[cmp$type=="simcomponent",c("id","subtype","nr")]
@@ -282,19 +282,46 @@ cmp[cmp$type=="simcomponent",c("id","subtype","nr")]
 We want to swap the components 2 to 5
 
 ```{r echo=FALSE}
-set.seed(12234)
+set.seed(1234)
 ```
 
 ```{r}
 toswap <- 2:5
 swapped <- sample(toswap, length(toswap))
+swapped
 newsol <- swapComponents(sol,swapped)
 cmp <- getComponents(newsol)
 cmp[cmp$type=="simcomponent",c("id","subtype","nr")]
 ```
 
+The order of the SimComponent is now different.
 
+## Adding timing SimComponent
 
+There is a special SimComponent that records the processing time of SimComponents.
+
+To add timing to a solution, one has to 
+
+* add an interface for the timing output
+* add the timing SimComponent and configure it to measure the time of all or only of
+distinct components
+* add the output for the timing information
+
+This can be done for every solution automatically via `addTimingSimComponent`.
+
+```{r}
+solfile <- system.file("solution","Yield.sol.xml",
+                       package="simplaceUtil")
+sol <- getSolutionFromFile(solfile)
+
+newsol <- addTimingSimComponent(sol, componentlist=c("LintulBiomass","LintulPheno"))
+cmp <- getComponents(newsol)
+cmp[cmp$type=="simcomponent" | grepl("timing",cmp$id),c("id","type","subtype","nr")]
+
+```
+
+The new solution has now an additional SimComponent *AutomaticTiming* as well as
+an additional output together with it's interface.
 
 # Standard transformation and visualisation of outputs
 
