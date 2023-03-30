@@ -313,7 +313,7 @@ createCodeStubsForSimVariables <- function(variables,
   {
     if(!dir.exists(outfolder)) dir.create(outfolder)
 
-    d <- paste0(outfolder,component)
+    d <- paste0(outfolder,"/",component)
 
     cat(fls, file=paste0(d,"_fields.java"),sep="",fill=FALSE)
     cat(vrs,file=paste0(d,"_createvariables.java"),sep="",fill=FALSE)

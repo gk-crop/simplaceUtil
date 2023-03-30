@@ -3,16 +3,7 @@
 <solution version="4.1" check="LAZY">
   <description title="Complete" author="G. Krauss" qualitylevel="I">WIKI_START
 === Purpose ===
-TECHNIAL TEST SOLUTION: PLEASE DON'T USE THIS SOLUTION FOR SCIENTIFIC SIMULATIONS!
-
-=== References ===
-
-=== Data ===
-
-=== Remarks ===
-
-=== Usage ===
-
+Example solution for simplaceUtil package.
 WIKI_END</description>
   <variables>
     <var id="vCLIMATEZONE" datatype="CHAR">00002</var>

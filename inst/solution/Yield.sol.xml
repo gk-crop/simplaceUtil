@@ -4,32 +4,24 @@
 <solution version="4.1" check="LAZY">
   <description title="Yield" author="XXX_XXX" qualitylevel="I">WIKI_START
 === Purpose ===
-
-=== References ===
-
-=== Data ===
-
-=== Remarks ===
-
-=== Usage ===
-
+Example solution for simplaceUtil package.
 WIKI_END</description>
   <variables>
-    
+
     <var id="vTempLimit" datatype="DOUBLE">35</var>
     <var id="vTempSlopeAboveLimit" datatype="DOUBLE">7</var>
     <var id="vCropName" datatype="CHAR">winter wheat</var>
     <var id="vBaseLUE" datatype="DOUBLE">3.0</var>
     <var id="vBaseTempBeforeAnt" datatype="DOUBLE">3.0</var>
     <var id="vBaseTempAfterAnt" datatype="DOUBLE">3.0</var>
-    
+
     <var id="startdate" datatype="DATE">01.01.1991</var>
     <var id="enddate" datatype="DATE">31.12.2004</var>
-       
+
     <var id="vClimateZone" datatype="CHAR">C02</var>
-     
-    
-    
+
+
+
   </variables>
   <interfaces default="simpool">
     <interface id="weatherfile" type="CSV">

@@ -1,0 +1,20 @@
+contenttype;id;description;datatype;unit;min;max;default
+constant;EarsPartitioningTableDVS;DVS for fraction of above-ground dry matter to ears;Double[];;;;0,1,2
+constant;EarsPartitioningTableFraction;Fraction of above-ground dry matter to ears as function of DVS;Double[];;;;.0,.1,.0
+constant;TranslocationFraction;Fraction of stems and leaves biomass  that is reserved for translocation at anthesis;Double;;0;1;0.2
+constant;FruitingEfficiency;Number of grains per storage organs mass;Double;g^-1;0;;.1
+input;EarPartitioningReductionFactor;Reduces the fraction of above-ground dry matter to ears (e. g. due to stress);Double;;0;1;1
+state;GrainNumber;Number of grains;Double;;0;;0
+state;TranslocationPoolMax;Biomass from stems and leaves that is reserved for translocation;Double;g m^-2;0;;0
+state;WEA;Weight of ears;Double;g m^-2;0;;0
+rate;RWEA;Change rate of ears;Double;g m^-2 d^-1;;;0
+state;Translocation;Sum of translocated biomass from stems and leaves to storage organs;Double;g m^-2;0;;0
+rate;TranslocationRate;Daily translocation from stems and leaves to storage organs;Double;g m^-2 d^-1;0;;0
+state;TranslocationFromLeaves;Sum of translocated biomass from leaves to storage organs;Double;g m^-2;0;;0
+rate;TranslocationFromLeavesRate;Daily translocation from leaves to storage organs;Double;g m^-2 d^-1;0;;0
+state;TranslocationFromStems;Sum of translocated biomass from stems to storage organs;Double;g m^-2;0;;0
+rate;TranslocationFromStemsRate;Daily translocation from stems to storage organs;Double;g m^-2 d^-1;0;;0
+state;StorageOrgansDemand;Total demand of storage organs biomass;Double;g m^-2;0;;0
+rate;StorageOrgansDemandRate;Daily demand of storage organs biomass;Double;g m^-2 d^-1;0;;0
+state;WSOExcess;Total storage organs excess due to sink limitation;Double;g m^-2;0;;0
+rate;RWSOExcess;Daily storage organs excess due to sink limitation;Double;g m^-2 d^-1;0;;0

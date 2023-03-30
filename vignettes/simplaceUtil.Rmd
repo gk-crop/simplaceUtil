@@ -32,16 +32,23 @@ knitr::opts_chunk$set(warning = FALSE)
 
 includeGraphic <- function(gr,name) {
   
-    type <- ifelse(knitr::is_latex_output(),'.pdf','.png')
-    fn <- tempfile(fileext = type)
+    type <- ifelse(knitr::is_latex_output(),'pdf','png')
+    fn <- knitr::fig_path(type,number=as.integer(runif(1,0,10000)))
+    dir.create(dirname(fn),recursive = TRUE, showWarnings = FALSE)
     DiagrammeR::export_graph(gr, fn, width = 2000)
-    fn <- "a"
     if(!file.exists(fn))
     {
-      fn <- system.file("img",paste0(name,type),package="simplaceUtil")
+      fn <- system.file("img",paste0(name,'.png'),package="simplaceUtil")
     }
     try(knitr::include_graphics(fn), silent=TRUE)
 }
+
+rawOutput <- function(txt,type="") {
+  cat(paste0("```",type,"\n"))
+  cat(paste0(trimws(txt),collapse="\n"))
+  cat("\n```")
+}
+
 
 
 ```
@@ -101,15 +108,18 @@ User variables show the values as defined in the solution. Notice that user vari
 variables[c(1:5,18:20),]
 ```
 
+
+Filenames for interfaces may use placeholder variables like `_WORKDIR_` or user defined variables (e.g. `vFilename`)
+
 ```{r}
 head(components[,c("id","ref")])
 ```
-
-
 ```{r, echo=FALSE}
 components$ref <- gsub('\\$', '$', components$ref, fixed = TRUE)
 ```
 
+With `replaceVariablesWithValues` we can replace the placeholder with the values
+from the user value dataframe. We can supply additional values for system variables like `_WORKDIR_`.
 
 ```{r}
 components$ref <- replaceVariablesWithValues(
@@ -199,6 +209,9 @@ includeGraphic(subgraph,"subgraph")
 
 # Modifying solutions
 
+
+## Sensitivity analysis and calibration
+
 A solution can be modified on the fly to meet requirements for sensitivity analysis or calibration  by
 
 - removing non-memory outputs for performance reasons
@@ -207,7 +220,6 @@ A solution can be modified on the fly to meet requirements for sensitivity analy
 - replacing variables from resource by user variables
 
 
-\footnotesize
 ```{r}
 solution_candidate <- system.file("solution","Yield.sol.xml",
                        package="simplaceUtil")
@@ -225,10 +237,26 @@ newsol <- sol |>
   replaceVariable("crop.SLA","vSLA") |>
   replaceVariable("crop.RGRL","vRGRL")
 
-soltext <- getTextFromSolution(newsol)
-
-cat(paste(substr(soltext,1,1500),"..."))
 ```
+
+Let's output the beginning of the solution as text:
+
+\footnotesize
+```{r}
+soltext <- getTextFromSolution(newsol)
+```
+
+
+```{r echo=FALSE, results='asis'}
+rawOutput(substr(soltext,1,1530))
+
+```
+\normalsize
+
+Notice that the modifications are logged in the `description` section of the 
+new solution.
+
+
 
 The solution can be saved as xml file:
 
@@ -237,10 +265,44 @@ solution_modified <- "simulation/solution/YieldModified.sol.xml"
 writeSolutionToFile(newsol, solution_modified) 
 ```
 
+## Changing order of SimComponents
+
+As the order of SimComponents can have a considerable impact, one can generate
+random orders of components and run the reordered solutions to analyse the impact.
+
+```{r}
+solution_candidate <- system.file("solution","Yield.sol.xml",
+                       package="simplaceUtil")
+sol <- getSolutionFromFile(solution_candidate)
+
+cmp <- getComponents(sol)
+cmp[cmp$type=="simcomponent",c("id","subtype","nr")]
+```
+
+We want to swap the components 2 to 5
+
+```{r echo=FALSE}
+set.seed(12234)
+```
+
+```{r}
+toswap <- 2:5
+swapped <- sample(toswap, length(toswap))
+newsol <- swapComponents(sol,swapped)
+cmp <- getComponents(newsol)
+cmp[cmp$type=="simcomponent",c("id","subtype","nr")]
+```
+
+
+
 
 # Standard transformation and visualisation of outputs
 
-With `parseDate` the standard Date column of Simplace output files is converted to Date.
+
+## Transform output data
+
+With `parseDate` the standard Date column of Simplace output files is converted 
+to Date.
 
 ```{r}
 outfile <- system.file("output","water.csv",
@@ -249,6 +311,18 @@ water <- read.csv(outfile, header=TRUE, sep=";")
 water <- parseDate(water)
 ```
 
+
+By default the simplace outputs are in wide format, e.g. each layer is in an own column.
+We can transform the dataframe from wide format to long format, by putting values from
+all layers into one column and distinguish them by an extra column `layer`.
+
+```{r}
+water[1:4,c(2,9:11,49)]
+water_long <- transformLayeredData(water)
+water_long[c(1:3,41:43,81:83),c(2,9:11)]
+```
+
+## Visualise output variables
 
 Multiple scalar values can be plotted in a common diagram.
 
@@ -263,17 +337,96 @@ plotLayeredOutput(water,"RetainedWater")
 ```
 
 
-Transform dataframe from wide format to long format.
-
-```{r}
-water_long <- transformLayeredData(water)
-head(water_long[,c(2,9:11)])
-```
-
-
 # Simple GUI as Shiny App
+
+The package includes a Shiny App that runs locally within a webbrowser.
 
 ```{r eval=FALSE}
 runSimplaceGuiApp()
 ```
+
+We can interactively explore solutions by filtering and displaying solution
+graphs.
+
+```{r out.width="100%", echo=FALSE}
+fn <- system.file("img","shiny_graph.png",package="simplaceUtil")
+try(knitr::include_graphics(fn), silent=TRUE)
+```
+
+We can also use a local Simplace installation to run the simulation defined by
+the solution and plot some of the output variables.
+
+```{r out.width="100%", echo=FALSE}
+fn <- system.file("img","shiny_plot.png",package="simplaceUtil")
+try(knitr::include_graphics(fn), silent=TRUE)
+```
+
+# Assistance for developing new SimComponents
+
+## Creating code stubs for SimVariables
+
+When creating a new SimComponent, we can put all SimVariables (constants, 
+inputs, states, rates, outputs) in a CSV table.
+
+```{r}
+varfile <- system.file("variables","translocation.csv",package="simplaceUtil")
+vartable <- read.csv(varfile, header=TRUE, sep=";")
+vartable[c(4,8:9),]
+```
+
+With the function `createCodeStubsForSimVariables` we can generate so called
+*boilerplate code* for Java as well as XML stubs for solutions.
+
+
+```{r}
+stubs <- createCodeStubsForSimVariables(varfile, "BMTransloc", sep=";")
+names(stubs)
+```
+
+When we specify an output folder, the stubs are written to files.
+
+```{r eval=FALSE}
+stubs <- createCodeStubsForSimVariables(varfile, "BMTransloc", sep=";",
+                                        outfolder="translocation_stubs")
+```
+
+## Example code stubs
+
+Defining fields in Java (`stubs$JavaFields`):
+
+```{r echo=FALSE, results='asis'}
+rawOutput(stubs$JavaFields[c(4,6,14)])
+```
+
+Creating the SimVariables (`stubs$JavaVariables`):
+
+```{r echo=FALSE, results='asis'}
+rawOutput(stubs$JavaVariables[c(4,6,14)])
+```
+
+
+Default initialisation of states and rates (sic!) (`stubs$JavaInit`):
+
+```{r echo=FALSE, results='asis'}
+rawOutput(stubs$JavaInit[c(6,14)])
+```
+
+
+XML stub for linking inputs  (`stubs$ComponentInputsXML`):
+
+```{r echo=FALSE, results='asis'}
+rawOutput(stubs$ComponentInputsXML[c(3:5)])
+```
+
+XML stubs for parameter file  (`stubs$ParametersXML`) and coresponding 
+resource section in solution (`stubs$ResourceParametersXML`):
+
+```{r echo=FALSE, results='asis'}
+rawOutput(stubs$ParametersXML)
+```
+```{r echo=FALSE, results='asis'}
+rawOutput(stubs$ResourceParametersXML)
+```
+
+
 
