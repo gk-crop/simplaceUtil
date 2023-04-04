@@ -1,4 +1,6 @@
-# simplaceUtil
+[![simplaceUtil status badge](https://gk-crop.r-universe.dev/badges/simplaceUtil)](https://gk-crop.r-universe.dev)
+
+# simplaceUtil <img src="man/figures/logo.svg" align="right" height="139" />
 
 Some utility functions to work with the Simplace framework.
 
