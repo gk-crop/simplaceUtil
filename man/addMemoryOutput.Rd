@@ -9,7 +9,8 @@ addMemoryOutput(
   outputid,
   frequence = "DAILY",
   rule = NULL,
-  resetrule = NULL
+  resetrule = NULL,
+  cachesize = 10
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ addMemoryOutput(
 \item{rule}{optional rule, when frequence is BOOLEAN or COMPLEX}
 
 \item{resetrule}{optional resetrule, when frequence is BOOLEAN or COMPLEX}
+
+\item{cachesize}{optional cachesize}
 }
 \value{
 modified solution object

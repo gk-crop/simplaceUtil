@@ -54,10 +54,11 @@ getSolutionFromText <- function(text) {
 #' @param frequence one of DAILY, YEARLY, BOOLEAN, COMPLEX
 #' @param rule optional rule, when frequence is BOOLEAN or COMPLEX
 #' @param resetrule optional resetrule, when frequence is BOOLEAN or COMPLEX
+#' @param cachesize optional cachesize
 #' @return modified solution object
 #'
 #' @export
-addMemoryOutput <- function(sol, outputid, frequence="DAILY", rule=NULL, resetrule=NULL) {
+addMemoryOutput <- function(sol, outputid, frequence="DAILY", rule=NULL, resetrule=NULL, cachesize=10) {
   x <- xml2::read_xml(as.character(sol))
   x <- removeOutput(x,outputid)
 
@@ -67,7 +68,7 @@ addMemoryOutput <- function(sol, outputid, frequence="DAILY", rule=NULL, resetru
   xml2::xml_add_child(intf,"poolsize",20000)
   outs <- xml2::xml_find_first(x, '/solution/outputs')
   xml2::xml_add_child(outs, "output", id=outputid, interface=paste0(outputid,"_meminterface"),
-                      frequence=frequence)
+                      frequence=frequence, cachesize=10)
   out <- xml2::xml_find_first(x, paste0('/solution/outputs/output[@id="',outputid,'"]'))
   xml2::xml_add_child(out,"header")
   if(!is.null(rule)) {
@@ -525,7 +526,7 @@ addTimingSimComponent <- function(sol, filename=NULL, componentlist = NULL,
 
   outs <- xml2::xml_find_first(x, '/solution/outputs')
   xml2::xml_add_child(outs, "output", id=outputid, interface=paste0(interfaceid),
-                      frequence="END")
+                      frequence="END", cachesize=10)
   out <- xml2::xml_find_first(x, paste0('/solution/outputs/output[@id="',outputid,'"]'))
   hd <- xml2::xml_add_child(out,"header")
 
