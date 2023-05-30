@@ -350,7 +350,7 @@ replaceVariable <- function(sol, oldid, newid) {
 
   # replace literal values in node text
   tl <- xml2::xml_find_all(x,paste0('/solution//*[.="',oldid,'"]'))
-  xml2::xml_text(tl) <- gsub(oldid, newid, xml2::xml_text(tl), fixed=TRUE)
+  xml2::xml_text(tl) <- newid
 
   # replace variable in formulas of note text
   tl <- xml2::xml_find_all(x,paste0('/solution//*//text()[contains(.,"${',oldid,'}")]'))
@@ -362,7 +362,7 @@ replaceVariable <- function(sol, oldid, newid) {
     xml2::xml_attr(tl, att) <- newid
 
     tl <- xml2::xml_find_all(x,paste0('/solution//*[contains(@',att,',"',oldid,'")]'))
-    xml2::xml_attr(tl, att) <- gsub(oldid, newid, xml2::xml_attr(tl,att), fixed=TRUE)
+    xml2::xml_attr(tl, att) <- gsub(paste0('${',oldid,'}'),paste0('${',newid,'}'), xml2::xml_attr(tl,att), fixed=TRUE)
   }
 
   xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* replaced",oldid,"with",newid)

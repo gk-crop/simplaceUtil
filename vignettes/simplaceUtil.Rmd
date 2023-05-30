@@ -1,8 +1,7 @@
 ---
 title: "simplaceUtil"
 author: "Gunther Krauss"
-date: "`r Sys.setlocale('LC_ALL','English.UTF-8');format(Sys.Date(),format='%B %d,
-  %Y')`"
+date: "`r Sys.setlocale('LC_ALL','English.utf8');format(Sys.Date(),format='%B %d,  %Y')`"
 output:
   rmarkdown::html_vignette:
     number_sections: yes
@@ -10,7 +9,7 @@ output:
     fig-height: 8
     toc: yes
     df_print: kable
-  pdf_document:
+  rmarkdown::pdf_document:
     number_sections: yes
     df_print: kable
     toc: yes

@@ -1,3 +1,6 @@
+Version 0.6.3
+* replacement of variables is more strict
+
 Version 0.6.2
 * small bugfix when creating solution outputs
 
