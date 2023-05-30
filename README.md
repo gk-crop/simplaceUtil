@@ -1,5 +1,7 @@
+<!-- badges: start -->
 [![simplaceUtil status badge](https://gk-crop.r-universe.dev/badges/simplaceUtil)](https://gk-crop.r-universe.dev)
-
+[![R-CMD-check](https://github.com/gk-crop/simplaceUtil/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gk-crop/simplaceUtil/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 # simplaceUtil <img src="man/figures/logo.svg" align="right" height="139" />
 
 Some utility functions to work with the Simplace framework.
