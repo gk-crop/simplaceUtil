@@ -5,8 +5,6 @@
 \title{Changes the type of an output from CSV to MEMORY or vice versa}
 \usage{
 changeOutputType(sol, outputid, type, filename = NULL, divider = ",")
-
-changeOutputType(sol, outputid, type, filename = NULL, divider = ",")
 }
 \arguments{
 \item{sol}{solution object}
@@ -21,11 +19,7 @@ changeOutputType(sol, outputid, type, filename = NULL, divider = ",")
 }
 \value{
 modified solution object
-
-modified solution object
 }
 \description{
-Changes the type of an output from CSV to MEMORY or vice versa
-
 Changes the type of an output from CSV to MEMORY or vice versa
 }
