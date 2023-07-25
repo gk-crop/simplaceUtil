@@ -34,30 +34,3 @@ parseDate <- function(data, newName="CURRENT.DATE", format="%d.%m.%Y", oldName =
   data
 }
 
-
-transdf <- function(l, n)
-{
-  # u <- attr(l,"unit")
-  if(is.list(l))
-  {
-    d <- as.data.frame(t(as.data.frame(l)))
-    names(d) <- gsub("V",paste0(n,"_"),names(d))
-    # for(i in seq_along(d)){attr(d[[i]],"unit")<-u}
-  }
-  else {
-    d <- data.frame(l)
-    names(d)<-n
-    # attr(d[[1]],"unit")<-u
-  }
-  d
-}
-
-#' converts expanded resultlist to dataframe in wide format
-#' @param reslist result list from simplace simulation
-#' @return data.frame with layered values (wide format)
-#' @export
-resultToDataframeExpanded <- function(reslist) {
-  df<-do.call(cbind,lapply(names(reslist),\(n)transdf(reslist[[n]], n)))
-  rownames(df)<-NULL
-  df
-}

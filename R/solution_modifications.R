@@ -85,6 +85,131 @@ addMemoryOutput <- function(sol, outputid, frequence="DAILY", rule=NULL, resetru
 }
 
 
+#' Adds a new CSV output to solution.
+#'
+#' Any output with the same id will be removed. The added output has no output
+#' variables. One has to add new variables via `addOutputVariable`.
+#'
+#' @param sol solution object
+#' @param filename name of the output file
+#' @param outputid id of new output
+#' @param frequence one of DAILY, YEARLY, BOOLEAN, COMPLEX
+#' @param rule optional rule, when frequence is BOOLEAN or COMPLEX
+#' @param resetrule optional resetrule, when frequence is BOOLEAN or COMPLEX
+#' @param cachesize optional cachesize
+#' @param divider character that is used as a divider for the csv file
+#' @return modified solution object
+#'
+#' @export
+addCSVOutput <- function(sol, filename, outputid,  frequence="DAILY", rule=NULL, resetrule=NULL, cachesize=10, divider=",") {
+  x <- xml2::read_xml(as.character(sol))
+  x <- removeOutput(x,outputid)
+
+  intfs <- xml2::xml_find_first(x, '/solution/interfaces')
+  xml2::xml_add_child(intfs, "interface", id=paste0(outputid,"_fileinterface"),type="CSV")
+  intf <- xml2::xml_find_first(x, paste0('/solution/interfaces/interface[@id="',outputid,'_fileinterface"]'))
+  xml2::xml_add_child(intf,"poolsize",100)
+  xml2::xml_add_child(intf,"divider",divider)
+  xml2::xml_add_child(intf,"filename", filename)
+  outs <- xml2::xml_find_first(x, '/solution/outputs')
+  xml2::xml_add_child(outs, "output", id=outputid, interface=paste0(outputid,"_fileinterface"),
+                      frequence=frequence, cachesize=10)
+  out <- xml2::xml_find_first(x, paste0('/solution/outputs/output[@id="',outputid,'"]'))
+  xml2::xml_add_child(out,"header")
+  if(!is.null(rule)) {
+    xml2::xml_attr(out,"rule")<-rule
+  }
+  if(!is.null(resetrule)) {
+    xml2::xml_attr(out,"rule")<-resetrule
+  }
+
+  desc <- xml2::xml_find_first(x,"/solution/description")
+  xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added csv output ",outputid)
+
+  x
+}
+
+
+#' Changes the type of an output from CSV to MEMORY or vice versa
+#'
+#' @param sol solution object
+#' @param outputid id of output to change
+#' @param type one of 'CSV' or 'MEMORY'
+#' @param filename name of the output file if type changes to 'CSV'
+#' @param divider character that is used as a divider for the csv file
+#'
+#' @return modified solution object
+#'
+#' @export
+changeOutputType <- function(sol, outputid, type, filename=NULL, divider=",") {
+  x <- xml2::read_xml(as.character(sol))
+
+  out <- xml2::xml_find_first(x, paste0('/solution/outputs/output[@id="',outputid,'"]'))
+  if(length(out)>0)
+  {
+    intfid <- xml2::xml_attr(out,"interface")
+    intf <- xml2::xml_find_first(x, paste0('/solution/interfaces/interface[@id="',intfid,'"]'))
+    xml2::xml_remove(xml2::xml_children(intf))
+    if(type=="CSV" && !is.null(filename)) {
+      xml2::xml_attr(intf, "type") <- type
+      xml2::xml_add_child(intf, "poolsize", 100)
+      xml2::xml_add_child(intf, "divider", divider)
+      xml2::xml_add_child(intf, "filename", filename)
+    }
+    else if (type=="MEMORY")
+    {
+      xml2::xml_attr(intf, "type") <- type
+      xml2::xml_add_child(intf, "poolsize", 2000)
+    }
+    desc <- xml2::xml_find_first(x,"/solution/description")
+    xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* changed type of",outputid,"to",type)
+
+  }
+  x
+
+}
+
+#' Changes the type of an output from CSV to MEMORY or vice versa
+#'
+#' @param sol solution object
+#' @param outputid id of output to change
+#' @param type one of 'CSV' or 'MEMORY'
+#' @param filename name of the output file if type changes to 'CSV'
+#' @param divider character that is used as a divider for the csv file
+#'
+#' @return modified solution object
+#'
+#' @export
+changeOutputType <- function(sol, outputid, type, filename=NULL, divider=",") {
+  x <- xml2::read_xml(as.character(sol))
+
+  out <- xml2::xml_find_first(x, paste0('/solution/outputs/output[@id="',outputid,'"]'))
+  if(length(out)>0)
+  {
+    intfid <- xml2::xml_attr(out,"interface")
+    intf <- xml2::xml_find_first(x, paste0('/solution/interfaces/interface[@id="',intfid,'"]'))
+    xml2::xml_remove(xml2::xml_children(intf))
+    if(type=="CSV" && !is.null(filename)) {
+      xml2::xml_attr(intf, "type") <- type
+      xml2::xml_add_child(intf, "poolsize", 100)
+      xml2::xml_add_child(intf, "divider", divider)
+      xml2::xml_add_child(intf, "filename", filename)
+    }
+    else if (type=="MEMORY")
+    {
+      xml2::xml_attr(intf, "type") <- type
+      xml2::xml_add_child(intf, "poolsize", 2000)
+    }
+    desc <- xml2::xml_find_first(x,"/solution/description")
+    xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* changed type of",outputid,"to",type)
+
+  }
+  x
+
+}
+
+
+
 #' Removes output with given id
 #'
 #' Notice: the interface for the output will also be removed.
@@ -141,6 +266,34 @@ removeNonMemoryOutputs <- function(sol) {
   }
   x
 }
+
+
+#' Changes all non-MEMORY outputs from solution to MEMORY outputs.
+#'
+#' When running large amout of runs (e.g. calibration) it's recommended to avoid
+#' to write outputs on disk.
+#'
+#' @param sol solution object
+#' @return modified solution object
+#'
+#' @export
+changeAllOutputTypesToMemory <- function(sol) {
+  x <- xml2::read_xml(as.character(sol))
+
+  intfs <- xml2::xml_attr(xml2::xml_find_all(x, '/solution/interfaces/interface[@type!="MEMORY"]'),"id")
+  outs <- xml2::xml_attr(xml2::xml_find_all(x, '/solution/outputs/output'),"interface")
+  to_change <- intersect(intfs, outs)
+  if(length(to_change)>0)
+  {
+    for(intf in to_change) {
+      outid <- xml2::xml_attr(xml2::xml_find_first(x, paste0('/solution/outputs/output[@interface="',intf,'"]')),"id")
+      x <- changeOutputType(x,outid, "MEMORY")
+    }
+  }
+  x
+}
+
+
 
 #' Adds output variable to an existing output
 #'

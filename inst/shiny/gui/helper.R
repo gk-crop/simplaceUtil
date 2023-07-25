@@ -89,13 +89,13 @@ getSimulationResult <- function (input,output,v)
       else {
         res <- simplace::getResult(v$sp, input$outselect)
       }
-      resl <- simplace::resultToList(res, expand=TRUE)
+      # resl <- simplace::resultToList(res, expand = TRUE)
       # units <- simplace::getUnitsOfResult(res)
       # for(i in seq_along(resl))
       # {
       #   attr(resl[[i]], "unit") <- units[[i]]
       # }
-      v$resultdf <- resultToDataframeExpanded(resl)
+      v$resultdf <- simplace::resultToDataframe(res, expand = TRUE)
     }
 
 
