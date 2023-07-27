@@ -19,12 +19,12 @@ Provides functions to work with the modeling framework Simplace
 \dontrun{
 # run the GUI
 runSimplaceGuiApp()
-
-# visualise the solution structure as graph
-graph <- solutionToGraph("/path/to/mysolution.sol.xml")
-DiagrammeR::render_graph(graph)
 }
 
+# visualise the solution structure as graph
+graph <- solutionToGraph(system.file("solution", "Yield.sol.xml",
+  package = "simplaceUtil"))
+DiagrammeR::render_graph(graph)
 }
 \author{
 {Gunther Krauss}

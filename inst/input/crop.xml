@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CropProperties>
+  <crop description=" CROP DATA FILE for use with LINTUL5 (NPK lim.) for soybean, August 2011 Based on WOFOST crop data set  SOY0902.CAB Regions : Central France (R24,R25) Sowing date : 28 April mean date of flowering: 25 June mean date of harvest : 25 September">
+    <parameter id="CROPNAME" unit="-">soybean</parameter>
+    <!-- Emergence -->
+    <parameter id="TBASEM" description="lower threshold temp. for emergence" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius">7.0</parameter>
+    <parameter id="TEFFMX" description="max. eff. temp. for emergence" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius">22.0</parameter>
+    <parameter id="TSUMEM" description="temperature sum from sowing to emergence" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius_day">70.</parameter>
+    <!-- Phenology -->
+    <parameter id="IDSL" description="indicates wheather pre-anthesis development depends on temp. (=0) or both temperature and daylengt (=1)" unit="-">0</parameter>
+    <parameter id="PhotoperiodTableHour" description="Day length for correction factor of development  " unit="http://www.wurvoc.org/vocabularies/om-1.8/hour">
+      <value>0</value>
+      <value>8</value>
+      <value>10</value>
+      <value>12</value>
+      <value>18</value>
+    </parameter>
+    <parameter id="PhotoperiodTableFactor" description="Correction factor of development rate in dependence of day length" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>1</value>
+      <value>1</value>
+      <value>1</value>
+      <value>1</value>
+    </parameter>
+    <parameter id="TSUM1" description="temperature sum from emergance to anthesis" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius_day">350.</parameter>
+    <parameter id="TSUM2" description="temperature sum from anthesis to maturity" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius_day">950.</parameter>
+    <parameter id="TsumIncrementTableMeanTemp" description="Average temperature for daily increase in temperature" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius">
+      <value>0</value>
+      <value>7</value>
+      <value>30</value>
+      <value>45</value>
+    </parameter>
+    <parameter id="TsumIncrementTableRate" description="Daily increase in temperature sum as function of av. temp." unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius">
+      <value>0</value>
+      <value>0</value>
+      <value>23</value>
+      <value>38</value>
+    </parameter>
+    <parameter id="DVSI" description="Initial DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">0.</parameter>
+    <parameter id="DVSEND" description="Development stage at harvest (=2.0 at maturity)" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">2.00</parameter>
+    <!-- Initial -->
+    <parameter id="TDWI" description="Initial total crop dry weight" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_square_metre">12</parameter>
+    <parameter id="RGRLAI" description="Maximum Relative increase in LAI" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day">0.0100</parameter>
+    <!-- Green area -->
+    <parameter id="SLATableDVS" description="DVS for specific leaf area" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>0.45</value>
+      <value>0.9</value>
+      <value>2</value>
+    </parameter>
+    <parameter id="SLATableSLA" description="Specific leaf area as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_gram">
+      <value>0.014</value>
+      <value>0.025</value>
+      <value>0.025</value>
+      <value>0.007</value>
+    </parameter>
+    <parameter id="SPA" description="specific pod area" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_gram">0</parameter>
+    <parameter id="SSATableDVS" description="DVS for specific stem area" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>2</value>
+    </parameter>
+    <parameter id="SSATableSSA" description="Specific stem area as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_gram">
+      <value>0</value>
+      <value>0</value>
+    </parameter>
+    <parameter id="LAICR" description="Critical leaf area index for overshadowing" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_square_metre">23.</parameter>
+    <parameter id="TBASE" description="lower theshold temp. for increase in LAI" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius">7.0</parameter>
+    <!-- Assimilation -->
+    <parameter id="KDIFTableDVS" description="DVS for extiction coefficient for diffuse visible light" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>2</value>
+    </parameter>
+    <parameter id="KDIFTableK" description="Extinction cofficient for diffuse visible light as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0.8</value>
+      <value>0.8</value>
+    </parameter>
+    <parameter id="RUETableDVS" description="DVS for radiation use efficiency for biomass production" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>1</value>
+      <value>1.7</value>
+      <value>2</value>
+    </parameter>
+    <parameter id="RUETableRUE" description="Radiation use efficiency for biomass production as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_megajoule">
+      <value>2.7</value>
+      <value>2.7</value>
+      <value>2.7</value>
+      <value>0</value>
+    </parameter>
+    <parameter id="TMPFTableMeanTemperature" description="Mean daytime temp for reduction factor of RUE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius">
+      <value>-1</value>
+      <value>0</value>
+      <value>10</value>
+      <value>20</value>
+      <value>25</value>
+      <value>30</value>
+      <value>35</value>
+    </parameter>
+    <parameter id="TMPFTableFactor" description="Reduction factor of RUE as function of  mean daytime temp" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>0</value>
+      <value>0.3</value>
+      <value>0.6</value>
+      <value>0.8</value>
+      <value>1</value>
+      <value>1</value>
+    </parameter>
+    <parameter id="TMNFTableMinTemperature" description="Min Temp for reduction factor of RUE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius">
+      <value>-5</value>
+      <value>0</value>
+      <value>3</value>
+      <value>30</value>
+    </parameter>
+    <parameter id="TMNFTableFactor" description="Reduction factor of RUE as function of low min. temp." unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>0</value>
+      <value>1</value>
+      <value>1</value>
+    </parameter>
+    <!-- Co2 correction of RUE -->
+    <parameter id="COTableCo2" description="CO2 concentration for correction of radiation use efficiency as a function of atmospheric" unit="http://www.wurvoc.org/vocabularies/om-1.8/parts_per_million">
+      <value>40</value>
+      <value>360</value>
+      <value>720</value>
+      <value>1000</value>
+      <value>2000</value>
+    </parameter>
+    <parameter id="COTableFactor" description="Correction of radiation use efficiency as a function of atmospheric CO2 concentration" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>1</value>
+      <value>1.35</value>
+      <value>1.5</value>
+      <value>1.5</value>
+    </parameter>
+    <!-- Partitioning -->
+    <parameter id="RootsPartitioningTableDVS" description="DVS for fraction of total dry matter to roots" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>0.75</value>
+      <value>1</value>
+      <value>1.5</value>
+      <value>2</value>
+    </parameter>
+    <parameter id="RootsPartitioningTableFraction" description="Fraction of total dry matter to roots as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0.65</value>
+      <value>0.35</value>
+      <value>0.15</value>
+      <value>0</value>
+      <value>0</value>
+    </parameter>
+    <parameter id="LeavesPartitioningTableDVS" description="DVS for fraction of above-ground dry matter to leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>1</value>
+      <value>1.15</value>
+      <value>1.3</value>
+      <value>1.5</value>
+      <value>2</value>
+    </parameter>
+    <parameter id="LeavesPartitioningTableFraction" description="Fraction of above-ground dry matter to leaves as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0.7</value>
+      <value>0.7</value>
+      <value>0.6</value>
+      <value>0.43</value>
+      <value>0.15</value>
+      <value>0</value>
+    </parameter>
+    <parameter id="StemsPartitioningTableDVS" description="DVS for fraction of above-ground dry matter to stems" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>1</value>
+      <value>1.15</value>
+      <value>1.3</value>
+      <value>1.5</value>
+      <value>2</value>
+    </parameter>
+    <parameter id="StemsPartitioningTableFraction" description="Fraction of above-ground dry matter to stems as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0.3</value>
+      <value>0.3</value>
+      <value>0.25</value>
+      <value>0.1</value>
+      <value>0.1</value>
+      <value>0</value>
+    </parameter>
+    <parameter id="StorageOrgansPartitioningTableDVS" description="DVS for fraction of above-ground dry matter to storage organs" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>1</value>
+      <value>1.15</value>
+      <value>1.3</value>
+      <value>1.5</value>
+      <value>2</value>
+    </parameter>
+    <parameter id="StorageOrgansPartitioningTableFraction" description="Fraction of above-ground dry matter to storage organs as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>0</value>
+      <value>0.15</value>
+      <value>0.47</value>
+      <value>0.75</value>
+      <value>1</value>
+    </parameter>
+    <!-- Death Rates -->
+    <parameter id="RDRL" description="max. rel. death rate of leaves due to water stress" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day">0.050</parameter>
+    <parameter id="RDRLeavesTableMeanTemp" description="Daily mean temperature for relative death rate of leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius">
+      <value>-10</value>
+      <value>10</value>
+      <value>15</value>
+      <value>30</value>
+      <value>50</value>
+    </parameter>
+    <parameter id="RDRLeavesTableRelativeRate" description="Relative death rate of leaves as a function of daily mean temperature" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day">
+      <value>0</value>
+      <value>0.02</value>
+      <value>0.03</value>
+      <value>0.05</value>
+      <value>0.09</value>
+    </parameter>
+    <parameter id="RDRSHM" description="rel. death rate of leaves due to shading (above LAICR)" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day">0.030</parameter>
+    <parameter id="RDRRootsTableDVS" description="DVS for relative death rate of stems" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>1.5</value>
+      <value>1.5001</value>
+      <value>2</value>
+    </parameter>
+    <parameter id="RDRRootsTableRelativeRate" description="Relative death rate of stems as a function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day">
+      <value>0</value>
+      <value>0</value>
+      <value>0.02</value>
+      <value>0.02</value>
+    </parameter>
+    <parameter id="RDRStemsTableDVS" description="DVS for relative death rate of roots" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>1.5</value>
+      <value>1.5001</value>
+      <value>2</value>
+    </parameter>
+    <parameter id="RDRStemsTableRelativeRate" description="Relative death rate of roots as a function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day">
+      <value>0</value>
+      <value>0</value>
+      <value>0.02</value>
+      <value>0.02</value>
+    </parameter>
+    <!-- Water Use -->
+    <parameter id="CFET" description="Correction factor transpiration rate" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">1.00</parameter>
+    <parameter id="DEPNR" description="Crop group number for soil water depletion" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">5.0</parameter>
+    <parameter id="IAIRDU" description="air ducts in roots present(=1) or not (=0)" unit="-">0</parameter>
+    <!-- Rooting -->
+    <parameter id="RDI" description="Initial rooting depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre">0.1</parameter>
+    <parameter id="RRI" description="Maximum daily increase in rooting depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre_per_day">0.012</parameter>
+    <parameter id="RDMCR" description="Maximum rooting depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre">1.2</parameter>
+    <parameter id="DVSDR" description="development stage above which death of roots and stems starts" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">1.0</parameter>
+    <parameter id="DVSDLT" description="development stage above which death of leaves starts in dependence of mean daily temperature" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">1.0</parameter>
+    <!-- Nutrient (N-P-K) use -->
+    <parameter id="RDRNS" description="max. relative death rate of leaves due to nutrient (N-P-K) stress" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day">0.05</parameter>
+    <parameter id="DVSNLT" description=" development stage above which no crop N-P-K uptake does occur" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">1.5</parameter>
+    <parameter id="DVSNT" description=" development stage above which N-P-K translocation to storage organs does occur " unit="http://www.wurvoc.org/vocabularies/om-1.8/one">0.8</parameter>
+    <parameter id="FNTRT" description=" N-P-K translocations from roots as a fraction of resp. total N-P-K amounts translocated from leaves and stems" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">0.15</parameter>
+    <parameter id="FRNX" description=" optimal N concentration as fraction of maximum N concentration" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">1.00</parameter>
+    <parameter id="FRPX" description=" optimal P concentration as fraction of maximum P concentration" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">1.00</parameter>
+    <parameter id="FRKX" description=" optimal K concentration as fraction of maximum K concentration" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">1.00</parameter>
+    <parameter id="LRNR" description=" maximum N concentration in roots as fraction of maximum N concentration in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">0.50</parameter>
+    <parameter id="LSNR" description=" maximum N concentration in stems as fraction of maximum N concentration in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">0.50</parameter>
+    <parameter id="LRPR" description=" maximum P concentration in roots as fraction of maximum P concentration in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">0.50</parameter>
+    <parameter id="LSPR" description=" maximum P concentration in stems as fraction of maximum P concentration in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">0.50</parameter>
+    <parameter id="LRKR" description=" maximum K concentration in roots as fraction of maximum K concentration in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">0.50</parameter>
+    <parameter id="LSKR" description=" maximum K concentration in stems as fraction of maximum K concentration in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">0.50</parameter>
+    <parameter id="NLAI" description=" coefficient for the reduction due to nutrient (N-P-K) stress of the LAI increase (during juvenile phase)" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">1.0</parameter>
+    <parameter id="NLUE" description=" coefficient for the reduction of RUE due to nutrient (N-P-K) stress" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">1.1</parameter>
+    <parameter id="NMAXSO" description=" maximum N concentration (= 1.6*min. N conc.) in storage organs" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">0.0560</parameter>
+    <parameter id="PMAXSO" description=" maximum P concentration (= 1.6*min. P conc.) in storage organs" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">0.0043</parameter>
+    <parameter id="KMAXSO" description=" maximum K concentration (= 1.6*min. K conc.) in storage organs" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">0.0192</parameter>
+    <parameter id="NPART" description=" coefficient for the effect of N stress on leaf allocation " unit="http://www.wurvoc.org/vocabularies/om-1.8/one">1.0</parameter>
+    <parameter id="NSLA" description=" coefficient for the effect of nutrient (N-P-K) stress on SLA reduction" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">0.5</parameter>
+    <parameter id="RNFLV" description=" residual N fraction in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">0.00933</parameter>
+    <parameter id="RNFST" description=" residual N fraction in stems" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">0.00467</parameter>
+    <parameter id="RNFRT" description=" residual N fraction in roots" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">0.00467</parameter>
+    <parameter id="RPFLV" description=" residual P fraction in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">0.00147</parameter>
+    <parameter id="RPFST" description=" residual P fraction in stems" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">0.00073</parameter>
+    <parameter id="RPFRT" description=" residual P fraction in roots" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">0.00073</parameter>
+    <parameter id="RKFLV" description=" residual K fraction in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">0.00933</parameter>
+    <parameter id="RKFST" description=" residual K fraction in stems" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">0.00467</parameter>
+    <parameter id="RKFRT" description=" residual K fraction in roots" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">0.00467</parameter>
+    <parameter id="TCNT" description=" time coefficient for N translocation to storage organs" unit="http://www.wurvoc.org/vocabularies/om-1.8/day">10.</parameter>
+    <parameter id="TCPT" description=" time coefficient for P translocation to storage organs" unit="http://www.wurvoc.org/vocabularies/om-1.8/day">10.</parameter>
+    <parameter id="TCKT" description=" time coefficient for K translocation to storage organs" unit="http://www.wurvoc.org/vocabularies/om-1.8/day">10.</parameter>
+    <parameter id="NFIXF" description=" fraction of crop nitrogen uptake by biological fixation" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">0.80</parameter>
+    <parameter id="NMaxTableDVS" description="DVS for maximum N concentration in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>0.4</value>
+      <value>0.7</value>
+      <value>1</value>
+      <value>2</value>
+      <value>2.1</value>
+    </parameter>
+    <parameter id="NMaxTableConcentration" description="Maximum N concentration in leaves as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">
+      <value>0.06</value>
+      <value>0.04</value>
+      <value>0.035</value>
+      <value>0.03</value>
+      <value>0.0293</value>
+      <value>0.0293</value>
+    </parameter>
+    <parameter id="PMaxTableDVS" description="DVS for maximum P concentration in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>0.4</value>
+      <value>0.7</value>
+      <value>1</value>
+      <value>2</value>
+      <value>2.1</value>
+    </parameter>
+    <parameter id="PMaxTableConcentration" description="Maximum P concentration in leaves as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">
+      <value>0.0142</value>
+      <value>0.0095</value>
+      <value>0.0083</value>
+      <value>0.0071</value>
+      <value>0.00693</value>
+      <value>0.00693</value>
+    </parameter>
+    <parameter id="KMaxTableDVS" description="DVS for maximum K concentration in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one">
+      <value>0</value>
+      <value>0.4</value>
+      <value>0.7</value>
+      <value>1</value>
+      <value>2</value>
+      <value>2.1</value>
+    </parameter>
+    <parameter id="KMaxTableConcentration" description="Maximum K concentration in leaves as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram">
+      <value>0.0655</value>
+      <value>0.0436</value>
+      <value>0.0382</value>
+      <value>0.0327</value>
+      <value>0.032</value>
+      <value>0.032</value>
+    </parameter>
+  </crop>
+</CropProperties>

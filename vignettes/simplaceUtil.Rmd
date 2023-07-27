@@ -387,6 +387,30 @@ fn <- system.file("img","shiny_plot.png",package="simplaceUtil")
 try(knitr::include_graphics(fn), silent=TRUE)
 ```
 
+# Assistance for creating new Solutions (simulation configuration)
+
+## Creating XML stubs for resources
+
+We can create the interface (location and format) and resource (structure) 
+description for a solution as XML stubs from given input data.
+
+Data can be given in CSV or XML format. The structure of the data has to be 
+compatible with Simplace.
+
+```{r}
+stubs <- createCsvResourceStubs(
+  filename = system.file("input","weather.csv", package="simplaceUtil"),
+  id = "weather",
+  sep =",",
+  keyvals = c("CURRENT.DATE" = "Date")
+)
+cat(stubs$interface)
+cat(stubs$resource)
+```
+
+The function tries to determine the datatype from the data. We have to check and possibly 
+correct the inferred datatype (e.g. replacing 'CHAR' by 'DATE' or 'INT' by 'DOUBLE' or 'BOOLEAN').
+
 # Assistance for developing new SimComponents
 
 ## Creating code stubs for SimVariables

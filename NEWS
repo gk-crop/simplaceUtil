@@ -1,3 +1,6 @@
+Version 0.6.5
+* Create resource and interface stubs from CSV or XML file structure
+
 Version 0.6.4
 * removed resultToDataFrameExpanded as one can use resultToDataframe from simplace package
 * functions to add CSV outputs, change output type from memory to csv and vice versa
