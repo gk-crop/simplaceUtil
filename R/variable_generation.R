@@ -47,7 +47,7 @@ get_variable_value <- function(l,pos,default=TRUE) {
     if(get_variable_datatype(l)=="DOUBLEARRAY")
     {
       n <- strsplit(l[[pos]],",",TRUE)[[1]]
-      n <- na.omit(as.numeric(n))
+      n <- stats::na.omit(as.numeric(n))
       if(length(n)>0)
       {
         if(default) {
@@ -65,7 +65,7 @@ get_variable_value <- function(l,pos,default=TRUE) {
     else if(get_variable_datatype(l)=="INTARRAY")
     {
       n <- strsplit(l[[pos]],",",TRUE)[[1]]
-      n <- na.omit(as.integer(n))
+      n <- stats::na.omit(as.integer(n))
       if(length(n)>0)
       {
         if(default) {

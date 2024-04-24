@@ -13,7 +13,7 @@
 #' @export
 #'
 #' @examples
-#' stubs <- createCsvResourceStubs(
+#' stubs <- createResourceStubsFromCsv(
 #'   filename = system.file("input","weather.csv", package="simplaceUtil"),
 #'   id = "weather",
 #'   sep =",",

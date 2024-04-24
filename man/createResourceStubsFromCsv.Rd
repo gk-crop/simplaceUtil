@@ -39,7 +39,7 @@ list of two strings ('interface' and 'resource')
 Creates XML stubs for interface and resource section from CSV file structure
 }
 \examples{
-stubs <- createCsvResourceStubs(
+stubs <- createResourceStubsFromCsv(
   filename = system.file("input","weather.csv", package="simplaceUtil"),
   id = "weather",
   sep =",",

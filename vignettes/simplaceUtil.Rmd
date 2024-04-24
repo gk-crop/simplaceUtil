@@ -398,7 +398,7 @@ Data can be given in CSV or XML format. The structure of the data has to be
 compatible with Simplace.
 
 ```{r}
-stubs <- createCsvResourceStubs(
+stubs <- createResourceStubsFromCsv(
   filename = system.file("input","weather.csv", package="simplaceUtil"),
   id = "weather",
   sep =",",
