@@ -39,7 +39,7 @@ get_variable_datatype <- function(l) {
          "")
 }
 
-get_variable_value <- function(l,pos) {
+get_variable_value <- function(l,pos,default=TRUE) {
   if(is.na(l[[pos]]) || l[[pos]]=='')
   {"null"}
   else
@@ -47,11 +47,16 @@ get_variable_value <- function(l,pos) {
     if(get_variable_datatype(l)=="DOUBLEARRAY")
     {
       n <- strsplit(l[[pos]],",",TRUE)[[1]]
-      n <- as.numeric(n[is.numeric(n)])
+      n <- na.omit(as.numeric(n))
       if(length(n)>0)
       {
-        n <- paste(paste0(n,"d"),collapse=",")
-        paste0("new Double[]{",n,"}")
+        if(default) {
+          n <- paste(paste0(n,"d"),collapse=",")
+          paste0("new Double[]{",n,"}")
+        }
+        else {
+         paste0(n[1],"d")
+        }
       }
       else {
         "null"
@@ -60,11 +65,16 @@ get_variable_value <- function(l,pos) {
     else if(get_variable_datatype(l)=="INTARRAY")
     {
       n <- strsplit(l[[pos]],",",TRUE)[[1]]
-      n <- as.integer(n[is.numeric(n)])
+      n <- na.omit(as.integer(n))
       if(length(n)>0)
       {
-        n <- paste(n,collapse=",")
-        paste0("new Int[]{",n,"}")
+        if(default) {
+          n <- paste(n,collapse=",")
+          paste0("new Integer[]{",n,"}")
+        }
+        else {
+          n[1]
+        }
       }
       else {
         "null"
@@ -76,8 +86,13 @@ get_variable_value <- function(l,pos) {
       n <- as.character(strsplit(l[[pos]],",",TRUE)[[1]])
       if(length(n)>0)
       {
-        n <- paste(paste0('"',n,'"'),collapse=",")
-        paste0("new String[]{",n,"}")
+        if(default) {
+          n <- paste(paste0('"',n,'"'),collapse=",")
+          paste0("new String[]{",n,"}")
+        }
+        else {
+          paste0('"',n[1],'"')
+        }
       }
       else {
         "null"
@@ -103,7 +118,7 @@ value_to_xml <- function(l,pos) {
   {""}
   else
   {
-    if(l[["datatype"]]=="Double[]")
+    if(l[["datatype"]]%in% c("Double[]","DOUBLEARRAY","Integer[]","INTARRAY","String[]","CHARRARAY"))
     {
       vals <- strsplit(l[[pos]],',')
       vals <- vals[[1]];
@@ -126,8 +141,8 @@ create_variable_java <- function(l)
          l[["description"]],"\", DATA_TYPE.",
          get_variable_datatype(l), ", CONTENT_TYPE.",
          get_variable_contenttype(l),", \"",l[["unit"]],"\", ",
-         get_variable_value(l,"min"),", ",
-         get_variable_value(l,"max"),", ",
+         get_variable_value(l,"min", FALSE),", ",
+         get_variable_value(l,"max", FALSE),", ",
          get_variable_value(l,"default"), ", this));\n")
 }
 

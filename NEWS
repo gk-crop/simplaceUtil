@@ -1,3 +1,7 @@
+Version 0.6.6
+* renamed functions for creating solution stubs from data
+* improved variable creation for code stubs
+
 Version 0.6.5
 * Create resource and interface stubs from CSV or XML file structure
 

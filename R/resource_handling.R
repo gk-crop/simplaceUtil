@@ -22,7 +22,7 @@
 #' cat(stubs$interface)
 #' cat(stubs$resource)
 #'
-#' stubs <- createCsvResourceStubs(
+#' stubs <- createResourceStubsFromCsv(
 #'   filename = system.file("input","soil.csv", package="simplaceUtil"),
 #'   id = "soil",
 #'   sep =";",
@@ -32,7 +32,7 @@
 #' cat(stubs$resource)
 
 #'
-createCsvResourceStubs <- function(filename, id,
+createResourceStubsFromCsv <- function(filename, id,
                                             sep=",",
                                             keyvals = NULL,
                                             arraycolumns = NULL,
@@ -105,13 +105,13 @@ createCsvResourceStubs <- function(filename, id,
 #' @export
 #'
 #' @examples
-#' stubs <- createXmlResourceStubs(
+#' stubs <- createResourceStubsFromXml(
 #'   filename = system.file("input","crop.xml",package="simplaceUtil"),
 #'   id="soil",
 #'   keyvals = c("vSoilType"=1)
 #' )
 #' cat(stubs$resource)
-createXmlResourceStubs <- function(filename, id,
+createResourceStubsFromXml <- function(filename, id,
                                             keyvals = NULL,
                                             frequence = "DAILY",
                                             rule = NULL,

@@ -2,4 +2,5 @@
 ^\.Rproj\.user$
 ^doc$
 ^Meta$
+^temp$
 ^\.github$
