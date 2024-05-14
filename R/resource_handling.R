@@ -62,7 +62,7 @@ createResourceStubsFromCsv <- function(filename, id,
   if(!is.null(rule) && frequence %in% c("BOOLEAN","COMPLEX")) {
     rl <- paste0(' rule="',rule,'"')
   }
-  res <- paste0('<resource id="',id,'" interface="',id,'_file" frequence="',frequence,'"',rl,'>',"\n",'  </header>')
+  res <- paste0('<resource id="',id,'" interface="',id,'_file" frequence="',frequence,'"',rl,'>',"\n",'  <header>')
   for(i in 1:ncol(data)) {
     dt <- "DOUBLE"
     if(is.character(data[1,i])) {
