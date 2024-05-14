@@ -62,7 +62,7 @@ createResourceStubsFromCsv <- function(filename, id,
   if(!is.null(rule) && frequence %in% c("BOOLEAN","COMPLEX")) {
     rl <- paste0(' rule="',rule,'"')
   }
-  res <- paste0('<resource id="',id,'" interface="',id,'_file" frequence="',frequence,'"',rl,'>')
+  res <- paste0('<resource id="',id,'" interface="',id,'_file" frequence="',frequence,'"',rl,'>',"\n",'  </header>')
   for(i in 1:ncol(data)) {
     dt <- "DOUBLE"
     if(is.character(data[1,i])) {
@@ -84,10 +84,10 @@ createResourceStubsFromCsv <- function(filename, id,
     if(nm[i] %in% keyvals) {
       key <- paste0(' key="',kn[keyvals==nm[i]],'"')
     }
-    ri <- paste0("\n",'  <res id="',nm[i],'"',key,' datatype="',dt,'", unit=""/>')
+    ri <- paste0("\n",'    <res id="',nm[i],'"',key,' datatype="',dt,'" unit=""/>')
     res <- paste0(res, ri)
   }
-  res <- paste0(res,"\n",'</resource>')
+  res <- paste0(res,"\n",'  </header>',"\n",'</resource>')
   list(interface = intf, resource = res)
 }
 
@@ -132,7 +132,7 @@ createResourceStubsFromXml <- function(filename, id,
   if(!is.null(rule) && frequence %in% c("BOOLEAN","COMPLEX")) {
     rl <- paste0(' rule="',rule,'"')
   }
-  res <- paste0('<resource id="',id,'" interface="',id,'_file" frequence="',frequence,'"',rl,'>')
+  res <- paste0('<resource id="',id,'" interface="',id,'_file" frequence="',frequence,'"',rl,'>',"\n",'  <header>')
 
 
   set <- xml2::xml_children(xmlnode)[[1]]
@@ -180,9 +180,9 @@ createResourceStubsFromXml <- function(filename, id,
       key <- paste0(' key="',kn[keyvals==kid],'"')
     }
 
-    ri <- paste0("\n",'  <res id="',id,'"',key,' datatype="',dt,'", unit="',unit,'"/>')
+    ri <- paste0("\n",'    <res id="',id,'"',key,' datatype="',dt,'" unit="',unit,'"/>')
     res <- paste0(res, ri)
   }
-  res <- paste0(res,"\n",'</resource>')
+  res <- paste0(res,"\n",'  </header>',"\n",'</resource>')
   list(interface = intf, resource = res)
 }

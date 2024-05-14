@@ -19,5 +19,10 @@ modified solution object
 \description{
 Notice: there is no check, whether the ids exist. Variables are replaced
 literarilly when they are the only content of an attribute or element content.
-In other attributes and element contents ${oldid} will be replaced by ${newid}
+In other attributes and element contents \verb{$\{oldid\}} will be
+replaced by \verb{$\{newid\}}
+}
+\details{
+Notice that the id of variables from resources, SimComponents etc. should
+be prefixed by the enclosing resource's, SimComponent's etc. id.
 }

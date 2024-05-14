@@ -1,3 +1,7 @@
+Version 0.6.7
+* fixed creation of solution stubs from data
+* updated documentation
+
 Version 0.6.6
 * renamed functions for creating solution stubs from data
 * improved variable creation for code stubs
