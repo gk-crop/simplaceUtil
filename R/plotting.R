@@ -7,6 +7,7 @@
 #' @param datecol column name for date  (default CURRENT.DATE)
 #' @return data.frame that contains only values needed for plotting
 #' @keywords internal
+#' @noRd
 subsetDataForPlot <-function(data, simulationid=NULL, date_from=NULL,
                              date_to=NULL, datecol="CURRENT.DATE")
 {
@@ -34,11 +35,15 @@ subsetDataForPlot <-function(data, simulationid=NULL, date_from=NULL,
 #' @param date_from simulation date from where values are plotted
 #' @param date_to simulateon date until values are plotted
 #' @param datecol column name for date (default CURRENT.DATE)
+#' @param nrow number of panel rows when plotting multiple simulation ids
+#' @param ncol number of panels in a row when plotting multiple simulation ids
 #' @export
 #' @importFrom rlang .data
 plotScalarOutput <- function (data, column_x, columns_y,
                               simulationid=NULL, date_from=NULL, date_to=NULL,
-                              datecol="CURRENT.DATE")
+                              datecol="CURRENT.DATE",
+                              nrow = NULL,
+                              ncol = NULL)
 {
   columns_y <- intersect(columns_y, names(data))
   cols <- unique(c("simulationid",datecol, column_x, columns_y))
@@ -83,12 +88,9 @@ plotScalarOutput <- function (data, column_x, columns_y,
         ggplot2::ggplot(data, ggplot2::aes(x=.data[[column_x]],
                                          y=.data[[datecol]])) +
           ggplot2::geom_line() +
-          ggplot2::facet_wrap(~.data$simulationid)
-
+          ggplot2::facet_wrap(~.data$simulationid, nrow=nrow, ncol=ncol)
       }
-
     }
-
   }
 }
 
@@ -101,11 +103,15 @@ plotScalarOutput <- function (data, column_x, columns_y,
 #' @param date_to simulation date until values are plotted
 #' @param date_to simulateon date until values are plotted
 #' @param datecol column name for date (default CURRENT.DATE)
+#' @param nrow number of panel rows when plotting multiple simulation ids
+#' @param ncol number of panels in a row when plotting multiple simulation ids
 #' @export
 #' @importFrom rlang .data
 plotLayeredOutput <- function(data, column, simulationid = NULL,
                               date_from=NULL, date_to=NULL,
-                              datecol="CURRENT.DATE")
+                              datecol="CURRENT.DATE",
+                              nrow=NULL,
+                              ncol=NULL)
 {
 
   data <- subsetDataForPlot(data, simulationid, date_from, date_to, datecol)
@@ -120,7 +126,8 @@ plotLayeredOutput <- function(data, column, simulationid = NULL,
                                  fill=.data[[column]])) +
         ggplot2::ylab("Layer") +
         ggplot2::geom_raster() +
-        ggplot2::scale_fill_gradient(low="#ddeeff",high="#000055")
+        ggplot2::scale_fill_gradient(low="#ddeeff",high="#000055") +
+        ggplot2::facet_wrap(~.data$simulationid,nrow=nrow, ncol=ncol)
     }
 
   }

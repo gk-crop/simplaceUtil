@@ -11,6 +11,9 @@ writeSolutionToFile(sol, file)
 
 \item{file}{filename for the solution}
 }
+\value{
+nothing, function writes a file as a side effect
+}
 \description{
 Writes solution to file
 }

@@ -3,4 +3,5 @@
 ^doc$
 ^Meta$
 ^temp$
+^log$
 ^\.github$

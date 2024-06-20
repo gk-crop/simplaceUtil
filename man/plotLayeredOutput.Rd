@@ -10,7 +10,9 @@ plotLayeredOutput(
   simulationid = NULL,
   date_from = NULL,
   date_to = NULL,
-  datecol = "CURRENT.DATE"
+  datecol = "CURRENT.DATE",
+  nrow = NULL,
+  ncol = NULL
 )
 }
 \arguments{
@@ -25,6 +27,10 @@ plotLayeredOutput(
 \item{date_to}{simulateon date until values are plotted}
 
 \item{datecol}{column name for date (default CURRENT.DATE)}
+
+\item{nrow}{number of panel rows when plotting multiple simulation ids}
+
+\item{ncol}{number of panels in a row when plotting multiple simulation ids}
 }
 \description{
 Plots layered output

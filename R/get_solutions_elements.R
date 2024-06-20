@@ -70,9 +70,9 @@ getUserVariables <- function(x)
 #'
 #' @param text text to replace
 #' @param variables variables dataframe
-#' @param additional additional variables as named vector c("var1"="value1", ...)
+#' @param additional additional variables as named vector c("var1"="value1", ...), useful for directory placeholder
 #' @export
-replaceVariablesWithValues <- function(text, variables, additional)
+replaceVariablesWithValues <- function(text, variables, additional=NULL)
 {
   repl <- c(variables$value, additional)
   names(repl) <- paste0("${",c(variables$id,names(additional)),"}")
@@ -331,6 +331,22 @@ getElementsFromSolutionFile <- function(file)
 getMemoryOutputIds <- function(comp) {
   comp[!is.na(comp$ref) & substr(comp$ref,nchar(comp$ref)-7,nchar(comp$ref))=="[MEMORY]", "id"]
 }
+
+#' Get filenames of file outputs
+#' @param comp components dataframe
+#' @param variables variables dataframe
+#' @param additional additional variables as named vector c("var1"="value1", ...), useful for directory placeholder
+#' @return character vector with the memory output ids
+#' @export
+getOutputFilenames <- function(comp,variables,additional=NULL) {
+  refs <- comp[comp$type=="output" & !is.na(comp$ref) & substr(comp$ref,nchar(comp$ref)-7,nchar(comp$ref))!="[MEMORY]", "ref"]
+  refs <- gsub("[^\\[]+\\[(.+)\\]","\\1",refs)
+  replaceVariablesWithValues(refs,
+      variables,
+      additional=additional
+  )
+}
+
 
 #' Determines the solution by it's file extension
 #'

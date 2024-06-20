@@ -1,3 +1,8 @@
+Version 0.6.8
+* get output filenames
+* automatic facets for layered data plots
+* methods to fetch SimComponent list and SimVariabes documentation from Website
+
 Version 0.6.7
 * fixed creation of solution stubs from data
 * updated documentation

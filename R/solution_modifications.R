@@ -17,6 +17,7 @@ getSolutionFromFile <- function(file) {
 #'
 #' @param sol solution object (xml_document)
 #' @param file filename for the solution
+#' @return nothing, function writes a file as a side effect
 #'
 #' @export
 writeSolutionToFile <- function(sol, file) {
