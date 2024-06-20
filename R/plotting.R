@@ -80,7 +80,7 @@ plotScalarOutput <- function (data, column_x, columns_y,
           ggplot2::ggplot(dt, ggplot2::aes(x=.data[[column_x]],
                                            y=.data$Value,colour=.data$Variable)) +
             ggplot2::geom_line() +
-            ggplot2::facet_wrap(~.data$simulationid)
+            ggplot2::facet_wrap(~.data$simulationid, nrow=nrow, ncol=ncol)
         }
       }
       else
@@ -127,7 +127,7 @@ plotLayeredOutput <- function(data, column, simulationid = NULL,
         ggplot2::ylab("Layer") +
         ggplot2::geom_raster() +
         ggplot2::scale_fill_gradient(low="#ddeeff",high="#000055") +
-        ggplot2::facet_wrap(~.data$simulationid,nrow=nrow, ncol=ncol)
+        ggplot2::facet_wrap(~.data$simulationid, nrow=nrow, ncol=ncol)
     }
 
   }
