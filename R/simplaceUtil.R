@@ -20,4 +20,4 @@
 #'   package = "simplaceUtil"))
 #' DiagrammeR::render_graph(graph)
 #' @name simplaceUtil
-NULL
+"_PACKAGE"

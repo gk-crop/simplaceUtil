@@ -16,6 +16,9 @@ versionDir <- function(version="current") {
   vs
 }
 
+
+
+
 #' Fetches the SimVariables table for a SimComponent from Simplace Website
 #'
 #' @param class class name of the SimComponent
@@ -39,6 +42,21 @@ fetchSimVariablesFromWebsite <- function(class, version="current") {
       names(res) <- c("contenttype", "id", "description", "datatype", "unit", "min", "max", "default")
       res$component <- class
       res$componentname <- sapply(strsplit(res$component,'\\.'), \(x) x[length(x)])
+
+      res$min <- ifelse(!(res$datatype %in% c("CHAR","CHARARRAY")),
+                            gsub("-","",trimws(res$min), fixed = TRUE),
+                            trimws(res$min))
+      res$max <- ifelse(!(res$datatype %in% c("CHAR","CHARARRAY")),
+                            gsub("-","",trimws(res$max), fixed = TRUE),
+                            trimws(res$max))
+      res$default <- ifelse(!(res$datatype %in% c("CHAR","CHARARRAY")),
+                            gsub("-","",trimws(res$default), fixed = TRUE),
+                            trimws(res$default))
+
+      res$default <- ifelse(res$datatype %in% c("INTARRAY","DOUBLEARRAY"),
+                            gsub(" ",",",res$default, fixed = TRUE),
+                            res$default)
+
       res
     }
     },

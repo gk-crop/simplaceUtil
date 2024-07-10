@@ -14,7 +14,7 @@ getOutputFilenames(comp, variables, additional = NULL)
 \item{additional}{additional variables as named vector c("var1"="value1", ...), useful for directory placeholder}
 }
 \value{
-character vector with the memory output ids
+named character vector with the filenames
 }
 \description{
 Get filenames of file outputs

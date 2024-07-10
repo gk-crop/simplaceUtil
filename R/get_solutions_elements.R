@@ -336,15 +336,19 @@ getMemoryOutputIds <- function(comp) {
 #' @param comp components dataframe
 #' @param variables variables dataframe
 #' @param additional additional variables as named vector c("var1"="value1", ...), useful for directory placeholder
-#' @return character vector with the memory output ids
+#' @return named character vector with the filenames
 #' @export
 getOutputFilenames <- function(comp,variables,additional=NULL) {
   refs <- comp[comp$type=="output" & !is.na(comp$ref) & substr(comp$ref,nchar(comp$ref)-7,nchar(comp$ref))!="[MEMORY]", "ref"]
+  ids <- comp[comp$type=="output" & !is.na(comp$ref) & substr(comp$ref,nchar(comp$ref)-7,nchar(comp$ref))!="[MEMORY]", "id"]
   refs <- gsub("[^\\[]+\\[(.+)\\]","\\1",refs)
-  replaceVariablesWithValues(refs,
+
+  refs <- replaceVariablesWithValues(refs,
       variables,
       additional=additional
   )
+  names(refs) <- ids
+  refs
 }
 
 

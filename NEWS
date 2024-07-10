@@ -1,3 +1,7 @@
+Version 0.6.9
+* output filenames vector named by output ids
+* enhance functions to return penalty values when parameters outside boundaries
+
 Version 0.6.8
 * get output filenames
 * automatic facets for layered data plots

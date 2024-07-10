@@ -1,7 +1,7 @@
 Package: simplaceUtil
 Title: Provides Utility Functions and ShinyApps to work with the modeling framework 'SIMPLACE'
-Version: 0.6.8
-Date: 2024-06-20
+Version: 0.6.9
+Date: 2024-07-10
 Authors@R: 
     person("Gunther", "Krauss", , "guntherkrauss@uni-bonn.de", role = c("aut", "cre"))
 Description: Provides Utility Functions and ShinyApps to work with the modeling framework 'SIMPLACE'. It visualises components of a solution, runs simulations and displays results.
