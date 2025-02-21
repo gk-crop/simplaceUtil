@@ -105,19 +105,21 @@ plotScalarOutput <- function (data, column_x, columns_y,
 #' @param datecol column name for date (default CURRENT.DATE)
 #' @param nrow number of panel rows when plotting multiple simulation ids
 #' @param ncol number of panels in a row when plotting multiple simulation ids
+#' @param sep character that separates layer number from variable name (default "_")
 #' @export
 #' @importFrom rlang .data
 plotLayeredOutput <- function(data, column, simulationid = NULL,
                               date_from=NULL, date_to=NULL,
                               datecol="CURRENT.DATE",
                               nrow=NULL,
-                              ncol=NULL)
+                              ncol=NULL,
+                              sep="-")
 {
 
   data <- subsetDataForPlot(data, simulationid, date_from, date_to, datecol)
   if(nrow(data)>0 && !is.null(column) && !is.na(column))
   {
-    dt <- transformLayeredData(data)
+    dt <- transformLayeredData(data, sep)
     if(nrow(dt)>0 && column %in% names(dt) && "layer" %in% names(dt))
     {
       ggplot2::ggplot(dt,

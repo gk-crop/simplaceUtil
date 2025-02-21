@@ -1,3 +1,8 @@
+Version 0.7.0
+* transformLayeredData can take now arbitrary separator
+* transformLayeredData now works on variable names that contain the separator multiple times
+
+
 Version 0.6.9
 * output filenames vector named by output ids
 * enhance functions to return penalty values when parameters outside boundaries

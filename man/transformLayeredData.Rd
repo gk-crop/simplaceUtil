@@ -4,10 +4,15 @@
 \alias{transformLayeredData}
 \title{Transform layered output data in long format}
 \usage{
-transformLayeredData(data)
+transformLayeredData(data, sep = "_")
 }
 \arguments{
 \item{data}{dataframe}
+
+\item{sep}{character that separates layer number from variable name (default "_")}
+}
+\value{
+dataframe in long format
 }
 \description{
 Transform layered output data in long format

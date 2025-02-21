@@ -1,16 +1,22 @@
 #' Transform layered output data in long format
 #'
 #' @param data dataframe
+#' @param sep character that separates layer number from variable name (default "_")
+#' @return dataframe in long format
 #' @export
-transformLayeredData <- function(data)
+transformLayeredData <- function(data, sep="_")
 {
-  if(any(grepl("[a-zA-Z]+_[0-9]+",names(data))))
+  if(sep %in% c(".","|","+","-","*","(",")","[","]")) {
+    sep = paste0("\\",sep)
+  }
+  pattern <- paste0("([a-zA-Z_0-9 .]+)",sep,"([0-9]+)")
+  if(sep!="" && any(grepl(pattern,names(data))))
   {
     tidyr::pivot_longer(
       data,
-      dplyr::matches("[a-zA-Z]+_[0-9]+"),
+      dplyr::matches(pattern),
       names_to = c(".value","layer"),
-      names_pattern ="([a-zA-Z_]+)_([0-9]+)$",
+      names_pattern =pattern,
       names_transform = list(layer=as.integer)
     )
   }

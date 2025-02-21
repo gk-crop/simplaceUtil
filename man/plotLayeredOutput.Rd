@@ -12,7 +12,8 @@ plotLayeredOutput(
   date_to = NULL,
   datecol = "CURRENT.DATE",
   nrow = NULL,
-  ncol = NULL
+  ncol = NULL,
+  sep = "-"
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ plotLayeredOutput(
 \item{nrow}{number of panel rows when plotting multiple simulation ids}
 
 \item{ncol}{number of panels in a row when plotting multiple simulation ids}
+
+\item{sep}{character that separates layer number from variable name (default "_")}
 }
 \description{
 Plots layered output

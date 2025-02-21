@@ -188,7 +188,7 @@ graph <- solutionToGraph(solfile)
 DiagrammeR::render_graph(graph)
 ```
 ```{r echo=FALSE, out.width="100%"}
-includeGraphic(graph,"graph")
+try(includeGraphic(graph,"graph"))
 ```
 
 We can restrict the graph to specific component types and the neighborhood of
@@ -202,7 +202,7 @@ subgraph <- getNeighborhood(graph, c("SlimWater","SlimRoots"),
 DiagrammeR::render_graph(subgraph)
 ```
 ```{r echo=FALSE, out.width="100%"}
-includeGraphic(subgraph,"subgraph")
+try(includeGraphic(subgraph,"subgraph"))
 ```
 
 
