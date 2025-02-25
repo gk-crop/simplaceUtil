@@ -6,10 +6,10 @@
 #' @export
 transformLayeredData <- function(data, sep="_")
 {
-  if(sep %in% c(".","|","+","-","*","(",")","[","]")) {
+  if(sep %in% c(".","|","+","-","*","(",")","[","]","$","^",",",":","?")) {
     sep = paste0("\\",sep)
   }
-  pattern <- paste0("([a-zA-Z_0-9 .]+)",sep,"([0-9]+)")
+  pattern <- paste0("(.+)",sep,"([0-9]+)$")
   if(sep!="" && any(grepl(pattern,names(data))))
   {
     tidyr::pivot_longer(
