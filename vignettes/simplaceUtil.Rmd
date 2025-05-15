@@ -365,6 +365,8 @@ plotLayeredOutput(water,"RetainedWater")
 
 # Simple GUI as Shiny App
 
+## Default App
+
 The package includes a Shiny App that runs locally within a webbrowser.
 
 ```{r eval=FALSE}
@@ -386,6 +388,57 @@ the solution and plot some of the output variables.
 fn <- system.file("img","shiny_plot.png",package="simplaceUtil")
 try(knitr::include_graphics(fn), silent=TRUE)
 ```
+
+## Custom App
+
+For running a specific solution / project by changing parameters interactively and get instantly custom plots,
+the user can create a custom shiny app by specifying
+
+- location of Simplace and it's work-/outputdir
+- a solution file and optionally a project file
+- a list of parameters (with default value, min, max or options)
+- a list of plot functions
+
+```{r eval=FALSE}
+simplacedirs <- within(list(),{
+  instdir <- simplace::findFirstSimplaceInstallation()
+  workdir <- paste0(instdir,"/simplace_run/simulation/")
+  outdir <- paste0(instdir,"/simplace_run/output/")
+}
+)
+
+solution <- paste0(simplacedirs$workdir,"/gk/solution/calibration/Yield.sol.xml")
+projects <- ""
+
+paramlist <- list(
+  vLUE = list(
+    label = "LUE",
+    value = 3.0,
+    min = 1.0,
+    max = 6.5
+  )
+  vCropName = list(
+    label = "Crop",
+    value = "winter wheat",
+    options = c("winter wheat", "spring wheat")
+  )
+
+)
+
+plotlist <- list(
+  "standard" = function(data,x="CURRENT.DATE",y="CURRENT.DATE",from,to) {
+    simplaceUtil::plotScalarOutput(data,x,y,date_from=from,date_to=to)
+  }
+)
+
+
+simplaceUtil::runSimplaceCustomGuiApp(
+  simplacedirs, solution, projects, 
+  paramlist, plotlist)
+
+```
+
+
 
 # Assistance for creating new Solutions (simulation configuration)
 

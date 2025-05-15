@@ -1,3 +1,7 @@
+Version 0.8.0
+* includes a simple shiny app customizable by the user to iteractively
+change parameters and get instant plots
+
 Version 0.7.0
 * transformLayeredData can take now arbitrary separator
 * transformLayeredData now works on variable names that contain the separator multiple times
