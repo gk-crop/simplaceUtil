@@ -1,3 +1,7 @@
+Version 0.8.1
+* improved shiny app
+* added table output to shiny app
+
 Version 0.8.0
 * includes a simple shiny app customizable by the user to iteractively
 change parameters and get instant plots

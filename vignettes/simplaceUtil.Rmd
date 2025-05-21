@@ -426,15 +426,18 @@ paramlist <- list(
 )
 
 plotlist <- list(
-  "standard" = function(data,x="CURRENT.DATE",y="CURRENT.DATE",from,to) {
-    simplaceUtil::plotScalarOutput(data,x,y,date_from=from,date_to=to)
+  "standard" = simplaceUtil::plotScalarOutput,
+  "boxplot" = function(data, x, y, simids, from, to) {
+      if(length(y)==1 && is.numeric(data[[y]])) {
+        boxplot(formula(paste(y,"~",x)),data=data)
+      }
   }
 )
 
 
 simplaceUtil::runSimplaceCustomGuiApp(
   simplacedirs, solution, projects, 
-  paramlist, plotlist)
+  plotlist=plotlist, paramlist = paramlist)
 
 ```
 

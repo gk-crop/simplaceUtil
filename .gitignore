@@ -15,3 +15,5 @@ Meta
 /doc/
 /Meta/
 temp
+/vignettes/*.html
+/vignettes/*.R

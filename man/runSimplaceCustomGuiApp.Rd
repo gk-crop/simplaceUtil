@@ -8,8 +8,10 @@ runSimplaceCustomGuiApp(
   simplacedirs,
   solution,
   project,
-  paramlist,
-  plotlist,
+  plotlist = list(Default = simplaceUtil::plotScalarOutput),
+  datalist = list(Default = identity),
+  paramlist = list(),
+  paramtransform = identity,
   ...
 )
 }
@@ -20,9 +22,13 @@ runSimplaceCustomGuiApp(
 
 \item{project}{filename of a project}
 
+\item{plotlist}{list of named functions that produce a plot}
+
+\item{datalist}{list of named functions that transform output dataframes}
+
 \item{paramlist}{list of named parameter elements}
 
-\item{plotlist}{list of named functions that produce a plot}
+\item{paramtransform}{function to transform the parameterlist}
 
 \item{...}{parameters passed to shiny::runApp}
 }
