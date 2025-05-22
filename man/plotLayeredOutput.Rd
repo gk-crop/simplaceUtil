@@ -13,7 +13,7 @@ plotLayeredOutput(
   datecol = "CURRENT.DATE",
   nrow = NULL,
   ncol = NULL,
-  sep = "-"
+  sep = "_"
 )
 }
 \arguments{
