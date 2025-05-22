@@ -18,6 +18,9 @@ tableOptions <- list(
   pageLength=25
 )
 
+elem <- getElementsFromSolutionFile(solutionlist)
+outids <- getMemoryOutputIds(elem$components)
+
 
 sp <- initSimplace(sd$instdir, sd$workdir, sd$outdir, javaparameters=sd$options)
 
@@ -25,34 +28,51 @@ sp <- initSimplace(sd$instdir, sd$workdir, sd$outdir, javaparameters=sd$options)
 openProject(sp, solutionlist, projectlist)
 
 
-#mylist <- c("a","b","c")
 
 ui <- fluidPage(
+
   titlePanel("Simplace R GUI"),
+
   sidebarLayout(
+
     sidebarPanel(
-      textOutput("test"),
+      h4("Input parameters"),
       uiOutput("inputs"),
+      h4("Output Settings"),
       checkboxInput("queue","Keep results from previous simulations", value=FALSE),
       uiOutput("outselect"),
+      div(
+        textOutput("status"),
+        style="font-size:60%"
+      ),
       width=3
-
-
     ),
+
     mainPanel(
+
       tabsetPanel(
         tabPanel("Graphs",
           uiOutput("variables"),
           uiOutput("plots")
         ),
-        tabPanel("Data",
+        tabPanel("Output Data",
           uiOutput("outdata")
         ),
         tabPanel("Run Parameters",
           dataTableOutput("outruns"),
           downloadButton("dl_outruns","Save Run Parameters")
+        ),
+        tabPanel("Info",
+          p(paste("Simplace InstallDir:", sd$instdir)),
+          p(paste("Simplace WorkDir:", sd$workdir)),
+          p(paste("Simplace OutputDir:", sd$outdir)),
+          p("Solution:"),
+          pre(simplaceUtil::getTextFromSolution(elem$sol)),
+          p("Project:"),
+          pre(projectlist)
         )
       )
+
     )
   )
 )
@@ -65,7 +85,7 @@ ui <- fluidPage(
 # Define server logic
 server <- function(input, output) {
 
-
+  # global reactive variables
 
   v <- reactiveValues()
   v$simulated <- FALSE
@@ -78,13 +98,13 @@ server <- function(input, output) {
 
   v$runs <- NULL
 
-  elem <- getElementsFromSolutionFile(solutionlist)
-  outids <- getMemoryOutputIds(elem$components)
+
   v$elem <- elem
   v$outids <- outids
   v$outid <- outids[1]
 
 
+  # running simulation and getting data
 
   param <- reactive({
     l <- list()
@@ -98,7 +118,7 @@ server <- function(input, output) {
     if(length(v$outids)>0) {
       par <- paramtransform(param())
 
-      output$test <- renderText("running simulation")
+      output$status <- renderText("running simulation")
       if(!input$queue) {
         resetSimulationQueue(sp)
       }
@@ -113,17 +133,17 @@ server <- function(input, output) {
       }
 
       v$simulated <- TRUE
-      output$test <- renderText("simulation finished")
+      output$status <- renderText(paste("finished",simid))
       if(!input$queue) {
         resetSimulationQueue(sp)
         if(!is.null(isolate(v$runs))) {
-          isolate(v$runs$hasdata <-FALSE)
+          isolate(v$runs$OutputKept <-FALSE)
         }
       }
       if(length(par)>0) {
         run <- as.data.frame(par)
         run$simulationid <- simid
-        run$hasdata <- TRUE
+        run$OutputKept <- TRUE
         v$runs <- rbind(isolate(v$runs),run)
       }
 
@@ -139,13 +159,17 @@ server <- function(input, output) {
     alldata()[[v$outid]]
   })
 
-  # inputs
+
+  # create dynamic input elements
+
+  # render parameters
   il<-list()
   for(i in seq_along(paramlist))  {
     id <- names(paramlist)[i]
     par <- paramlist[[i]]
     if(length(par$options)>0) {
-      ip <- selectInput(id, label=par$label, choices = par$options, multiple=FALSE)
+      ip <- selectInput(id, label=par$label, choices = par$options, multiple=FALSE,
+                        selected=par$value)
     }
     else if(!is.null(par$min) && !is.null(par$max) && par$min < par$max) {
       ip <- sliderInput(id, label=par$label,
@@ -160,10 +184,8 @@ server <- function(input, output) {
   }
   output$inputs <- renderUI({do.call(tagList,il)})
 
-
-  output$outselect <-  renderUI(
-
-    {
+  # render outputs
+  output$outselect <-  renderUI({
       ch_m <-v$outids
       names(ch_m)<-ch_m
       if(length(ch_m)>0) {
@@ -172,6 +194,7 @@ server <- function(input, output) {
     }
   )
 
+  # render output variables
   output$variables <- renderUI({
     ch <- names(data())
     dmin <- min(data()$CURRENT.DATE)
@@ -189,7 +212,9 @@ server <- function(input, output) {
     )}
   )
 
-  # plots
+  # create output elements
+
+  # render plots
   tl <- list()
   for(i in seq_along(plotlist)) {
     n <- names(plotlist)[[i]]
@@ -210,7 +235,7 @@ server <- function(input, output) {
   }
 
 
-  # tables
+  # render output tables
   tlt <- list()
   for(i in seq_along(datalist)) {
     n <- names(datalist)[[i]]
@@ -238,6 +263,10 @@ server <- function(input, output) {
     })
   }
 
+
+  #render run tables
+  output$outruns <- renderDataTable(v$runs)
+
   output[["dl_outruns"]]<-downloadHandler(
     filename = function() {
       paste("RunParameters","_", format(Sys.time(),format="%Y%m%d_%H%M%S"), ".csv", sep="")
@@ -248,8 +277,7 @@ server <- function(input, output) {
   )
 
 
-  output$outruns <- renderDataTable(v$runs)
-
+  # events that modify global state
   observeEvent(input$xvariable,
                {v$xvalues<-input$xvariable;},
                ignoreInit=TRUE)
@@ -267,7 +295,7 @@ server <- function(input, output) {
                ignoreInit=TRUE)
   observeEvent(input$queue,
                {if(!is.null(isolate(v$runs))) {
-                 isolate(v$runs$hasdata <-FALSE)
+                 isolate(v$runs$OutputKept <-FALSE)
                }})
 
 
