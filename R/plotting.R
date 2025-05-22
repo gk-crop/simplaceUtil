@@ -113,7 +113,7 @@ plotLayeredOutput <- function(data, column, simulationid = NULL,
                               datecol="CURRENT.DATE",
                               nrow=NULL,
                               ncol=NULL,
-                              sep="-")
+                              sep="_")
 {
 
   data <- subsetDataForPlot(data, simulationid, date_from, date_to, datecol)

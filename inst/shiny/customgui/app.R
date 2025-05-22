@@ -129,7 +129,7 @@ server <- function(input, output) {
       df <- list()
       for(outid in v$outids) {
         res <- getResult(sp, outid)
-        df[[outid]] <- resultToDataframe(res)
+        df[[outid]] <- resultToDataframe(res, expand=TRUE)
       }
 
       v$simulated <- TRUE
