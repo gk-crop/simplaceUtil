@@ -34,8 +34,8 @@ runSimplaceCustomGuiApp <- function(simplacedirs, solution, project,
                                     ...)
 {
   shiny::shinyOptions(simplacedirs = simplacedirs)
-  shiny::shinyOptions(solutions = solution)
-  shiny::shinyOptions(projects = project)
+  shiny::shinyOptions(solution = solution)
+  shiny::shinyOptions(project = project)
   shiny::shinyOptions(plotlist = plotlist)
   shiny::shinyOptions(datalist = datalist)
   shiny::shinyOptions(paramlist = paramlist)

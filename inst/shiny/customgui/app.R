@@ -5,8 +5,8 @@ library(DT)
 library(simplace)
 
 sd <- getShinyOption("simplacedirs")
-solutionlist <- getShinyOption("solutions")
-projectlist <- getShinyOption("projects")
+solution <- getShinyOption("solution")
+project <- getShinyOption("project")
 paramlist <- getShinyOption("paramlist")
 paramtransform <- getShinyOption("paramtransform")
 plotlist <- getShinyOption("plotlist")
@@ -18,14 +18,20 @@ tableOptions <- list(
   pageLength=25
 )
 
-elem <- getElementsFromSolutionFile(solutionlist)
+elem <- getElementsFromSolutionFile(solution)
 outids <- getMemoryOutputIds(elem$components)
 
 
 sp <- initSimplace(sd$instdir, sd$workdir, sd$outdir, javaparameters=sd$options)
 
 
-openProject(sp, solutionlist, projectlist)
+isProject = nchar(project) > 0
+
+if(!isProject) {
+  openProject(sp, solution, project)
+}
+
+projectcount <- 0
 
 
 
@@ -39,7 +45,7 @@ ui <- fluidPage(
       h4("Input parameters"),
       uiOutput("inputs"),
       h4("Output Settings"),
-      checkboxInput("queue","Keep results from previous simulations", value=FALSE),
+      uiOutput("queuecheck"),
       uiOutput("outselect"),
       div(
         textOutput("status"),
@@ -69,7 +75,7 @@ ui <- fluidPage(
           p("Solution:"),
           pre(simplaceUtil::getTextFromSolution(elem$sol)),
           p("Project:"),
-          pre(projectlist)
+          pre(project)
         )
       )
 
@@ -119,13 +125,23 @@ server <- function(input, output) {
       par <- paramtransform(param())
 
       output$status <- renderText("running simulation")
-      if(!input$queue) {
+      if(!isProject && !input$queue) {
         resetSimulationQueue(sp)
       }
 
+      simid <- ""
+      if(isProject) {
+        openProject(sp,solution, project, par)
+        projectcount <<- projectcount + 1
+        simid <- projectcount
+        runProject(sp)
+        closeProject(sp)
+      }
+      else {
+        simid = createSimulation(sp,par,queue = input$queue)
+        runSimulations(sp)
+      }
 
-      simid = createSimulation(sp,par,queue = input$queue)
-      runSimulations(sp)
       df <- list()
       for(outid in v$outids) {
         res <- getResult(sp, outid)
@@ -133,22 +149,28 @@ server <- function(input, output) {
       }
 
       v$simulated <- TRUE
-      output$status <- renderText(paste("finished",simid))
-      if(!input$queue) {
+      tp <- ifelse(isProject,"proj","sim")
+      output$status <- renderText(paste("finished",tp,simid))
+      if(!isProject && !input$queue) {
         resetSimulationQueue(sp)
+        if(!is.null(isolate(v$runs))) {
+          isolate(v$runs$OutputKept <-FALSE)
+        }
+      }
+      else {
         if(!is.null(isolate(v$runs))) {
           isolate(v$runs$OutputKept <-FALSE)
         }
       }
       if(length(par)>0) {
         run <- as.data.frame(par)
-        run$simulationid <- simid
+        run$simulationid <- ifelse(isProject,projectcount,simid)
         run$OutputKept <- TRUE
         v$runs <- rbind(isolate(v$runs),run)
       }
 
 
-      print(paste("ran sim",unique(df[[1]]$simulationid)))
+      print(paste("ran sim",simid))
       df
     }
 
@@ -211,6 +233,14 @@ server <- function(input, output) {
       )
     )}
   )
+
+  if(!isProject) {
+    output$queuecheck <- renderUI(
+      checkboxInput("queue","Keep results from previous simulations", value=FALSE)
+      )
+  }
+
+
 
   # create output elements
 
@@ -293,10 +323,14 @@ server <- function(input, output) {
   observeEvent(input$outid,
                {v$outid<-input$outid;},
                ignoreInit=TRUE)
-  observeEvent(input$queue,
-               {if(!is.null(isolate(v$runs))) {
-                 isolate(v$runs$OutputKept <-FALSE)
-               }})
+
+  if(!isProject) {
+    observeEvent(input$queue,
+                 {if(!is.null(isolate(v$runs))) {
+                   isolate(v$runs$OutputKept <-FALSE)
+                 }})
+
+  }
 
 
 }

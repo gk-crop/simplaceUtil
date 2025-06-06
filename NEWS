@@ -1,3 +1,6 @@
+Version 0.8.2
+* custom app now runs projects too
+
 Version 0.8.1
 * improved shiny app
 * added table output to shiny app
