@@ -1,3 +1,6 @@
+Version 0.8.3
+* added select input for simulation ids
+
 Version 0.8.2
 * custom app now runs projects too
 
@@ -12,7 +15,6 @@ change parameters and get instant plots
 Version 0.7.0
 * transformLayeredData can take now arbitrary separator
 * transformLayeredData now works on variable names that contain the separator multiple times
-
 
 Version 0.6.9
 * output filenames vector named by output ids

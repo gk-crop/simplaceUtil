@@ -37,7 +37,7 @@ projectcount <- 0
 
 ui <- fluidPage(
 
-  titlePanel("Simplace R GUI"),
+  titlePanel("Simplace R User Defined GUI"),
 
   sidebarLayout(
 
@@ -45,7 +45,9 @@ ui <- fluidPage(
       h4("Input parameters"),
       uiOutput("inputs"),
       h4("Output Settings"),
-      uiOutput("queuecheck"),
+      if(!isProject) {
+          checkboxInput("queue","Keep results from previous simulations", value=FALSE)
+      },
       uiOutput("outselect"),
       div(
         textOutput("status"),
@@ -102,6 +104,8 @@ server <- function(input, output) {
   v$start <- NULL
   v$end <- NULL
 
+  v$simids <- "All"
+
   v$runs <- NULL
 
 
@@ -156,11 +160,20 @@ server <- function(input, output) {
         if(!is.null(isolate(v$runs))) {
           isolate(v$runs$OutputKept <-FALSE)
         }
+        isolate(v$simids <- "All")
       }
-      else {
+      else if(isProject) {
         if(!is.null(isolate(v$runs))) {
           isolate(v$runs$OutputKept <-FALSE)
         }
+      }
+      else if(input$queue) {
+        isolate({
+          if(!(length(v$simids)==1 && v$simids[1]=='All')) {
+            v$simids <- c(v$simids, simid)
+          }
+
+        })
       }
       if(length(par)>0) {
         run <- as.data.frame(par)
@@ -219,6 +232,7 @@ server <- function(input, output) {
   # render output variables
   output$variables <- renderUI({
     ch <- names(data())
+    simids <- c("All",sort(unique(data()$simulationid)))
     dmin <- min(data()$CURRENT.DATE)
     dmax <- max(data()$CURRENT.DATE)
     if(is.null(v$start)) {v$start <- dmin}
@@ -226,19 +240,21 @@ server <- function(input, output) {
 
     tagList(
       fluidRow(
-        column(3,selectInput("xvariable","x-Values",choices = ch,selected=v$xvalues)),
-        column(3,selectInput("yvariable","y-Values",choices = ch,selected=v$yvalues,multiple=TRUE)),
-        column(3,dateInput("start","Start",value=v$start,min=dmin-730,max=dmax)),
-        column(3,dateInput("end","End", value=v$end,min=dmin,max=dmax+730))
+        div( style="font-size:75%",
+        column(2,selectInput("xvariable","x-Values",choices = ch,selected=v$xvalues)),
+        column(2,selectInput("yvariable","y-Values",choices = ch,selected=v$yvalues,multiple=TRUE)),
+        column(3,dateRangeInput('daterange',
+                                label = 'Date range to plot',
+                                min = dmin-730, max=dmax+730,
+                                start = v$start, end = v$end)),
+        column(5,selectInput("simids","Simulations",choices = simids, selected=v$simids,multiple=TRUE)),
+        )
+
       )
     )}
   )
 
-  if(!isProject) {
-    output$queuecheck <- renderUI(
-      checkboxInput("queue","Keep results from previous simulations", value=FALSE)
-      )
-  }
+
 
 
 
@@ -258,9 +274,17 @@ server <- function(input, output) {
     local({
       n <- names(plotlist)[[i]]
       id = paste0("plot_",n)
-      output[[id]] <- renderPlot({plotlist[[n]](data(),input$xvariable, input$yvariable,
-                                                NULL,
-                                                input$start, input$end)})
+      simlist <- NULL
+
+
+      output[[id]] <- renderPlot({
+        simids <- NULL
+        if(any(input$simids !="All")) {
+          simids <- setdiff(input$simids,"All")
+        }
+        plotlist[[n]](data(),input$xvariable, input$yvariable,
+                      simids,
+                      input$daterange[1], input$daterange[2])})
     })
   }
 
@@ -284,7 +308,7 @@ server <- function(input, output) {
       output[[id]] <- renderDataTable(datalist[[n]](data()),options=tableOptions)
       output[[paste0("dl_",id)]]<-downloadHandler(
         filename = function() {
-          paste(input$outid,"_",id,"_", format(Sys.time(),format="%Y%m%d_%H%M%S"), ".csv", sep="")
+          paste(input$outid,"_",gsub(" ","-",id),"_", ifelse(isProject,paste0(projectcount,"_"),""), format(Sys.time(),format="%Y%m%d_%H%M%S"), ".csv", sep="")
         },
         content = function(file) {
           write.csv(data(), file)
@@ -314,11 +338,19 @@ server <- function(input, output) {
   observeEvent(input$yvariable,
                {v$yvalues<-input$yvariable;},
                ignoreInit=TRUE)
-  observeEvent(input$start,
-               {v$start<-input$start;},
+  observeEvent(input$daterange,
+               {v$start<-input$daterange[1];
+                v$end<-input$daterange[2]},
                ignoreInit=TRUE)
-  observeEvent(input$end,
-               {v$end<-input$end;},
+  observeEvent(input$simids,{
+                 slen <- length(input$simids)
+                 if(slen > 1 && input$simids[slen]=="All") {
+                   v$simids <- "All"
+                 }
+                 else if(slen > 1) {
+                   v$simids <- setdiff(input$simids, "All")
+                 }
+               },
                ignoreInit=TRUE)
   observeEvent(input$outid,
                {v$outid<-input$outid;},
