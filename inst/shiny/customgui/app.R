@@ -24,11 +24,16 @@ outids <- getMemoryOutputIds(elem$components)
 
 sp <- initSimplace(sd$instdir, sd$workdir, sd$outdir, javaparameters=sd$options)
 
+isProject = FALSE
+if(!is.null(project)) {
+  if(nchar(project)>0) {
+    isProject = TRUE
+  }
+}
 
-isProject = nchar(project) > 0
 
 if(!isProject) {
-  openProject(sp, solution, project)
+  openProject(sp, solution)
 }
 
 projectcount <- 0

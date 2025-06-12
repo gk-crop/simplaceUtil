@@ -45,6 +45,25 @@ elements$variables
 elements$links
 ```
 
+## Modify solution
+
+A solution can be modified on the fly, e.g. for making it suitable for calibration
+by replacing parameters from crop files to user defined variables and adding memory 
+outputs for target variables.
+
+```
+sol <- getSolutionFromFile(solfile)
+newsol <- sol |>
+  removeNonMemoryOutputs() |>
+  addMemoryOutput("Yields",frequence = "YEARLY") |>
+  addOutputVariable("Yields","Year","CURRENT.YEAR","INT") |>
+  addOutputVariable("Yields", "Yield","LintulBiomass.sWSO","DOUBLE","MAX") |>
+  addUserVariable("vLUE",3.0,"DOUBLE") |>
+  addUserVariable("vSLA",0.02,"DOUBLE") |>
+  replaceVariable("crop.LUE","vLUE") |>
+  replaceVariable("crop.SLA","vSLA") 
+```
+
 ## Plot variables from  CSV output
 
 

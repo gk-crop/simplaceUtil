@@ -7,7 +7,7 @@
 runSimplaceCustomGuiApp(
   simplacedirs,
   solution,
-  project,
+  project = NULL,
   plotlist = list(Default = simplaceUtil::plotScalarOutput),
   datalist = list(Default = identity),
   paramlist = list(),
@@ -26,7 +26,7 @@ runSimplaceCustomGuiApp(
 
 \item{datalist}{list of named functions that transform output dataframes}
 
-\item{paramlist}{list of named parameter elements}
+\item{paramlist}{list of named parameter elements that will be used for input sliders / option lists}
 
 \item{paramtransform}{function to transform the parameterlist}
 
@@ -39,4 +39,74 @@ does not return a value, called for the side effect of running the shiny app
 User can create automatically a simple GUI for a specific solution/project
 by specifying solution, project, list of parameters that could be interatively
 changed as well a list of custom plot functions.
+}
+\details{
+\itemize{
+\item \code{plotlist} takes a named list of functions of the form
+\code{f(data, xvalue, yvalues, simulationids, from, to)} and creates a plot
+\itemize{
+\item \code{data} is a data.frame
+\item \code{xvalue} is a string with the column name for x
+\item \code{yvalues} is a vector of strings with the column names for y
+\item \code{simulationids} can be NULL or a vector of strings with simulation ids
+\item \code{from} and \code{to} are dates for subsetting the data that will be plotted
+}
+\item \code{datalist} takes a named list of functions of the form \code{f(data)} and return
+the modified data.frame
+\item \code{paramlist} is a named list of parameters where the name of each element has to
+match a \code{var} in the solution (unless the list will be transformed). Each parameter is a list with the elements
+\itemize{
+\item \code{label}
+\item \code{value}
+\item \code{min} and \code{max} or \code{options} (vector of possible values)
+}
+\item \code{paramtransform} is a function that transforms the input parameters to hand
+them over to Simplace
+}
+}
+\examples{
+\dontrun{
+instdir <- simplace::findFirstSimplaceInstallation()
+simplacedirs <- list(
+  instdir = instdir,
+  workdir = paste0(instdir,"/simplace_run/simulation/"),
+  outdir = paste0(instdir,"/simplace_run/output/")
+)
+
+solution <- paste0(simplacedirs$workdir,"/gk/solution/calibration/Yield.sol.xml")
+
+paramlist <- list(
+ vLUE = list(
+   label = "Light Use efficiency",
+   value = 3.0,
+   min = 1.0,
+   max = 6.5
+ )
+)
+
+plotlist <- list(
+  "Default" = simplaceUtil::plotScalarOutput,
+  "Boxplots" = function(data,x,y,sim,from,to) {
+    if(length(y)==1 && is.numeric(data[[y]])) {
+      boxplot(formula(paste(y,"~simulationid")),data)
+    }
+  }
+)
+
+datalist <- list(
+  "Aggregated Yield"=function(data) {
+    dplyr::group_by(data, simulationid) |>
+    dplyr::summarise(minY=min(Yield),maxY=max(Yield))},
+  "Raw Data"=identity
+)
+
+simplaceUtil::runSimplaceCustomGuiApp(
+  simplacedirs, sol,
+  plotlist = plotlist,
+  datalist = datalist,
+  paramlist = paramlist
+)
+
+}
+
 }

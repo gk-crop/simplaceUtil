@@ -1,3 +1,7 @@
+Version 0.8.4
+* changed signature of SimplaceCustomGuiApp function
+* updated documentation
+
 Version 0.8.3
 * added select input for simulation ids
 

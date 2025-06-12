@@ -396,48 +396,53 @@ the user can create a custom shiny app by specifying
 
 - location of Simplace and it's work-/outputdir
 - a solution file and optionally a project file
-- a list of parameters (with default value, min, max or options)
 - a list of plot functions
+- a list of data transformation functions
+- a list of parameters (with default value, min, max or options)
+
 
 ```{r eval=FALSE}
-simplacedirs <- within(list(),{
-  instdir <- simplace::findFirstSimplaceInstallation()
-  workdir <- paste0(instdir,"/simplace_run/simulation/")
-  outdir <- paste0(instdir,"/simplace_run/output/")
-}
+instdir <- simplace::findFirstSimplaceInstallation()
+simplacedirs <- list(
+  instdir = instdir,
+  workdir = paste0(instdir,"/simplace_run/simulation/"),
+  outdir = paste0(instdir,"/simplace_run/output/")
 )
 
 solution <- paste0(simplacedirs$workdir,"/gk/solution/calibration/Yield.sol.xml")
-projects <- ""
 
 paramlist <- list(
-  vLUE = list(
-    label = "LUE",
-    value = 3.0,
-    min = 1.0,
-    max = 6.5
-  )
-  vCropName = list(
-    label = "Crop",
-    value = "winter wheat",
-    options = c("winter wheat", "spring wheat")
-  )
-
+ vLUE = list(
+   label = "Light Use efficiency",
+   value = 3.0,
+   min = 1.0,
+   max = 6.5
+ )
 )
 
 plotlist <- list(
-  "standard" = simplaceUtil::plotScalarOutput,
-  "boxplot" = function(data, x, y, simids, from, to) {
-      if(length(y)==1 && is.numeric(data[[y]])) {
-        boxplot(formula(paste(y,"~",x)),data=data)
-      }
+  "Default" = simplaceUtil::plotScalarOutput,
+  "Boxplots" = function(data,x,y,sim,from,to) {
+    if(length(y)==1 && is.numeric(data[[y]])) {
+      boxplot(formula(paste(y,"~simulationid")),data)
+    }
   }
 )
 
+datalist <- list(
+  "Aggregated Yield"=function(data){
+    dplyr::group_by(data, simulationid) |>
+    dplyr::summarise(minY=min(Yield),maxY=max(Yield))
+    },
+  "Raw Data"=identity
+)
 
 simplaceUtil::runSimplaceCustomGuiApp(
-  simplacedirs, solution, projects, 
-  plotlist=plotlist, paramlist = paramlist)
+  simplacedirs, sol,
+  plotlist = plotlist,
+  datalist = datalist,
+  paramlist = paramlist
+)
 
 ```
 
