@@ -1,3 +1,6 @@
+Version 0.8.5
+* added format parameter for creating output variables
+
 Version 0.8.4
 * changed signature of SimplaceCustomGuiApp function
 * updated documentation

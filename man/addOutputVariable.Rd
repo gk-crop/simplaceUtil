@@ -12,7 +12,8 @@ addOutputVariable(
   datatype,
   mode = NULL,
   unit = NULL,
-  description = NULL
+  description = NULL,
+  format = NULL
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ addOutputVariable(
 \item{unit}{unit of the variable (optional)}
 
 \item{description}{short description (optional)}
+
+\item{format}{format string (optional)}
 }
 \value{
 modified solution object

@@ -268,11 +268,12 @@ changeAllOutputTypesToMemory <- function(sol) {
 #' @param mode one of FIRST, LAST, AVG, SUM (optional)
 #' @param unit unit of the variable (optional)
 #' @param description short description (optional)
+#' @param format format string (optional)
 #' @return modified solution object
 #'
 #' @export
 addOutputVariable <- function(sol, outputid, id, rule, datatype, mode=NULL,
-                              unit=NULL, description=NULL) {
+                              unit=NULL, description=NULL, format=NULL) {
 
   x <- xml2::read_xml(as.character(sol))
   x <- removeOutputVariable(x, outputid, id)
@@ -289,6 +290,10 @@ addOutputVariable <- function(sol, outputid, id, rule, datatype, mode=NULL,
   if(!is.null(description)) {
     xml2::xml_attr(md,"description") <- description
   }
+  if(!is.null(format)) {
+    xml2::xml_attr(md,"format") <- format
+  }
+
 
   desc <- xml2::xml_find_first(x,"/solution/description")
   xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added output variable",id," to output ",outputid,"")
