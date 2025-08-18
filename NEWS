@@ -1,3 +1,6 @@
+Version 0.8.6
+* small fix - deal with malformed rule variables in output
+
 Version 0.8.5
 * added format parameter for creating output variables
 

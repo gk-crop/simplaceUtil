@@ -42,7 +42,9 @@ getVars <- function(s, ruleonly=FALSE)
     v<-markVariables(m)
     df<-data.frame(from=v[1],name=v[2],stringsAsFactors=FALSE)
   }
-  colnames(df)<-c("from","name")
+  if(ncol(df)==2) {
+    colnames(df)<-c("from","name")
+  }
   df
 }
 
