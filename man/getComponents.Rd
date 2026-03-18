@@ -4,10 +4,12 @@
 \alias{getComponents}
 \title{Gets components for a solution}
 \usage{
-getComponents(x)
+getComponents(x, description = TRUE)
 }
 \arguments{
 \item{x}{xml object (solution)}
+
+\item{description}{if TRUE, title attribute and text from description tag are included}
 }
 \value{
 data.frame with the solution components (resources, sim components, outputs)

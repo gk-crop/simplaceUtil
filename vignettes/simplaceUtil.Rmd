@@ -322,6 +322,43 @@ cmp[cmp$type=="simcomponent" | grepl("timing",cmp$id),c("id","type","subtype","n
 The new solution has now an additional SimComponent *AutomaticTiming* as well as
 an additional output together with it's interface.
 
+# Modifying XML parameter files
+
+When calibrating parameters, it is useful to access and modify the parameter files:
+
+- read values from parameter files before calibration to use them as starting points for calibration
+- replace the original values with calibrated parameters and save them to a (new) parameterfile
+- modify the solution to use the new parameterfile with the calibrated values
+
+We fetch and modify parameters. For interpolation tables, normally a
+scale factor is calibrated. To update the y values, one has to multiply them with the calibrated scale factor.
+
+```{r}
+params <- readXMLParameterFile(system.file("input", "crop.xml", package="simplaceUtil"))
+TSUM1_default <- getXMLParameter(params, c(CROPNAME="soy bean"), "TSUM1")
+
+TSUM1_calib <- 370
+ScaleFactorRUE <- 1.1
+params_new <- params |>
+  setXMLParameter(c(CROPNAME="soy bean"), "TSUM1", TSUM1_calib) |>
+  scaleXMLParameter(c(CROPNAME="soy bean"), "RUETableRUE", ScaleFactorRUE)
+getXMLParameter(params, c(CROPNAME="soy bean"), "RUETableRUE")
+getXMLParameter(params_new, c(CROPNAME="soy bean"), "RUETableRUE")
+```
+
+Finally the modified paramter sets are written to a new file and
+the solution is modified to use the new parameter file.
+
+```{r eval=FALSE}
+newfile <- paste0(tempdir(),"/crop_calib.xml")
+writeXMLParameterFile(params_new, newfile)
+sol <- getSolutionFromFile(system.file("solution", "Yield.sol.xml", package="simplaceUtil"))
+newsol <- sol |>
+  changeInterfaceFile("cropdata", newfile)
+getTextFromSolution(newsol) |> cat()
+```
+
+
 # Standard transformation and visualisation of outputs
 
 

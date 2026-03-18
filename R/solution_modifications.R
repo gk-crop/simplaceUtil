@@ -679,3 +679,30 @@ addTimingSimComponent <- function(sol, filename=NULL, componentlist = NULL,
 
   x
 }
+
+#' Changes all non-MEMORY outputs from solution to MEMORY outputs.
+#'
+#' When running large amout of runs (e.g. calibration) it's recommended to avoid
+#' to write outputs on disk.
+#'
+#' @param sol solution object
+#' @param id id of interface
+#' @param filename new filename
+#' @param keeppath if set to true,  original path is kept and only filename is modified
+#'
+#' @return modified solution object
+#'
+#' @export
+changeInterfaceFile <- function(sol, id, filename, keeppath=FALSE) {
+  x <- xml2::read_xml(as.character(sol))
+  fn <- xml2::xml_find_first(x, paste0('/solution/interfaces/interface[@id="',id,'"]/filename'))
+  oldfile <- xml2::xml_text(fn)
+  if(keeppath) {
+    filename <- paste0(dirname(oldfile),"/", basename(filename))
+  }
+  xml2::xml_text(fn) <- filename
+  desc <- xml2::xml_find_first(x,"/solution/description")
+  xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* changed interface file from ",oldfile,"to",filename)
+  x
+}
+

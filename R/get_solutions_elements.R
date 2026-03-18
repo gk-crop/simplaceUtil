@@ -61,11 +61,16 @@ getUserVariables <- function(x)
   id <- c(xml2::xml_attr(var,'id'),xml2::xml_attr(dyn,'id'))
   value <- c(xml2::xml_text(var),
             xml2::xml_text(dyn))
+  rule <- c(xml2::xml_attr(var,'rule'),
+            xml2::xml_attr(dyn,'rule'))
   unit <-c(xml2::xml_attr(var,'unit'),
             xml2::xml_attr(dyn,'unit'))
   datatype <- c(xml2::xml_attr(var,'datatype'),
           xml2::xml_attr(dyn,'datatype'))
-  data.frame(id,value, unit, datatype, kind)
+  description <- c(xml2::xml_attr(var,'description'),
+                xml2::xml_attr(dyn,'description'))
+  unit <- ifelse(is.na(unitsymbols[unit]),unit, unitsymbols[unit])
+  data.frame(id,value, unit, rule, datatype, kind, description)
 }
 
 #' Replaces variables with content
@@ -85,9 +90,10 @@ replaceVariablesWithValues <- function(text, variables, additional=NULL)
 #' Gets components for a solution
 #'
 #' @param x xml object (solution)
+#' @param description if TRUE, title attribute and text from description tag are included
 #' @return data.frame with the solution components (resources, sim components, outputs)
 #' @export
-getComponents <- function(x)
+getComponents <- function(x, description = TRUE)
 {
   df <- NULL
 
@@ -157,6 +163,13 @@ getComponents <- function(x)
   df$type <- as.character(df$type)
   df$subtype <- as.character(df$subtype)
   df$ref <- as.character(df$ref)
+
+  if(description && nrow(df)>0) {
+    df$title <- trimws(sapply(df$id, \(id) xml2::xml_attr(xml2::xml_find_first(x, paste0("//solution/*/*[@id='",id,"']/description")),"title")))
+    df$description <- trimws(sapply(df$id, \(id) xml2::xml_text(xml2::xml_find_first(x, paste0("//solution/*/*[@id='",id,"']/description")))) )
+  }
+
+  df
   rownames(df) <- NULL
   df
 }
@@ -399,3 +412,35 @@ getSolutionInfoAsDataframe <- function (file, workdir)
   comp$subsubsubproject <- md$folders[5]
   comp
 }
+
+
+#' Get variables for a specific resource or transformer
+#'
+#' @param x xml object (solution)
+#' @param id id of the resource or transformer
+#' @param compactkey if TRUE, then id and key column are merged
+#'
+#' @returns a datatframe with all the variables of a resource
+#' @export
+#'
+getResourceVariables <- function(x, id, compactkey = FALSE) {
+  vars <- xml2::xml_attrs(xml2::xml_find_all(x, paste0("//resource[@id='",id,"']/header/res","|","//transform[@id='",id,"']/header/res")))
+  alldf <- NULL
+  for(v in vars) {
+    alldf <- rbind(alldf, data.frame(id=v['id'], datatype=v['datatype'],
+                                     unit=ifelse(!is.na(unitsymbols[v['unit']]),unitsymbols[v['unit']],v['unit']),
+                                     key=v['key']))
+  }
+  row.names(alldf) <- NULL
+  if(compactkey) {
+    alldf[["id [key]"]] <- ifelse(
+      !is.na(alldf$key) & alldf$key!="",
+      paste0(alldf$id," [=",alldf$key,"]"),
+      alldf$id)
+    alldf <- alldf[,c("id [key]", "unit", "datatype")]
+  }
+  alldf
+}
+
+
+

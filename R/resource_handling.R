@@ -186,3 +186,199 @@ createResourceStubsFromXml <- function(filename, id,
   res <- paste0(res,"\n",'  </header>',"\n",'</resource>')
   list(interface = intf, resource = res)
 }
+
+
+#' Read XML parameter file
+#'
+#' @param file filename of parameterfile
+#'
+#' @returns parameterdata (XML2 object)
+#' @export
+readXMLParameterFile <- function(file) {
+  xml2::read_xml(file)
+}
+
+#' Write parameterdata to xml file
+#'
+#' @param paramdata parameterdata (xml2 object)
+#' @param file filename of parameterfile
+#'
+#' @returns just for side effects, returs paramdata invisibly
+#' @export
+#'
+writeXMLParameterFile <- function(paramdata, file) {
+  xml2::write_xml(paramdata, file)
+  invisible(paramdata)
+}
+
+
+#' Get IDs of all parametersets in the parameterfile
+#'
+#' @inheritParams writeXMLParameterFile
+#' @param keyid id of the parameter that identifies the parameterset
+#'
+#' @returns character vector with all IDs
+#' @export
+#'
+#' @examples
+#'
+#' params <- readXMLParameterFile(system.file("input", "crop.xml", package="simplaceUtil"))
+#' getXMLParameterIDs(params, "CROPNAME")
+#'
+getXMLParameterIDs <- function(paramdata, keyid) {
+  xpath <- paste0("/*/*/parameter[@id='",keyid[1],"']")
+  xml2::xml_text(xml2::xml_find_all(paramdata, xpath))
+}
+
+
+
+#' Get a parameter value for a specific parameterset
+#'
+#' @inheritParams writeXMLParameterFile
+#' @param key named vector `c(idname="value")` to identify the dataset, the name is the id of the parameter and the value has to match the parameter's value
+#' @param id name of the parameter of which the value should be retrieved
+#'
+#' @returns the value of the parameter
+#' @export
+#'
+#' @examples
+#'
+#' params <- readXMLParameterFile(system.file("input", "crop.xml", package="simplaceUtil"))
+#' getXMLParameterIDs(params, "CROPNAME")
+#' getXMLParameter(params, c(CROPNAME="soy bean"), "TSUM1")
+#' getXMLParameter(params, c(CROPNAME="faba bean"), "TSUM1")
+#'
+getXMLParameter <- function(paramdata, key, id) {
+  xpath <- paste0("/*/*[parameter[@id='",names(key)[1],"' and text()='",key[1],"']]")
+  y<-xml2::xml_find_all(paramdata, xpath)
+  if(length(y)==0) {
+    warning(paste0("There is no parameterset identified by ",names(key[1]),"='",key[1],"'"))
+    return(NA)
+  }
+  z <- xml2::xml_find_first(y,paste0("parameter[@id='",id,"']"))
+  if(is.na(xml2::xml_type(z))) {
+    warning(paste0("Parameter '",id,"' is not in the parameterset of ",names(key[1]),"='",key[1],"'"))
+    return(NA)
+  }
+  vals <- xml2::xml_find_all(z,"value")
+  if(length(vals)>0) {
+    vals <- xml2::xml_text(vals, trim=TRUE)
+  } else {
+    vals <- xml2::xml_text(z, trim=TRUE)
+  }
+  vals
+}
+
+
+#' Set a parameter value for a specific parameterset
+#'
+#' @inheritParams getXMLParameter
+#' @param id name of the parameter of which the value should be set
+#' @param value new value to set (vector)
+#'
+#' @returns modified parameter set (xml2 object)
+#' @export
+#'
+#' @examples
+#'
+#' params <- readXMLParameterFile(system.file("input", "crop.xml", package="simplaceUtil"))
+#' getXMLParameter(params, c(CROPNAME="soy bean"), "TSUM1")
+#' params_new <-setXMLParameter(params, c(CROPNAME="soy bean"), "TSUM1",400)
+#' getXMLParameter(params_new, c(CROPNAME="soy bean"), "TSUM1")
+#'
+setXMLParameter <- function(paramdata, key, id, value="") {
+  xpath <- paste0("/*/*[parameter[@id='",names(key)[1],"' and text()='",key[1],"']]")
+  x <- xml_clone(paramdata)
+  y<-xml2::xml_find_all(x, xpath)
+  if(length(y)==0) {
+    stop(paste0("There is no parameterset identified by ",names(key[1]),"='",key[1],"'"))
+  }
+  z <- xml2::xml_find_first(y,paste0("parameter[@id='",id,"']"))
+  if(is.na(xml2::xml_type(z))) {
+    stop(paste0("Parameter '",id,"' is not in the parameterset of ",names(key[1]),"='",key[1],"'"))
+  }
+  cz <- xml2::xml_children(z)
+  sapply(cz, xml2::xml_remove)
+  if(length(value)>1) {
+    for(v in value) {
+      xml2::xml_add_child(z, .value="value", v)
+    }
+  }
+  else {
+    xml2::xml_text(z) <- as.character(value)
+  }
+  x
+}
+
+
+#' Scales a parameter value by a value
+#'
+#' @inheritParams getXMLParameter
+#' @param id name of the parameter which should be scaled
+#' @param factor scaling factor
+#'
+#' @returns modified parameter set (xml2 object)
+#' @export
+#'
+#' @examples
+#'
+#' params <- readXMLParameterFile(system.file("input", "crop.xml", package="simplaceUtil"))
+#' getXMLParameter(params, c(CROPNAME="soy bean"), "RUETableRUE")
+#' params_new <-scaleXMLParameter(params, c(CROPNAME="soy bean"), "RUETableRUE",0.9)
+#' getXMLParameter(params_new, c(CROPNAME="soy bean"), "RUETableRUE")
+#'
+scaleXMLParameter <- function(paramdata, key, id, factor=1) {
+  vals <- as.numeric(getXMLParameter(paramdata, key, id)) * factor
+  setXMLParameter(paramdata, key, id, vals)
+}
+
+
+#' Adds a parameter to a specific parameterset
+#'
+#' When the parameter already exists in the parameter set,
+#' it is removed and the new parameter is added at the end.
+#'
+#'
+#' @inheritParams getXMLParameter
+#' @param id name of the parameter which should added
+#' @param value value to set (numeric or character vector)
+#' @param unit unit of the parameter
+#' @param description description of the parameter
+#'
+#' @returns modified parameter set (xml2 object)
+#' @export
+#'
+#' @examples
+#' params <- readXMLParameterFile(system.file("input", "crop.xml", package="simplaceUtil"))
+#' getXMLParameter(params, c(CROPNAME="soy bean"), "ExtraTableYZZ")
+#' params_new <- addXMLParameter(params, c(CROPNAME="soy bean"), "ExtraTableYZZ", c(1,2,4))
+#' getXMLParameter(params_new, c(CROPNAME="soy bean"), "ExtraTableYZZ")
+
+
+addXMLParameter <- function(paramdata, key, id, value="", unit="", description=NULL) {
+  xpath <- paste0("/*/*[parameter[@id='",names(key)[1],"' and text()='",key[1],"']]")
+  x <- xml_clone(paramdata)
+  y<-xml2::xml_find_all(x, xpath)
+  if(length(y)==0) {
+    stop(paste0("There is no parameterset identified by ",names(key[1]),"='",key[1],"'"))
+  }
+  z <- xml2::xml_find_first(y,paste0("parameter[@id='",id,"']"))
+  if(length(z)>0) {
+    xml2::xml_remove(z)
+  }
+  xml2::xml_add_child(y, .value="parameter", id=id, unit=unit)
+  z <- xml2::xml_find_first(y, paste0("parameter[@id='",id,"']"))
+  if(!is.null(description)) {
+    xml2::xml_attr(z, "description") <- description
+  }
+  if(length(value)>1) {
+    for(v in value) {
+      xml2::xml_add_child(z, .value="value", v)
+    }
+  }
+  else {
+    xml2::xml_text(z) <- as.character(value)
+  }
+  x
+}
+

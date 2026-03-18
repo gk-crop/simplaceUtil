@@ -1,3 +1,10 @@
+Version 0.8.7
+* read and write parameter xml files
+* fetch, modify and add parameters to parameter file
+* get variables from resource
+* modify interface file
+* optionally fetch description when getting compontents
+
 Version 0.8.6
 * small fix - deal with malformed rule variables in output
 
