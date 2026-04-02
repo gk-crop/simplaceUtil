@@ -1,3 +1,6 @@
+Version 0.8.8
+* Bugfix when reading values from online documentation
+
 Version 0.8.7
 * read and write parameter xml files
 * fetch, modify and add parameters to parameter file

@@ -44,13 +44,13 @@ fetchSimVariablesFromWebsite <- function(class, version="current") {
       res$componentname <- sapply(strsplit(res$component,'\\.'), \(x) x[length(x)])
 
       res$min <- ifelse(!(res$datatype %in% c("CHAR","CHARARRAY")),
-                            gsub("-","",trimws(res$min), fixed = TRUE),
+                            gsub("^-$","",trimws(res$min)),
                             trimws(res$min))
       res$max <- ifelse(!(res$datatype %in% c("CHAR","CHARARRAY")),
-                            gsub("-","",trimws(res$max), fixed = TRUE),
+                            gsub("^-$","",trimws(res$max)),
                             trimws(res$max))
       res$default <- ifelse(!(res$datatype %in% c("CHAR","CHARARRAY")),
-                            gsub("-","",trimws(res$default), fixed = TRUE),
+                            gsub("^-$","",trimws(res$default)),
                             trimws(res$default))
 
       res$default <- ifelse(res$datatype %in% c("INTARRAY","DOUBLEARRAY"),
