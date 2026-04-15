@@ -3,11 +3,16 @@
 #' @param comp components dataframe
 #' @param links links dataframe
 #' @param showinterfaces if TRUE, include interfaces in graph
+#' @param fillcolors vector of colors, named by component's subtype
+#' @param shapes vector of shapes, named by component's type
 #' @param ... options passed to [DiagrammeR::create_graph()]
 #' @return graph object of class `dgr_graph`
 #' @export
 #' @importFrom rlang .data
-componentsToGraph <- function(comp, links, showinterfaces=FALSE, ...)
+componentsToGraph <- function(comp, links, showinterfaces=FALSE,
+                              fillcolors = c(var="white",interface="#eeeeee",resource="#ffff99cc",alias="#ffff99cc",transform="#ffdd88cc", mgm="#ff9999cc",simple="#ff6666cc", normal="#ff3333cc",grouped="#ff1111cc", output="#999999cc"),
+                              shapes = c(var="oval",resource="egg", simcomponent="rectangle",output="polygon",interface="triangle"),
+...)
 {
 
 
@@ -15,16 +20,32 @@ componentsToGraph <- function(comp, links, showinterfaces=FALSE, ...)
   {
     comp <- comp[comp$type!="interface",]
   }
+  else {
+    comp[comp$type=="interface","subtype"] <- "interface"
+  }
 
-  shapes <- c(var="oval",resource="egg", simcomponent="rectangle",output="triangle",interface="triangle")
+
   ranks <- c(interface=0,var=1,resource=2, simcomponent=3,output=4)
-  fills <- c(var="white",resource="#ffff99cc",alias="#ffff99cc",transform="#ffdd88cc", mgm="#ff9999cc",simple="#ff6666cc", normal="#ff3333cc",grouped="#ff1111cc", output="#999999cc")
 
+  shaps <- c(var="oval",resource="egg", simcomponent="rectangle",output="triangle",interface="triangle")
+  shaps[names(shapes)] <- shapes
 
-  nodes <- DiagrammeR::create_node_df(n = nrow(comp), label=comp$id, shape=shapes[comp$type],
+  fills <- c(var="white",interface="#e0e0e0",resource="#ffff99cc",alias="#ffff99cc",transform="#ffdd88cc", mgm="#ffaa99cc",simple="#ff9988cc", normal="#ff7777cc",grouped="#ff6655cc", output="#aaaaaacc")
+  fills[names(fillcolors)] <- fillcolors
+
+  shape <- ifelse(is.na(shaps[comp$type]),"rectangle", shaps[comp$type])
+  fillcolor <- ifelse(is.na(fills[comp$subtype]),"white", fills[comp$subtype])
+  sides <- ifelse(shape=="polygon",3,1)
+  orientation <- ifelse(shape=="polygon",180,0)
+
+  nodes <- DiagrammeR::create_node_df(n = nrow(comp), label=comp$id,
+                                      shape=shape,
+                                      sides = sides,
+                                      orientation = orientation,
                                       type = comp$type,
                                       subtype = comp$subtype,
-                                      fillcolor=fills[comp$subtype],fontcolor="black",
+                                      fillcolor=fillcolor,
+                                      fontcolor="black",
                                       width=.6+pmax(0,nchar(comp$id)-10)/20,
                                       height=.2,
                                       fontsize=6,
@@ -36,8 +57,8 @@ componentsToGraph <- function(comp, links, showinterfaces=FALSE, ...)
     dplyr::filter(!is.na(.data$from) & !is.na(.data$to)) |>
     dplyr::group_by(.data$from,.data$to,.data$rel) |>
     dplyr::summarise( count=dplyr::n(), .groups="drop") |>
-    dplyr::left_join( nodes |> dplyr::select(to_id=.data$id,.data$label), by=c("to"="label")) |>
-    dplyr::left_join( nodes |> dplyr::select(from_id=.data$id,.data$label), by=c("from"="label")) |>
+    dplyr::left_join( nodes |> dplyr::select(to_id="id","label"), by=c("to"="label")) |>
+    dplyr::left_join( nodes |> dplyr::select(from_id="id","label"), by=c("from"="label")) |>
     dplyr::filter(!is.na(.data$from_id) & !is.na(.data$to_id)) |>
     dplyr::mutate(color=dplyr::if_else(.data$to_id-.data$from_id < 0,"red","blue"))
 
@@ -260,3 +281,69 @@ getLinkingFromComponent <- function(graph, names, distance = 50, linkage = "alls
   getConnected(graph, names, distance, linkage, type, dir=-1)
 }
 
+
+
+#' Creates legends
+#'
+#' @param showinterfaces if TRUE, include interfaces in graph
+#' @param fillcolors vector of colors, named by component's subtype
+#' @param shapes vector of shapes, named by component's type
+#'
+#' @returns a list with the component legend and links (arrows) legend
+#' @export
+graphLegend <- function(showinterfaces=TRUE, fillcolors=NULL, shapes=NULL) {
+  comp <- data.frame(
+    id=c("Variables","Interface","Resource","Transformer","Component","MgM/Rule Comp","Output"),
+    type=c("var","interface","resource","resource","simcomponent","simcomponent","output"),
+    subtype=c("var","XML","resource","transform","normal","simple","output"),
+    ref=NA,
+    javaclass=NA,
+    nr=1:7,
+    title=NA,
+    description=NA
+  )
+  links <- data.frame(from=NA_character_,name=NA_character_, to=NA_character_,rel=NA_character_)
+
+  gr <- componentsToGraph(comp, links, showinterfaces, fillcolors, shapes)
+
+  compl <- data.frame(
+    id=c("A","Value",
+         "Previous Value","B",
+         "C","Rule",
+         "D","Data Location",
+         "E", "Transformed Data",
+         "F","Key"),
+    type=c("simcomponent","simcomponent",
+           "simcomponent","simcomponent",
+           "simcomponent","simcomponent",
+           "interface","resource",
+           "resource","resource",
+           "var","resource"),
+    subtype=c("normal","normal",
+              "normal","normal",
+              "normal","simple",
+              "interface","resource",
+              "resource","transformer",
+              "var","resource"),
+
+    ref=NA,
+    javaclass=NA,
+    nr=1:12,
+    title=NA,
+    description=NA
+  )
+
+  linksl <- data.frame(
+    from = c("A","B","C","D","E","F"),
+    to=c("Value","Previous Value","Rule","Data Location","Transformed Data","Key"),
+    name=NA,
+    rel=c("value","value","rule","storage","data","key")
+
+  )
+
+  grl <- componentsToGraph(compl, linksl, showinterfaces, fillcolors, shapes)
+
+  list(components=gr, links=grl)
+
+
+}

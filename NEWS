@@ -1,3 +1,9 @@
+Version 0.8.9
+* changed default graph colors and shapes
+* user can now set graph colors and shapes
+* method to create legends for graph components and links
+
+
 Version 0.8.8
 * Bugfix when reading values from online documentation
 

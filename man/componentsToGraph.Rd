@@ -4,7 +4,17 @@
 \alias{componentsToGraph}
 \title{Creates a graph from component and links dataframe}
 \usage{
-componentsToGraph(comp, links, showinterfaces = FALSE, ...)
+componentsToGraph(
+  comp,
+  links,
+  showinterfaces = FALSE,
+  fillcolors = c(var = "white", interface = "#eeeeee", resource = "#ffff99cc", alias =
+    "#ffff99cc", transform = "#ffdd88cc", mgm = "#ff9999cc", simple = "#ff6666cc", normal
+    = "#ff3333cc", grouped = "#ff1111cc", output = "#999999cc"),
+  shapes = c(var = "oval", resource = "egg", simcomponent = "rectangle", output =
+    "polygon", interface = "triangle"),
+  ...
+)
 }
 \arguments{
 \item{comp}{components dataframe}
@@ -12,6 +22,10 @@ componentsToGraph(comp, links, showinterfaces = FALSE, ...)
 \item{links}{links dataframe}
 
 \item{showinterfaces}{if TRUE, include interfaces in graph}
+
+\item{fillcolors}{vector of colors, named by component's subtype}
+
+\item{shapes}{vector of shapes, named by component's type}
 
 \item{...}{options passed to \code{\link[DiagrammeR:create_graph]{DiagrammeR::create_graph()}}}
 }
