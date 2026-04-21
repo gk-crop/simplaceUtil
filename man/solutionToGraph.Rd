@@ -4,12 +4,22 @@
 \alias{solutionToGraph}
 \title{Creates a graph from a solution}
 \usage{
-solutionToGraph(file, showinterfaces = FALSE, ...)
+solutionToGraph(
+  file,
+  showinterfaces = FALSE,
+  fillcolors = NULL,
+  shapes = NULL,
+  ...
+)
 }
 \arguments{
 \item{file}{solution file}
 
 \item{showinterfaces}{if true include interfaces}
+
+\item{fillcolors}{vector of colors, named by component's subtype}
+
+\item{shapes}{vector of shapes, named by component's type}
 
 \item{...}{options passed to DiagrammeR::create_graph()}
 }

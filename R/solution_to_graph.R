@@ -10,7 +10,7 @@
 #' @export
 #' @importFrom rlang .data
 componentsToGraph <- function(comp, links, showinterfaces=FALSE,
-                              fillcolors = c(var="white",interface="#eeeeee",resource="#ffff99cc",alias="#ffff99cc",transform="#ffdd88cc", mgm="#ff9999cc",simple="#ff6666cc", normal="#ff3333cc",grouped="#ff1111cc", output="#999999cc"),
+                              fillcolors = c(var="white",interface="#e0e0e0",resource="#ffff99cc",alias="#ffff99cc",transform="#ffdd88cc", mgm="#ffaa99cc",simple="#ff9988cc", normal="#ff7777cc",grouped="#ff6655cc", output="#aaaaaacc"),
                               shapes = c(var="oval",resource="egg", simcomponent="rectangle",output="polygon",interface="triangle"),
 ...)
 {
@@ -27,7 +27,7 @@ componentsToGraph <- function(comp, links, showinterfaces=FALSE,
 
   ranks <- c(interface=0,var=1,resource=2, simcomponent=3,output=4)
 
-  shaps <- c(var="oval",resource="egg", simcomponent="rectangle",output="triangle",interface="triangle")
+  shaps <- c(var="oval",resource="egg", simcomponent="rectangle",output="polygon",interface="triangle")
   shaps[names(shapes)] <- shapes
 
   fills <- c(var="white",interface="#e0e0e0",resource="#ffff99cc",alias="#ffff99cc",transform="#ffdd88cc", mgm="#ffaa99cc",simple="#ff9988cc", normal="#ff7777cc",grouped="#ff6655cc", output="#aaaaaacc")
@@ -85,10 +85,14 @@ componentsToGraph <- function(comp, links, showinterfaces=FALSE,
 #'
 #' @param file solution file
 #' @param showinterfaces if true include interfaces
+#' @param fillcolors vector of colors, named by component's subtype
+#' @param shapes vector of shapes, named by component's type
 #' @param ... options passed to DiagrammeR::create_graph()
 #' @return graph object of class `dgr_graph`
 #' @export
-solutionToGraph <- function(file,showinterfaces=FALSE,...)
+solutionToGraph <- function(file,showinterfaces=FALSE,
+                            fillcolors = NULL,
+                            shapes = NULL, ...)
 {
   cp <- getElementsFromSolutionFile(file)
   componentsToGraph(cp$components, cp$links,showinterfaces,...)
