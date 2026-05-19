@@ -1,121 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE solution PUBLIC "-//SIMPLACE/DTD SOL 1.0//EN" "http://simplace.net/dtd/SimSolution_4_1.dtd">
-
-<solution version="4.1" check="LAZY">
+<!DOCTYPE solution PUBLIC "-//SIMPLACE/DTD SOL 1.0//EN" "http://simplace.net/dtd/SimSolution_5_2.dtd">
+<solution version="5.2" check="LAZY">
   <description title="Yield" author="XXX_XXX" qualitylevel="I">WIKI_START
 === Purpose ===
 Example solution for simplaceUtil package.
 WIKI_END</description>
   <variables>
-
     <var id="vTempLimit" datatype="DOUBLE">35</var>
     <var id="vTempSlopeAboveLimit" datatype="DOUBLE">7</var>
     <var id="vCropName" datatype="CHAR">winter wheat</var>
     <var id="vBaseLUE" datatype="DOUBLE">3.0</var>
     <var id="vBaseTempBeforeAnt" datatype="DOUBLE">3.0</var>
     <var id="vBaseTempAfterAnt" datatype="DOUBLE">3.0</var>
-
     <var id="startdate" datatype="DATE">01.01.1991</var>
     <var id="enddate" datatype="DATE">31.12.2004</var>
-
     <var id="vClimateZone" datatype="CHAR">C02</var>
-
-
-
   </variables>
-  <interfaces default="simpool">
+  <interfaces>
     <interface id="weatherfile" type="CSV">
-      <poolsize>2</poolsize>
-      <divider />
+      <divider/>
       <filename>${_WORKDIR_}/data/Weather_all.txt</filename>
     </interface>
     <interface id="phenologyfile" type="CSV">
-      <poolsize>1</poolsize>
       <filename>${_WORKDIR_}/data/LintulPhenologyObservations.csv</filename>
     </interface>
     <interface id="cropdata" type="XML">
-      <poolsize>1</poolsize>
       <filename>${_WORKDIR_}/data/CropPropertiesLintul.xml</filename>
     </interface>
     <interface id="yieldout" type="CSV">
-      <poolsize>100</poolsize>
-	  <divider>;</divider>
+      <divider>;</divider>
       <filename>${_OUTPUTDIR_}/yield_daily.csv</filename>
     </interface>
     <interface id="sumyieldout" type="CSV">
-      <poolsize>100</poolsize>
-	  <divider>;</divider>
+      <divider>;</divider>
       <filename>${_OUTPUTDIR_}/yield_yearly.csv</filename>
     </interface>
   </interfaces>
   <resources>
     <resource id="weather" interface="weatherfile" frequence="DAILY">
       <header>
-        <res id="ClimateZone" datatype="CHAR" key="vClimateZone" />
-        <res id="CURRENTDATE" datatype="DATE" key="CURRENT.DATE" />
-        <res id="Rain" unit="mm" datatype="DOUBLE" />
-        <res id="AirTemperatureMax" unit="°C" datatype="DOUBLE" />
-        <res id="AirTemperatureMin" unit="°C" datatype="DOUBLE" />
-        <res id="GlobalSolarRadiation" unit="MJ*m**-2" datatype="DOUBLE" />
-        <res id="WindSpeed" unit="m*s**-1" datatype="DOUBLE" />
-        <res id="ReferenceEvapotranspiration" unit="mm" datatype="DOUBLE" />
+        <res id="ClimateZone" datatype="CHAR" key="vClimateZone"/>
+        <res id="CURRENTDATE" datatype="DATE" key="CURRENT.DATE"/>
+        <res id="Rain" datatype="DOUBLE" unit="mm"/>
+        <res id="AirTemperatureMax" datatype="DOUBLE" unit="°C"/>
+        <res id="AirTemperatureMin" datatype="DOUBLE" unit="°C"/>
+        <res id="GlobalSolarRadiation" datatype="DOUBLE" unit="MJ*m**-2"/>
+        <res id="WindSpeed" datatype="DOUBLE" unit="m*s**-1"/>
+        <res id="ReferenceEvapotranspiration" datatype="DOUBLE" unit="mm"/>
       </header>
     </resource>
     <resource id="phenology" interface="phenologyfile" frequence="COMPLEX" rule="${DefaultManagement.DoHarvest}">
       <header>
-        <res id="number" datatype="INT" key="LintulPheno.CropCycleCount" />
-        <res id="crop" datatype="CHAR" />
-        <res id="year" datatype="INT" />
-        <res id="emergencedoy" datatype="INT" />
-        <res id="reldem" datatype="INT" />
+        <res id="number" datatype="INT" key="LintulPheno.CropCycleCount"/>
+        <res id="crop" datatype="CHAR"/>
+        <res id="year" datatype="INT"/>
+        <res id="emergencedoy" datatype="INT"/>
+        <res id="reldem" datatype="INT"/>
       </header>
     </resource>
     <resource id="crop" interface="cropdata" frequence="COMPLEX" rule="${DefaultManagement.DoSow}">
       <header>
-        <res id="CROPNAME" datatype="CHAR" key="vCropName" />
-        <res id="AirTemperatureSumAnthesis" unit="K" datatype="DOUBLE" />
-        <res id="AirTemperatureSumMilkripeness" unit="K" datatype="DOUBLE" />
-        <res id="AirTemperatureSumMaturity" unit="K" datatype="DOUBLE" />
-        <res id="RelativeDayOfEmergence" unit="-" datatype="INT" />
-        <res id="DroughtTolerance" unit="-" datatype="DOUBLE" />
-        <res id="BaseTempBeforeAnt" unit="°C" datatype="DOUBLE" />
-        <res id="BaseTempAfterAnt" unit="°C" datatype="DOUBLE" />
-        <res id="LUE" unit="-" datatype="DOUBLE" />
-        <res id="SLA" unit="m**2 m**-2" datatype="DOUBLE" />
-        <res id="RGRL" unit="-" datatype="DOUBLE" />
-        <res id="LaiNStressReduction" unit="-" datatype="DOUBLE" />
-        <res id="LueNStressReduction" unit="-" datatype="DOUBLE" />
-        <res id="SlaNStressReduction" unit="-" datatype="DOUBLE" />
-        <res id="PartitioningNStressReduction" unit="-" datatype="DOUBLE" />
-        <res id="LaiCritical" unit="-" datatype="DOUBLE" />
-        <res id="TRANCO" unit="mm" datatype="DOUBLE" />
-        <res id="RDRSHM" unit="-" datatype="DOUBLE" />
-        <res id="RDRL" unit="-" datatype="DOUBLE" />
-        <res id="RDRNS" unit="-" datatype="DOUBLE" />
-        <res id="K" unit="-" datatype="DOUBLE" />
-        <res id="VernalDaysMax" unit="-" datatype="INT" />
-        <res id="VernalisationTLow" unit="°C" datatype="DOUBLE" />
-        <res id="VernalisationTHigh" unit="°C" datatype="DOUBLE" />
-        <res id="Latitude" unit="°" datatype="DOUBLE" />
-        <res id="RDRLeavesTableMeanTemperature" description="Daily mean temperature for relative death rate of leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLEARRAY" />
-        <res id="RDRLeavesTableRelativeRate" description="Relative death rate of leaves as a function of daily mean temperature" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY" />
-        <res id="RootsPartitioningTableDVS" description="DVS for fraction of total dry matter to roots" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLEARRAY" />
-        <res id="RootsPartitioningTableFraction" description="Fraction of total dry matter to roots as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLEARRAY" />
-        <res id="LeavesPartitioningTableDVS" description="DVS for fraction of total dry matter to leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLEARRAY" />
-        <res id="LeavesPartitioningTableFraction" description="Fraction of total dry matter to leaves as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLEARRAY" />
-        <res id="StemsPartitioningTableDVS" description="DVS for fraction of total dry matter to stems" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLEARRAY" />
-        <res id="StemsPartitioningTableFraction" description="Fraction of total dry matter to stems as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLEARRAY" />
-        <res id="StorageOrgansPartitioningTableDVS" description="DVS for fraction of total dry matter to storage organs" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLEARRAY" />
-        <res id="StorageOrgansPartitioningTableFraction" description="Fraction of total dry matter to storage organs as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLEARRAY" />
+        <res id="CROPNAME" datatype="CHAR" key="vCropName"/>
+        <res id="AirTemperatureSumAnthesis" datatype="DOUBLE" unit="K"/>
+        <res id="AirTemperatureSumMilkripeness" datatype="DOUBLE" unit="K"/>
+        <res id="AirTemperatureSumMaturity" datatype="DOUBLE" unit="K"/>
+        <res id="RelativeDayOfEmergence" datatype="INT" unit="-"/>
+        <res id="DroughtTolerance" datatype="DOUBLE" unit="-"/>
+        <res id="BaseTempBeforeAnt" datatype="DOUBLE" unit="°C"/>
+        <res id="BaseTempAfterAnt" datatype="DOUBLE" unit="°C"/>
+        <res id="LUE" datatype="DOUBLE" unit="-"/>
+        <res id="SLA" datatype="DOUBLE" unit="m**2 m**-2"/>
+        <res id="RGRL" datatype="DOUBLE" unit="-"/>
+        <res id="LaiNStressReduction" datatype="DOUBLE" unit="-"/>
+        <res id="LueNStressReduction" datatype="DOUBLE" unit="-"/>
+        <res id="SlaNStressReduction" datatype="DOUBLE" unit="-"/>
+        <res id="PartitioningNStressReduction" datatype="DOUBLE" unit="-"/>
+        <res id="LaiCritical" datatype="DOUBLE" unit="-"/>
+        <res id="TRANCO" datatype="DOUBLE" unit="mm"/>
+        <res id="RDRSHM" datatype="DOUBLE" unit="-"/>
+        <res id="RDRL" datatype="DOUBLE" unit="-"/>
+        <res id="RDRNS" datatype="DOUBLE" unit="-"/>
+        <res id="K" datatype="DOUBLE" unit="-"/>
+        <res id="VernalDaysMax" datatype="INT" unit="-"/>
+        <res id="VernalisationTLow" datatype="DOUBLE" unit="°C"/>
+        <res id="VernalisationTHigh" datatype="DOUBLE" unit="°C"/>
+        <res id="Latitude" datatype="DOUBLE" unit="°"/>
+        <res id="RDRLeavesTableMeanTemperature" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" description="Daily mean temperature for relative death rate of leaves"/>
+        <res id="RDRLeavesTableRelativeRate" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" description="Relative death rate of leaves as a function of daily mean temperature"/>
+        <res id="RootsPartitioningTableDVS" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="DVS for fraction of total dry matter to roots"/>
+        <res id="RootsPartitioningTableFraction" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="Fraction of total dry matter to roots as function of DVS"/>
+        <res id="LeavesPartitioningTableDVS" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="DVS for fraction of total dry matter to leaves"/>
+        <res id="LeavesPartitioningTableFraction" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="Fraction of total dry matter to leaves as function of DVS"/>
+        <res id="StemsPartitioningTableDVS" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="DVS for fraction of total dry matter to stems"/>
+        <res id="StemsPartitioningTableFraction" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="Fraction of total dry matter to stems as function of DVS"/>
+        <res id="StorageOrgansPartitioningTableDVS" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="DVS for fraction of total dry matter to storage organs"/>
+        <res id="StorageOrgansPartitioningTableFraction" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="Fraction of total dry matter to storage organs as function of DVS"/>
       </header>
     </resource>
     <transform id="weather_transform" frequence="DAILY" class="net.simplace.sim.transformers.DefaultSQLStatementTransformer">
       <header>
-        <res id="ClimateZone" datatype="CHAR" key="vClimateZone" />
-        <res id="CURRENTDATE" datatype="DATE" key="CURRENT.DATE" />
-        <res id="AirTemperatureMean" unit="°C" datatype="DOUBLE" />
-        <res id="EffectiveTempRateBeforeAnt" unit="K" datatype="DOUBLE" />
-        <res id="EffectiveTempRateAfterAnt" unit="K" datatype="DOUBLE" />
+        <res id="ClimateZone" datatype="CHAR" key="vClimateZone"/>
+        <res id="CURRENTDATE" datatype="DATE" key="CURRENT.DATE"/>
+        <res id="AirTemperatureMean" datatype="DOUBLE" unit="°C"/>
+        <res id="EffectiveTempRateBeforeAnt" datatype="DOUBLE" unit="K"/>
+        <res id="EffectiveTempRateAfterAnt" datatype="DOUBLE" unit="K"/>
       </header>
       <input id="statement">SELECT
             ClimateZone,
@@ -142,22 +130,22 @@ WIKI_END</description>
     </transform>
     <transform id="dl" frequence="DAILY" class="net.simplace.sim.transformers.DayLengthTransformer">
       <header>
-        <res id="DOY" datatype="INT" key="CURRENT.DOY" />
-        <res id="DayLength" datatype="DOUBLE" />
+        <res id="DOY" datatype="INT" key="CURRENT.DOY"/>
+        <res id="DayLength" datatype="DOUBLE"/>
       </header>
       <input id="Latitude">50.2</input>
     </transform>
     <transform id="at" frequence="DAILY" resource="crop" class="net.simplace.sim.transformers.AstronomicParametersTransformer">
       <header>
-        <res id="DOY" datatype="INT" key="CURRENT.DOY" />
-        <res id="CropName" datatype="CHAR" key="vCropName" />
-        <res id="DayLength" datatype="DOUBLE" />
-        <res id="PhotoperiodicDayLength" datatype="DOUBLE" />
-        <res id="SolarConstant" datatype="DOUBLE" />
-        <res id="SINLD" datatype="DOUBLE" />
-        <res id="COSLD" datatype="DOUBLE" />
-        <res id="DSINB" datatype="DOUBLE" />
-        <res id="DSINBE" datatype="DOUBLE" />
+        <res id="DOY" datatype="INT" key="CURRENT.DOY"/>
+        <res id="CropName" datatype="CHAR" key="vCropName"/>
+        <res id="DayLength" datatype="DOUBLE"/>
+        <res id="PhotoperiodicDayLength" datatype="DOUBLE"/>
+        <res id="SolarConstant" datatype="DOUBLE"/>
+        <res id="SINLD" datatype="DOUBLE"/>
+        <res id="COSLD" datatype="DOUBLE"/>
+        <res id="DSINB" datatype="DOUBLE"/>
+        <res id="DSINBE" datatype="DOUBLE"/>
       </header>
       <!--input id="SunInclinationField">SunInclination</input-->
       <input id="LatitudeField">Latitude</input>
@@ -167,89 +155,88 @@ WIKI_END</description>
   <simmodel>
     <simcomponent id="DefaultManagement" class="net.simplace.sim.components.DefaultManagement">
       <action rule="${CURRENT.DOY}==${phenology.emergencedoy}">
-        <mgm id="DoSow" datatype="BOOLEAN" default="false" rule="true" />
-        <mgm id="Crop" datatype="CHAR" rule="${vCropName}" />
+        <mgm id="DoSow" datatype="BOOLEAN" default="false" rule="true"/>
+        <mgm id="Crop" datatype="CHAR" rule="${vCropName}"/>
       </action>
-      <action rule="${LintulPheno.sDevStage}&gt;=2.1">
-        <mgm id="DoHarvest" datatype="BOOLEAN" default="false" rule="true" />
-        <mgm id="Crop" datatype="CHAR" />
+      <action rule="${LintulPheno.sDevStage} ge 2.1">
+        <mgm id="DoHarvest" datatype="BOOLEAN" default="false" rule="true"/>
+        <mgm id="Crop" datatype="CHAR"/>
       </action>
     </simcomponent>
     <simcomponent id="LintulPheno" class="net.simplace.sim.components.models.lintul.LintulPhenology">
-      <input id="cAirTemperatureSumAnthesis" source="crop.AirTemperatureSumAnthesis" />
-      <input id="cAirTemperatureSumMilkripeness" source="crop.AirTemperatureSumMilkripeness" />
-      <input id="cAirTemperatureSumMaturity" source="crop.AirTemperatureSumMaturity" />
-      <input id="cRelativeDayOfEmergence" source="crop.RelativeDayOfEmergence" />
-      <input id="iRTEFFAnt" source="VernalisationAndPhotoresponse.RTSUM" />
-      <input id="iRTEFFMat" source="VernalisationAndPhotoresponse.RTSUM" />
-      <input id="iDoSow" source="DefaultManagement.DoSow" />
-      <input id="iDoHarvest" source="DefaultManagement.DoHarvest" />
+      <input id="cAirTemperatureSumAnthesis" source="crop.AirTemperatureSumAnthesis"/>
+      <input id="cAirTemperatureSumMilkripeness" source="crop.AirTemperatureSumMilkripeness"/>
+      <input id="cAirTemperatureSumMaturity" source="crop.AirTemperatureSumMaturity"/>
+      <input id="cRelativeDayOfEmergence" source="crop.RelativeDayOfEmergence"/>
+      <input id="iRTEFFAnt" source="VernalisationAndPhotoresponse.RTSUM"/>
+      <input id="iRTEFFMat" source="VernalisationAndPhotoresponse.RTSUM"/>
+      <input id="iDoSow" source="DefaultManagement.DoSow"/>
+      <input id="iDoHarvest" source="DefaultManagement.DoHarvest"/>
     </simcomponent>
     <simcomponent id="VernalisationAndPhotoresponse" class="net.simplace.sim.components.crop.VernalisationAndPhotoresponse">
-      <input id="cVernalDaysMax" source="crop.VernalDaysMax" />
+      <input id="cVernalDaysMax" source="crop.VernalDaysMax"/>
       <input id="cApplyVernalisation" datatype="BOOLEAN">true</input>
       <input id="cApplyPhotoresponse" datatype="BOOLEAN">true</input>
-      <input id="cThigh" source="crop.VernalisationTHigh" />
-      <input id="cTlow" source="crop.VernalisationTLow" />
-      <input id="cLatitude" source="crop.Latitude" />
-      <input id="iDAVTMP" source="weather_transform.AirTemperatureMean" />
-      <input id="iTSumBaseAnt" source="weather_transform.EffectiveTempRateBeforeAnt" />
-      <input id="iTSumBaseMat" source="weather_transform.EffectiveTempRateAfterAnt" />
-      <input id="iDevStage" source="LintulPheno.sDevStage" />
+      <input id="cThigh" source="crop.VernalisationTHigh"/>
+      <input id="cTlow" source="crop.VernalisationTLow"/>
+      <input id="cLatitude" source="crop.Latitude"/>
+      <input id="iDAVTMP" source="weather_transform.AirTemperatureMean"/>
+      <input id="iTSumBaseAnt" source="weather_transform.EffectiveTempRateBeforeAnt"/>
+      <input id="iTSumBaseMat" source="weather_transform.EffectiveTempRateAfterAnt"/>
+      <input id="iDevStage" source="LintulPheno.sDevStage"/>
     </simcomponent>
     <simcomponent id="LintulPartitioning" class="net.simplace.sim.components.models.lintul.LintulPartitioning">
-      <input id="iDoSow" source="DefaultManagement.DoSow" />
-      <input id="cPartitionNStressReduction" source="crop.AirTemperatureSumAnthesis" />
-      <input id="cRootsPartitioningTableDVS" source="crop.RootsPartitioningTableDVS" />
-      <input id="cRootsPartitioningTableFraction" source="crop.RootsPartitioningTableFraction" />
-      <input id="cLeavesPartitioningTableDVS" source="crop.LeavesPartitioningTableDVS" />
-      <input id="cLeavesPartitioningTableFraction" source="crop.LeavesPartitioningTableFraction" />
-      <input id="cStemsPartitioningTableDVS" source="crop.StemsPartitioningTableDVS" />
-      <input id="cStemsPartitioningTableFraction" source="crop.StemsPartitioningTableFraction" />
-      <input id="cStorageOrgansPartitioningTableDVS" source="crop.StorageOrgansPartitioningTableDVS" />
-      <input id="cStorageOrgansPartitioningTableFraction" source="crop.StorageOrgansPartitioningTableFraction" />
-      <input id="iDevStage" source="LintulPheno.sDevStage" />
+      <input id="iDoSow" source="DefaultManagement.DoSow"/>
+      <input id="cPartitionNStressReduction" source="crop.AirTemperatureSumAnthesis"/>
+      <input id="cRootsPartitioningTableDVS" source="crop.RootsPartitioningTableDVS"/>
+      <input id="cRootsPartitioningTableFraction" source="crop.RootsPartitioningTableFraction"/>
+      <input id="cLeavesPartitioningTableDVS" source="crop.LeavesPartitioningTableDVS"/>
+      <input id="cLeavesPartitioningTableFraction" source="crop.LeavesPartitioningTableFraction"/>
+      <input id="cStemsPartitioningTableDVS" source="crop.StemsPartitioningTableDVS"/>
+      <input id="cStemsPartitioningTableFraction" source="crop.StemsPartitioningTableFraction"/>
+      <input id="cStorageOrgansPartitioningTableDVS" source="crop.StorageOrgansPartitioningTableDVS"/>
+      <input id="cStorageOrgansPartitioningTableFraction" source="crop.StorageOrgansPartitioningTableFraction"/>
+      <input id="iDevStage" source="LintulPheno.sDevStage"/>
     </simcomponent>
     <simcomponent id="LintulBiomass" class="net.simplace.sim.components.models.lintul.LintulBiomass">
-      <input id="cK" source="crop.K" />
-      <input id="cLaiCritical" source="crop.LaiCritical" />
-      <input id="cRDRSHM" source="crop.RDRSHM" />
-      <input id="cRDRNS" source="crop.RDRNS" />
-      <input id="cRDRL" source="crop.RDRL" />
-      <input id="cRGRL" source="crop.RGRL" />
-      <input id="cSLA" source="crop.SLA" />
-      <input id="cRDRLeavesTableMeanTemperature" source="crop.RDRLeavesTableMeanTemperature" />
-      <input id="cRDRLeavesTableRelativeRate" source="crop.RDRLeavesTableRelativeRate" />
-      <input id="cRelativeDayOfEmergence" source="phenology.reldem" />
-      <input id="iDoSow" source="DefaultManagement.DoSow" />
-      <input id="iDoHarvest" source="DefaultManagement.DoHarvest" />
-      <input id="iEffectiveTempRateBeforeAnt" source="weather_transform.EffectiveTempRateBeforeAnt" />
-      <input id="iEffectiveTempRateAfterAnt" source="weather_transform.EffectiveTempRateAfterAnt" />
-      <input id="iAirTemperatureMean" source="weather_transform.AirTemperatureMean" />
-      <input id="iRadiation" source="weather.GlobalSolarRadiation" />
-      <input id="iDevStage" source="LintulPheno.sDevStage" />
-      <input id="iPartRootFactor" source="LintulPartitioning.FractionRoot" />
-      <input id="iPartStemsFactor" source="LintulPartitioning.FractionStems" />
-      <input id="iPartStorageOrgansFactor" source="LintulPartitioning.FractionStorageOrgans" />
-      <input id="iPartLeavesFactor" source="LintulPartitioning.FractionLeaves" />
-      <input id="iLUE" source="crop.LUE" />
+      <input id="cK" source="crop.K"/>
+      <input id="cLaiCritical" source="crop.LaiCritical"/>
+      <input id="cRDRSHM" source="crop.RDRSHM"/>
+      <input id="cRDRNS" source="crop.RDRNS"/>
+      <input id="cRDRL" source="crop.RDRL"/>
+      <input id="cRGRL" source="crop.RGRL"/>
+      <input id="cSLA" source="crop.SLA"/>
+      <input id="cRDRLeavesTableMeanTemperature" source="crop.RDRLeavesTableMeanTemperature"/>
+      <input id="cRDRLeavesTableRelativeRate" source="crop.RDRLeavesTableRelativeRate"/>
+      <input id="cRelativeDayOfEmergence" source="phenology.reldem"/>
+      <input id="iDoSow" source="DefaultManagement.DoSow"/>
+      <input id="iDoHarvest" source="DefaultManagement.DoHarvest"/>
+      <input id="iEffectiveTempRateBeforeAnt" source="weather_transform.EffectiveTempRateBeforeAnt"/>
+      <input id="iEffectiveTempRateAfterAnt" source="weather_transform.EffectiveTempRateAfterAnt"/>
+      <input id="iAirTemperatureMean" source="weather_transform.AirTemperatureMean"/>
+      <input id="iRadiation" source="weather.GlobalSolarRadiation"/>
+      <input id="iDevStage" source="LintulPheno.sDevStage"/>
+      <input id="iPartRootFactor" source="LintulPartitioning.FractionRoot"/>
+      <input id="iPartStemsFactor" source="LintulPartitioning.FractionStems"/>
+      <input id="iPartStorageOrgansFactor" source="LintulPartitioning.FractionStorageOrgans"/>
+      <input id="iPartLeavesFactor" source="LintulPartitioning.FractionLeaves"/>
+      <input id="iLUE" source="crop.LUE"/>
     </simcomponent>
   </simmodel>
   <outputs>
-     <output id="YieldsDaily" interface="yieldout" frequence="DAILY" cachesize="2">
+    <output id="YieldsDaily" interface="yieldout" frequence="DAILY" cachesize="2">
       <header>
-	    <out id="ClimateZone" datatype="CHAR" rule="vClimateZone" />
-	    <out id="Year" datatype="INT" rule="CURRENT.YEAR" />
-        <out id="Yield" datatype="DOUBLE" rule="LintulBiomass.sWSO" />
+        <out id="ClimateZone" datatype="CHAR" rule="vClimateZone"/>
+        <out id="Year" datatype="INT" rule="CURRENT.YEAR"/>
+        <out id="Yield" datatype="DOUBLE" rule="LintulBiomass.sWSO"/>
       </header>
     </output>
     <output id="YieldsSummary" interface="sumyieldout" frequence="YEARLY" cachesize="2">
       <header>
-	    <out id="ClimateZone" datatype="CHAR" mode="LAST" rule="vClimateZone" />
-	    <out id="Year" datatype="INT" mode="LAST" rule="CURRENT.YEAR" />
-        <out id="Yield" datatype="DOUBLE" mode="MAX" rule="LintulBiomass.sWSO" />
+        <out id="ClimateZone" datatype="CHAR" mode="LAST" rule="vClimateZone"/>
+        <out id="Year" datatype="INT" mode="LAST" rule="CURRENT.YEAR"/>
+        <out id="Yield" datatype="DOUBLE" mode="MAX" rule="LintulBiomass.sWSO"/>
       </header>
     </output>
   </outputs>
 </solution>
-

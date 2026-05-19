@@ -4,7 +4,15 @@
 \alias{addUserVariable}
 \title{Adds an user variable to the \code{variables} section}
 \usage{
-addUserVariable(sol, id, value, datatype, unit = NULL, description = NULL)
+addUserVariable(
+  sol,
+  id,
+  value,
+  datatype,
+  unit = NULL,
+  description = NULL,
+  rule = NULL
+)
 }
 \arguments{
 \item{sol}{solution object}
@@ -18,6 +26,8 @@ addUserVariable(sol, id, value, datatype, unit = NULL, description = NULL)
 \item{unit}{unit (optional)}
 
 \item{description}{short description (optional)}
+
+\item{rule}{optional rule}
 }
 \value{
 modified solution object

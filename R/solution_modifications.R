@@ -72,6 +72,7 @@ addMemoryOutput <- function(sol, outputid, frequence="DAILY", rule=NULL, resetru
                       frequence=frequence, cachesize=10)
   out <- xml2::xml_find_first(x, paste0('/solution/outputs/output[@id="',outputid,'"]'))
   xml2::xml_add_child(out,"header")
+
   if(!is.null(rule)) {
     xml2::xml_attr(out,"rule")<-rule
   }
@@ -109,7 +110,6 @@ addCSVOutput <- function(sol, filename, outputid,  frequence="DAILY", rule=NULL,
   intfs <- xml2::xml_find_first(x, '/solution/interfaces')
   xml2::xml_add_child(intfs, "interface", id=paste0(outputid,"_fileinterface"),type="CSV")
   intf <- xml2::xml_find_first(x, paste0('/solution/interfaces/interface[@id="',outputid,'_fileinterface"]'))
-  xml2::xml_add_child(intf,"poolsize",100)
   xml2::xml_add_child(intf,"divider",divider)
   xml2::xml_add_child(intf,"filename", filename)
   outs <- xml2::xml_find_first(x, '/solution/outputs')
@@ -153,14 +153,12 @@ changeOutputType <- function(sol, outputid, type, filename=NULL, divider=",") {
     xml2::xml_remove(xml2::xml_children(intf))
     if(type=="CSV" && !is.null(filename)) {
       xml2::xml_attr(intf, "type") <- type
-      xml2::xml_add_child(intf, "poolsize", 100)
       xml2::xml_add_child(intf, "divider", divider)
       xml2::xml_add_child(intf, "filename", filename)
     }
     else if (type=="MEMORY")
     {
       xml2::xml_attr(intf, "type") <- type
-      xml2::xml_add_child(intf, "poolsize", 2000)
     }
     desc <- xml2::xml_find_first(x,"/solution/description")
     xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* changed type of",outputid,"to",type)
@@ -279,10 +277,13 @@ addOutputVariable <- function(sol, outputid, id, rule, datatype, mode=NULL,
   x <- removeOutputVariable(x, outputid, id)
 
   cmp <- xml2::xml_find_first(x,paste0('/solution/outputs/output[@id="',outputid,'"]/header'))
-  xml2::xml_add_child(cmp,'out', id=id, rule=rule, datatype=datatype)
+  xml2::xml_add_child(cmp,'out', id=id, datatype=datatype)
   md <- xml2::xml_find_first(x,paste0('/solution/outputs/output[@id="',outputid,'"]/header/out[@id="',id,'"]'))
   if(!is.null(mode)) {
     xml2::xml_attr(md,"mode") <- mode
+  }
+  if(!is.null(format)) {
+    xml2::xml_attr(md,"format") <- format
   }
   if(!is.null(unit)) {
     xml2::xml_attr(md,"unit") <- unit
@@ -290,9 +291,7 @@ addOutputVariable <- function(sol, outputid, id, rule, datatype, mode=NULL,
   if(!is.null(description)) {
     xml2::xml_attr(md,"description") <- description
   }
-  if(!is.null(format)) {
-    xml2::xml_attr(md,"format") <- format
-  }
+  xml2::xml_attr(md, "rule") <- rule
 
 
   desc <- xml2::xml_find_first(x,"/solution/description")
@@ -336,10 +335,11 @@ removeOutputVariable <- function(sol, outputid, id) {
 #' @param datatype of the variable
 #' @param unit unit (optional)
 #' @param description short description (optional)
+#' @param rule optional rule
 #' @return modified solution object
 #'
 #' @export
-addUserVariable <- function(sol, id, value, datatype, unit=NULL, description=NULL) {
+addUserVariable <- function(sol, id, value, datatype, unit=NULL, description=NULL, rule=NULL) {
   x <- xml2::read_xml(as.character(sol))
 
   vars <- xml2::xml_find_first(x,"/solution/variables")
@@ -354,6 +354,9 @@ addUserVariable <- function(sol, id, value, datatype, unit=NULL, description=NUL
   }
   if(!is.null(description)) {
     xml2::xml_attr(var,"description") <- description
+  }
+  if(!is.null(rule)) {
+    xml2::xml_attr(var,"rule") <- rule
   }
   desc <- xml2::xml_find_first(x,"/solution/description")
   xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added user variable",id,"with value",paste(value,collapse=","))
@@ -485,7 +488,7 @@ replaceVariable <- function(sol, oldid, newid) {
   tl <- xml2::xml_find_all(x,paste0('/solution//*//text()[contains(.,"${',oldid,'}")]'))
   xml2::xml_text(tl) <- gsub(paste0('${',oldid,'}'),paste0('${',newid,'}'),xml2::xml_text(tl),fixed = TRUE)
 
-  attlist <- c("source", "rule", "key", "resetrule")
+  attlist <- c("source", "rule", "resetrule", "key")
   for(att in attlist) {
     tl <- xml2::xml_find_all(x,paste0('/solution//*[@',att,'="',oldid,'"]'))
     xml2::xml_attr(tl, att) <- newid
@@ -634,7 +637,6 @@ addTimingSimComponent <- function(sol, filename=NULL, componentlist = NULL,
   intfs <- xml2::xml_find_first(x, '/solution/interfaces')
   xml2::xml_add_child(intfs, "interface", id=interfaceid,type=itype)
   intf <- xml2::xml_find_first(x, paste0('/solution/interfaces/interface[@id="',interfaceid,'"]'))
-  xml2::xml_add_child(intf,"poolsize",20000)
   if(!is.null(filename))
   {
     xml2::xml_add_child(intf,"divider",",")
@@ -666,13 +668,13 @@ addTimingSimComponent <- function(sol, filename=NULL, componentlist = NULL,
   if(length(componentlist)>0) {
     nr <- length(componentlist)
     for(cmp in componentlist) {
-      xml2::xml_add_child(hd, "out", id=cmp, rule=paste0(simcomponentid, ".",cmp),datatype="INT", mode="SUM")
+      xml2::xml_add_child(hd, "out", id=cmp, datatype="INT", mode="SUM", rule=paste0(simcomponentid, ".",cmp))
 
     }
 
   }
-  xml2::xml_add_child(hd, "out", id=paste0("iHeader|1-",nr), rule=paste0(simcomponentid, ".iHeader"),datatype="CHARARRAY")
-  xml2::xml_add_child(hd, "out", id=paste0("iValues|1-",nr), rule=paste0(simcomponentid, ".iValues"), datatype="INTARRAY",mode="SUM")
+  xml2::xml_add_child(hd, "out", id=paste0("iHeader|1-",nr), datatype="CHARARRAY", rule=paste0(simcomponentid, ".iHeader"))
+  xml2::xml_add_child(hd, "out", id=paste0("iValues|1-",nr), datatype="INTARRAY", mode="SUM", rule=paste0(simcomponentid, ".iValues"))
 
   desc <- xml2::xml_find_first(x,"/solution/description")
   xml2::xml_text(desc) <- paste(xml2::xml_text(desc),"\n","* added timing elements",outputid)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE solution PUBLIC "-//SIMPLACE/DTD SOL 1.0//EN" "http://simplace.net/dtd/SimSolution_3_3.dtd">
-<solution version="4.1" check="LAZY">
+<!DOCTYPE solution PUBLIC "-//SIMPLACE/DTD SOL 1.0//EN" "http://simplace.net/dtd/SimSolution_5_2.dtd">
+<solution version="5.2" check="LAZY">
   <description title="Complete" author="G. Krauss" qualitylevel="I">WIKI_START
 === Purpose ===
 Example solution for simplaceUtil package.
@@ -27,108 +27,86 @@ WIKI_END</description>
     <dyn id="startdate" description="Start date of simulation" datatype="DATE">01.01.1991</dyn>
     <dyn id="enddate" description="End date of simulation" datatype="DATE">31.12.2004</dyn>
   </variables>
-  <interfaces default="simpool">
+  <interfaces>
     <interface id="compare" type="CSV">
-      <poolsize>2</poolsize>
       <divider>;</divider>
       <filename>${_WORKDIR_}/gk/data/lintul/compare/compare_Complete.csv</filename>
     </interface>
     <interface id="weatherfile" type="CSV">
-      <poolsize>20</poolsize>
       <divider/>
       <filename>${vFileName}</filename>
     </interface>
     <interface id="phenologyfile" type="CSV">
-      <poolsize>10</poolsize>
       <filename>${_WORKDIR_}/gk/data/lintul/LintulPhenologyObservations.csv</filename>
     </interface>
     <interface id="cropfile" type="XML">
-      <poolsize>10</poolsize>
       <filename>${_WORKDIR_}/gk/data/lintul/CropPropertiesLintulWaterstress.xml</filename>
     </interface>
     <interface id="soilfile" type="CSV">
-      <poolsize>10</poolsize>
       <divider>;</divider>
       <filename>${_WORKDIR_}/gk/data/slim/SoilPropertiesSlim.csv</filename>
     </interface>
     <interface id="SlimAlfaFile" type="CSV">
-      <poolsize>10</poolsize>
       <divider>;</divider>
       <filename>${_WORKDIR_}/gk/data/slim/SlimAlfa.csv</filename>
     </interface>
     <interface id="slimfile" type="XML">
-      <poolsize>10</poolsize>
       <divider/>
       <filename>${_WORKDIR_}/gk/data/slim/SLIMProperties_ln92i13.xml</filename>
     </interface>
     <interface id="carbonfile" type="XML">
-      <poolsize>10</poolsize>
       <divider/>
       <filename>${_WORKDIR_}/gk/data/soilcn/Carbon.xml</filename>
     </interface>
     <interface id="nitrogenfile" type="XML">
-      <poolsize>10</poolsize>
       <divider/>
       <filename>${_WORKDIR_}/gk/data/soilcn/Nitrogen.xml</filename>
     </interface>
     <interface id="soilcropfile" type="XML">
-      <poolsize>10</poolsize>
       <divider/>
       <filename>${_WORKDIR_}/gk/data/soilcn/Crop.xml</filename>
     </interface>
     <interface id="initfile" type="XML">
-      <poolsize>10</poolsize>
       <divider/>
       <filename>${_WORKDIR_}/gk/data/soilcn/Init.xml</filename>
     </interface>
     <interface id="auxfile" type="XML">
-      <poolsize>10</poolsize>
       <divider/>
       <filename>${_WORKDIR_}/gk/data/soilcn/Auxiliary.xml</filename>
     </interface>
     <interface id="ndemandfile" type="XML">
-      <poolsize>10</poolsize>
       <divider/>
       <filename>${_WORKDIR_}/gk/data/ndemand/NitrogenDemandProperties.xml</filename>
     </interface>
     <interface id="sumyieldout" type="CSV">
-      <poolsize>1000</poolsize>
       <divider>;</divider>
       <filename>${_OUTPUTDIR_}/gk/complete/yieldsummary.csv</filename>
     </interface>
     <interface id="biomassout" type="CSV">
-      <poolsize>1000</poolsize>
       <divider>;</divider>
       <filename>${_OUTPUTDIR_}/gk/complete/biomass_${projectid}.csv</filename>
     </interface>
     <interface id="waterout" type="CSV">
-      <poolsize>1000</poolsize>
       <divider>;</divider>
       <filename>${_OUTPUTDIR_}/gk/complete/water.csv</filename>
     </interface>
     <interface id="stmpout" type="CSV">
-      <poolsize>1000</poolsize>
       <divider>;</divider>
       <filename>${_OUTPUTDIR_}/gk/complete/soiltemp.csv</filename>
     </interface>
     <interface id="soilcnout" type="CSV">
-      <poolsize>1000</poolsize>
       <divider>;</divider>
       <filename>${_OUTPUTDIR_}/gk/complete/soilcn.csv</filename>
     </interface>
     <interface id="plantnitrogenout" type="CSV">
-      <poolsize>1000</poolsize>
       <divider>;</divider>
       <filename>${_OUTPUTDIR_}/gk/complete/plantnitrogen.csv</filename>
     </interface>
     <interface id="miscout" type="CSV">
-      <poolsize>1000</poolsize>
       <divider>;</divider>
       <filename>${_OUTPUTDIR_}/gk/complete/misc.csv</filename>
     </interface>
-    <interface id="diagramout" type="MEMORY">
-      <poolsize>20000</poolsize>
-    </interface>
+    <interface id="diagramout" type="MEMORY"/>
   </interfaces>
   <resources>
     <resource id="referencedata" interface="compare" frequence="DAILY">
@@ -142,141 +120,141 @@ WIKI_END</description>
         <res id="KeyValue" datatype="CHAR"/>
         <res id="PolygonCode" datatype="CHAR"/>
         <res id="CURRENTDATE" datatype="DATE" key="CURRENT.DATE"/>
-        <res id="Rain" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" description="Rainfall" datatype="DOUBLE"/>
-        <res id="AirTemperatureMax" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
-        <res id="AirTemperatureMin" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
-        <res id="GlobalSolarRadiation" unit="http://www.wurvoc.org/vocabularies/om-1.8/megajoule_per_square_metre" datatype="DOUBLE"/>
-        <res id="WindSpeed" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre_per_second-time" datatype="DOUBLE"/>
-        <res id="ReferenceEvapotranspiration" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
+        <res id="Rain" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" description="Rainfall"/>
+        <res id="AirTemperatureMax" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius"/>
+        <res id="AirTemperatureMin" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius"/>
+        <res id="GlobalSolarRadiation" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/megajoule_per_square_metre"/>
+        <res id="WindSpeed" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre_per_second-time"/>
+        <res id="ReferenceEvapotranspiration" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
       </header>
     </resource>
     <resource id="phenology" interface="phenologyfile" frequence="COMPLEX" rule="${DefaultManagement.DoHarvest}">
       <header>
         <res id="number" datatype="INT" key="LintulPhenology.CropCycleCount"/>
         <res id="crop" datatype="CHAR"/>
-        <res id="year" unit="http://www.wurvoc.org/vocabularies/om-1.8/year" datatype="INT"/>
-        <res id="sowingdoy" unit="http://www.wurvoc.org/vocabularies/om-1.8/day" datatype="INT"/>
-        <res id="emergencedoy" unit="http://www.wurvoc.org/vocabularies/om-1.8/day" datatype="INT"/>
-        <res id="maturitydoy" unit="http://www.wurvoc.org/vocabularies/om-1.8/day" datatype="INT"/>
+        <res id="year" datatype="INT" unit="http://www.wurvoc.org/vocabularies/om-1.8/year"/>
+        <res id="sowingdoy" datatype="INT" unit="http://www.wurvoc.org/vocabularies/om-1.8/day"/>
+        <res id="emergencedoy" datatype="INT" unit="http://www.wurvoc.org/vocabularies/om-1.8/day"/>
+        <res id="maturitydoy" datatype="INT" unit="http://www.wurvoc.org/vocabularies/om-1.8/day"/>
         <res id="yield" datatype="DOUBLE"/>
-        <res id="reldem" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="INT"/>
+        <res id="reldem" datatype="INT" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
       </header>
     </resource>
     <resource id="soil" interface="soilfile" frequence="YEARLY">
       <header>
         <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
-        <res id="dampingdepth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="soilwater_fc_global" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLE"/>
-        <res id="soilwater_sat_global" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLE"/>
-        <res id="drainage_rate" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
-        <res id="soilwater_fc" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
-        <res id="soilwater_red" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
-        <res id="soilwater_wp" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
-        <res id="soilwater_sat" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
-        <res id="soilwater_res" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
-        <res id="soilwater_init" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
-        <res id="bulkdensity" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
-        <res id="clay" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
-        <res id="carbon" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
-        <res id="ammonium" unit="http://www.wurvoc.org/vocabularies/om-1.8/milligram_per_kilogram" datatype="DOUBLEARRAY"/>
-        <res id="nitrate" unit="http://www.wurvoc.org/vocabularies/om-1.8/milligram_per_kilogram" datatype="DOUBLEARRAY"/>
-        <res id="sand" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
+        <res id="dampingdepth" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="soilwater_fc_global" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre"/>
+        <res id="soilwater_sat_global" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre"/>
+        <res id="drainage_rate" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="depth" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="soilwater_fc" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre"/>
+        <res id="soilwater_red" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre"/>
+        <res id="soilwater_wp" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre"/>
+        <res id="soilwater_sat" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre"/>
+        <res id="soilwater_res" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre"/>
+        <res id="soilwater_init" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_centimetre_per_cubic_centimetre"/>
+        <res id="bulkdensity" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre"/>
+        <res id="clay" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram"/>
+        <res id="carbon" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram"/>
+        <res id="ammonium" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/milligram_per_kilogram"/>
+        <res id="nitrate" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/milligram_per_kilogram"/>
+        <res id="sand" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram"/>
       </header>
     </resource>
     <resource id="slimalfa" interface="SlimAlfaFile" frequence="YEARLY">
       <header>
         <res id="runnr" datatype="INT" key="vRunNr"/>
-        <res id="ALFA" unit="" datatype="DOUBLEARRAY"/>
+        <res id="ALFA" datatype="DOUBLEARRAY" unit=""/>
       </header>
     </resource>
     <resource id="slim" interface="slimfile" frequence="YEARLY">
       <header>
         <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
-        <res id="THICKL" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="SEEDD" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="MaxSoilEvaporationDepth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="MT" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="INT"/>
-        <res id="MY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="INT"/>
-        <res id="MD" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="INT"/>
-        <res id="WMGENT" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="WRGENT" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="WMGENS" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="WRGENS" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="IFWGEN" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="BOOLEAN"/>
-        <res id="ALFA" unit="" datatype="DOUBLE"/>
+        <res id="THICKL" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="SEEDD" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="MaxSoilEvaporationDepth" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="MT" datatype="INT" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="MY" datatype="INT" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="MD" datatype="INT" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="WMGENT" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="WRGENT" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="WMGENS" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="WRGENS" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="IFWGEN" datatype="BOOLEAN" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="ALFA" datatype="DOUBLE" unit=""/>
         <res id="DP" datatype="DOUBLE"/>
-        <res id="WALIQ" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="WM1S" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="WRST" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="WRSS" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="SMD" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="AREA" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre" datatype="DOUBLE"/>
-        <res id="BGEN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_square_metre" datatype="DOUBLE"/>
-        <res id="ELIM" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="SCONC" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_metre" datatype="DOUBLE"/>
-        <res id="SEEDD" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="AX" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="AMEQ" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="SCMIN" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="TEMCO1" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="TEMCO2" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="FLOWNR" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="AMR2" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="AMR1" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="HBT" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="HBS" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="CalculateRunoffWater" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="BOOLEAN"/>
-        <res id="BulkDensityThresholdLower" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre" datatype="DOUBLE"/>
-        <res id="BulkDensityThresholdMiddle" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre" datatype="DOUBLE"/>
-        <res id="BulkDensityThresholdUpper" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre" datatype="DOUBLE"/>
-        <res id="MinimalBDSeminalRootReductionFactor" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="SoilStrengthParameter" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="MaximalSeminalRootLengthPerDay" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="DeadRootsDevStage" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="DailyDeadRootsRate" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="WALIQ" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="WM1S" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="WRST" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="WRSS" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="SMD" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="AREA" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre"/>
+        <res id="BGEN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_square_metre"/>
+        <res id="ELIM" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="SCONC" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_metre"/>
+        <res id="SEEDD" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="AX" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="AMEQ" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="SCMIN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="TEMCO1" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="TEMCO2" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="FLOWNR" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="AMR2" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="AMR1" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="HBT" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="HBS" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="CalculateRunoffWater" datatype="BOOLEAN" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="BulkDensityThresholdLower" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre"/>
+        <res id="BulkDensityThresholdMiddle" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre"/>
+        <res id="BulkDensityThresholdUpper" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre"/>
+        <res id="MinimalBDSeminalRootReductionFactor" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="SoilStrengthParameter" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="MaximalSeminalRootLengthPerDay" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="DeadRootsDevStage" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="DailyDeadRootsRate" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
       </header>
     </resource>
     <resource id="crop" interface="cropfile" frequence="COMPLEX" rule="${DefaultManagement.DoSow}">
       <header>
         <res id="CROPNAME" datatype="CHAR" key="vCropName"/>
-        <res id="AirTemperatureSumAnthesis" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius_day" datatype="DOUBLE"/>
-        <res id="AirTemperatureSumMilkripeness" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius_day" datatype="DOUBLE"/>
-        <res id="AirTemperatureSumMaturity" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius_day" datatype="DOUBLE"/>
-        <res id="RelativeDayOfEmergence" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="INT"/>
-        <res id="DroughtTolerance" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="BaseTempBeforeAnt" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
-        <res id="BaseTempAfterAnt" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
-        <res id="LUE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="SLA" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_square_metre" datatype="DOUBLE"/>
-        <res id="RGRL" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="LaiNStressReduction" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="LueNStressReduction" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="SlaNStressReduction" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="PartitioningNStressReduction" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="LaiCritical" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_square_metre" datatype="DOUBLE"/>
-        <res id="TRANCO" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="RDRSHM" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="RDRL" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="RDRNS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="K" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="VernalDaysMax" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="INT"/>
-        <res id="VernalisationTLow" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
-        <res id="VernalisationTHigh" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
-        <res id="Latitude" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree" datatype="DOUBLE"/>
-        <res id="ROOTDI" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="ROOTDM" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="RRDMAX" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="RDRLeavesTableMeanTemperature" datatype="DOUBLEARRAY" description="Daily mean temperature for relative death rate of leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius"/>
-        <res id="RDRLeavesTableRelativeRate" datatype="DOUBLEARRAY" description="Relative death rate of leaves as a function of daily mean temperature" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
-        <res id="RootsPartitioningTableDVS" datatype="DOUBLEARRAY" description="DVS for fraction of total dry matter to roots" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
-        <res id="RootsPartitioningTableFraction" datatype="DOUBLEARRAY" description="Fraction of total dry matter to roots as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
-        <res id="LeavesPartitioningTableDVS" datatype="DOUBLEARRAY" description="DVS for fraction of total dry matter to leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
-        <res id="LeavesPartitioningTableFraction" datatype="DOUBLEARRAY" description="Fraction of total dry matter to leaves as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
-        <res id="StemsPartitioningTableDVS" datatype="DOUBLEARRAY" description="DVS for fraction of total dry matter to stems" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
-        <res id="StemsPartitioningTableFraction" datatype="DOUBLEARRAY" description="Fraction of total dry matter to stems as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
-        <res id="StorageOrgansPartitioningTableDVS" datatype="DOUBLEARRAY" description="DVS for fraction of total dry matter to storage organs" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
-        <res id="StorageOrgansPartitioningTableFraction" datatype="DOUBLEARRAY" description="Fraction of total dry matter to storage organs as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="AirTemperatureSumAnthesis" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius_day"/>
+        <res id="AirTemperatureSumMilkripeness" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius_day"/>
+        <res id="AirTemperatureSumMaturity" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius_day"/>
+        <res id="RelativeDayOfEmergence" datatype="INT" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="DroughtTolerance" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="BaseTempBeforeAnt" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius"/>
+        <res id="BaseTempAfterAnt" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius"/>
+        <res id="LUE" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="SLA" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_square_metre"/>
+        <res id="RGRL" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="LaiNStressReduction" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="LueNStressReduction" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="SlaNStressReduction" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="PartitioningNStressReduction" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="LaiCritical" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_square_metre"/>
+        <res id="TRANCO" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="RDRSHM" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="RDRL" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="RDRNS" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="K" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="VernalDaysMax" datatype="INT" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="VernalisationTLow" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius"/>
+        <res id="VernalisationTHigh" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius"/>
+        <res id="Latitude" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree"/>
+        <res id="ROOTDI" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="ROOTDM" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="RRDMAX" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="RDRLeavesTableMeanTemperature" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" description="Daily mean temperature for relative death rate of leaves"/>
+        <res id="RDRLeavesTableRelativeRate" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" description="Relative death rate of leaves as a function of daily mean temperature"/>
+        <res id="RootsPartitioningTableDVS" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="DVS for fraction of total dry matter to roots"/>
+        <res id="RootsPartitioningTableFraction" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="Fraction of total dry matter to roots as function of DVS"/>
+        <res id="LeavesPartitioningTableDVS" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="DVS for fraction of total dry matter to leaves"/>
+        <res id="LeavesPartitioningTableFraction" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="Fraction of total dry matter to leaves as function of DVS"/>
+        <res id="StemsPartitioningTableDVS" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="DVS for fraction of total dry matter to stems"/>
+        <res id="StemsPartitioningTableFraction" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="Fraction of total dry matter to stems as function of DVS"/>
+        <res id="StorageOrgansPartitioningTableDVS" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="DVS for fraction of total dry matter to storage organs"/>
+        <res id="StorageOrgansPartitioningTableFraction" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="Fraction of total dry matter to storage organs as function of DVS"/>
       </header>
     </resource>
     <resource id="ndemand" interface="ndemandfile" frequence="COMPLEX" rule="${DefaultManagement.DoSow}">
@@ -296,110 +274,110 @@ WIKI_END</description>
         <res id="ANSTI" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
         <res id="ANRTI" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description=""/>
         <res id="DELT" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description=""/>
-        <res id="NMaxTableDVS" datatype="DOUBLEARRAY" description="DVS for maximum N concentration in leaves" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
-        <res id="NMaxTableConcentration" datatype="DOUBLEARRAY" description="Maximum N concentration in leaves as function of DVS" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
-        <res id="NAbsorptionTableNNI" datatype="DOUBLEARRAY" description="NNI for absorption reduction factor" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
-        <res id="NAbsorptionTableFactor" datatype="DOUBLEARRAY" description="Absorption reduction factor as function of NNI" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="NMaxTableDVS" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="DVS for maximum N concentration in leaves"/>
+        <res id="NMaxTableConcentration" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" description="Maximum N concentration in leaves as function of DVS"/>
+        <res id="NAbsorptionTableNNI" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="NNI for absorption reduction factor"/>
+        <res id="NAbsorptionTableFactor" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" description="Absorption reduction factor as function of NNI"/>
       </header>
     </resource>
     <resource id="carbon" interface="carbonfile" frequence="YEARLY">
       <header>
         <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
-        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
-        <res id="Lignfct" unit="" datatype="DOUBLE"/>
-        <res id="Brabove" unit="" datatype="DOUBLE"/>
-        <res id="Fmicrolab" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Li" unit="" datatype="DOUBLE"/>
+        <res id="depth" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="Lignfct" datatype="DOUBLE" unit=""/>
+        <res id="Brabove" datatype="DOUBLE" unit=""/>
+        <res id="Fmicrolab" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Li" datatype="DOUBLE" unit=""/>
         <res id="Ymin" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp1" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp2" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp3" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp4" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp5" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp6" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp7" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp8" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp9" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp10" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp11" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp12" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp13" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp14" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp15" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="MineralisationDepth" unit="" datatype="DOUBLE"/>
+        <res id="Kdecomp1" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp2" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp3" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp4" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp5" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp6" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp7" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp8" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp9" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp10" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp11" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp12" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp13" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp14" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp15" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="MineralisationDepth" datatype="DOUBLE" unit=""/>
       </header>
     </resource>
     <resource id="nitrogen" interface="nitrogenfile" frequence="YEARLY">
       <header>
         <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
-        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
-        <res id="FracNH4Volat" unit="" datatype="DOUBLE"/>
-        <res id="Bactnc" unit="" datatype="DOUBLE"/>
-        <res id="Critinflow" unit="" datatype="DOUBLE"/>
-        <res id="Fungnc" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Ligncmax" unit="" datatype="DOUBLE"/>
-        <res id="Ligncmin" unit="" datatype="DOUBLE"/>
-        <res id="Minncact" unit="" datatype="DOUBLE"/>
-        <res id="Ncsommicro" unit="" datatype="DOUBLE"/>
-        <res id="Ninorgcrit" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="Ratemicrobup" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
+        <res id="depth" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="FracNH4Volat" datatype="DOUBLE" unit=""/>
+        <res id="Bactnc" datatype="DOUBLE" unit=""/>
+        <res id="Critinflow" datatype="DOUBLE" unit=""/>
+        <res id="Fungnc" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Ligncmax" datatype="DOUBLE" unit=""/>
+        <res id="Ligncmin" datatype="DOUBLE" unit=""/>
+        <res id="Minncact" datatype="DOUBLE" unit=""/>
+        <res id="Ncsommicro" datatype="DOUBLE" unit=""/>
+        <res id="Ninorgcrit" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="Ratemicrobup" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
       </header>
     </resource>
     <resource id="soilcrop" interface="soilcropfile" frequence="YEARLY">
       <header>
-        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
+        <res id="depth" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
         <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
-        <res id="Celroot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Celshoot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Ligbranch" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Ligroot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Ligshoot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Ligstem" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Celroot" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Celshoot" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Ligbranch" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Ligroot" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Ligshoot" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Ligstem" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
       </header>
     </resource>
     <resource id="aux" interface="auxfile" frequence="YEARLY">
       <header>
         <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
         <res id="WaterEffectSwitch" datatype="CHAR"/>
-        <res id="TimeDiv" unit="" datatype="DOUBLE"/>
+        <res id="TimeDiv" datatype="DOUBLE" unit=""/>
       </header>
     </resource>
     <resource id="init" interface="initfile" frequence="YEARLY">
       <header>
         <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
-        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
-        <res id="CelloseSurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="CellosesurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="LigncellosesurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="LigncellosesurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="BranchsurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="BranchsurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="StemsurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="StemsurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="MetabsurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="MetabsurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="CellosesoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="CellosesoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="LigncellosesoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="LigncellosesoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="RootsoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="RootsoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="MetabsoilC" unit="" datatype="DOUBLEARRAY"/>
-        <res id="MetabsoilN" unit="" datatype="DOUBLEARRAY"/>
-        <res id="microLabCN" unit="" datatype="DOUBLE"/>
-        <res id="microLabFrac" unit="" datatype="DOUBLE"/>
-        <res id="microRstCN" unit="" datatype="DOUBLE"/>
-        <res id="microRstFrac" unit="" datatype="DOUBLE"/>
-        <res id="OldSOMCN" unit="" datatype="DOUBLE"/>
-        <res id="YoungSOMCN" unit="" datatype="DOUBLE"/>
+        <res id="depth" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="CelloseSurfC" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="CellosesurfN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="LigncellosesurfC" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="LigncellosesurfN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="BranchsurfC" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="BranchsurfN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="StemsurfC" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="StemsurfN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="MetabsurfC" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="MetabsurfN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="CellosesoilC" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="CellosesoilN" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="LigncellosesoilC" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="LigncellosesoilN" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="RootsoilC" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="RootsoilN" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="MetabsoilC" datatype="DOUBLEARRAY" unit=""/>
+        <res id="MetabsoilN" datatype="DOUBLEARRAY" unit=""/>
+        <res id="microLabCN" datatype="DOUBLE" unit=""/>
+        <res id="microLabFrac" datatype="DOUBLE" unit=""/>
+        <res id="microRstCN" datatype="DOUBLE" unit=""/>
+        <res id="microRstFrac" datatype="DOUBLE" unit=""/>
+        <res id="OldSOMCN" datatype="DOUBLE" unit=""/>
+        <res id="YoungSOMCN" datatype="DOUBLE" unit=""/>
       </header>
     </resource>
     <transform id="weather_transform" frequence="DAILY" class="net.simplace.sim.transformers.DefaultSQLStatementTransformer">
       <header>
         <res id="CURRENTDATE" datatype="DATE" key="CURRENT.DATE"/>
-        <res id="AirTemperatureMean" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
-        <res id="EffectiveTempRateBeforeAnt" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
-        <res id="EffectiveTempRateAfterAnt" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius" datatype="DOUBLE"/>
+        <res id="AirTemperatureMean" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius"/>
+        <res id="EffectiveTempRateBeforeAnt" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius"/>
+        <res id="EffectiveTempRateAfterAnt" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/degree_Celsius"/>
       </header>
       <input id="statement">SELECT
 				CURRENTDATE,
@@ -424,23 +402,23 @@ WIKI_END</description>
     <transform id="soil_transform" resource="soil" frequence="YEARLY" class="net.simplace.sim.transformers.SoilLayerTransformer">
       <header>
         <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
-        <res id="dampingdepth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
-        <res id="soilwater_fc_global" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLE"/>
-        <res id="soilwater_sat_global" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLE"/>
-        <res id="drainage_rate" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre" datatype="DOUBLE"/>
-        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
-        <res id="soilwater_fc" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
-        <res id="soilwater_red" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
-        <res id="soilwater_wp" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
-        <res id="soilwater_sat" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
-        <res id="soilwater_res" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
-        <res id="soilwater_init" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre" datatype="DOUBLEARRAY"/>
-        <res id="bulkdensity" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre" datatype="DOUBLEARRAY"/>
-        <res id="clay" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
-        <res id="carbon" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
-        <res id="ammonium" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
-        <res id="nitrate" unit="http://www.wurvoc.org/vocabularies/om-1.8/milligram_per_kilogram" datatype="DOUBLEARRAY"/>
-        <res id="sand" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram" datatype="DOUBLEARRAY"/>
+        <res id="dampingdepth" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="soilwater_fc_global" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre"/>
+        <res id="soilwater_sat_global" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre"/>
+        <res id="drainage_rate" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/millimetre"/>
+        <res id="depth" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="soilwater_fc" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre"/>
+        <res id="soilwater_red" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre"/>
+        <res id="soilwater_wp" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre"/>
+        <res id="soilwater_sat" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre"/>
+        <res id="soilwater_res" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre"/>
+        <res id="soilwater_init" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/cubic_metre_per_cubic_metre"/>
+        <res id="bulkdensity" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_cubic_centimetre"/>
+        <res id="clay" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram"/>
+        <res id="carbon" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram"/>
+        <res id="ammonium" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram"/>
+        <res id="nitrate" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/milligram_per_kilogram"/>
+        <res id="sand" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_hectogram"/>
       </header>
       <input id="layercount"/>
       <input id="layerthickness">0.03</input>
@@ -450,27 +428,27 @@ WIKI_END</description>
       <header>
         <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
         <res id="depth" datatype="DOUBLEARRAY"/>
-        <res id="Lignfct" unit="" datatype="DOUBLE"/>
-        <res id="Brabove" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Fmicrolab" unit="" datatype="DOUBLE"/>
-        <res id="Li" unit="" datatype="DOUBLE"/>
+        <res id="Lignfct" datatype="DOUBLE" unit=""/>
+        <res id="Brabove" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Fmicrolab" datatype="DOUBLE" unit=""/>
+        <res id="Li" datatype="DOUBLE" unit=""/>
         <res id="Ymin" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp1" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp2" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp3" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp4" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp5" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp6" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp7" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp8" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp9" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp10" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp11" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp12" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp13" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp14" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="Kdecomp15" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day" datatype="DOUBLEARRAY"/>
-        <res id="MineralisationDepth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLE"/>
+        <res id="Kdecomp1" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp2" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp3" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp4" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp5" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp6" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp7" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp8" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp9" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp10" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp11" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp12" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp13" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp14" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="Kdecomp15" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/reciprocal_day"/>
+        <res id="MineralisationDepth" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
       </header>
       <input id="layercount"/>
       <input id="layerthickness">0.03</input>
@@ -480,16 +458,16 @@ WIKI_END</description>
       <header>
         <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
         <res id="depth" datatype="DOUBLEARRAY"/>
-        <res id="FracNH4Volat" unit="" datatype="DOUBLE"/>
-        <res id="Bactnc" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Critinflow" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Fungnc" unit="" datatype="DOUBLE"/>
-        <res id="Ligncmax" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Ligncmin" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Minncact" unit="" datatype="DOUBLE"/>
-        <res id="Ncsommicro" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Ninorgcrit" unit="" datatype="DOUBLE"/>
-        <res id="Ratemicrobup" unit="" datatype="DOUBLEARRAY"/>
+        <res id="FracNH4Volat" datatype="DOUBLE" unit=""/>
+        <res id="Bactnc" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Critinflow" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Fungnc" datatype="DOUBLE" unit=""/>
+        <res id="Ligncmax" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Ligncmin" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Minncact" datatype="DOUBLE" unit=""/>
+        <res id="Ncsommicro" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Ninorgcrit" datatype="DOUBLE" unit=""/>
+        <res id="Ratemicrobup" datatype="DOUBLEARRAY" unit=""/>
       </header>
       <input id="layercount"/>
       <input id="layerthickness">0.03</input>
@@ -498,12 +476,12 @@ WIKI_END</description>
     <transform id="soilcrop_transform" resource="soilcrop" frequence="YEARLY" class="net.simplace.sim.transformers.SoilLayerTransformer">
       <header>
         <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
-        <res id="Celroot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Celshoot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Ligbranch" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Ligroot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Ligshoot" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
-        <res id="Ligstem" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram" datatype="DOUBLE"/>
+        <res id="Celroot" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Celshoot" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Ligbranch" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Ligroot" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Ligshoot" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
+        <res id="Ligstem" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/gram_per_gram"/>
       </header>
       <input id="layercount"/>
       <input id="layerthickness">0.03</input>
@@ -512,31 +490,31 @@ WIKI_END</description>
     <transform id="init_transform" resource="init" frequence="YEARLY" class="net.simplace.sim.transformers.SoilLayerTransformer">
       <header>
         <res id="soiltype" datatype="CHAR" key="vSoiltype"/>
-        <res id="depth" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre" datatype="DOUBLEARRAY"/>
-        <res id="CelloseSurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="CellosesurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="LigncellosesurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="LigncellosesurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="BranchsurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="BranchsurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="StemsurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="StemsurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="MetabsurfC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="MetabsurfN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLE"/>
-        <res id="CellosesoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="CellosesoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="LigncellosesoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="LigncellosesoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="RootsoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="RootsoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="MetabsoilC" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="MetabsoilN" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare" datatype="DOUBLEARRAY"/>
-        <res id="microLabCN" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="microLabFrac" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="microRstCN" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="microRstFrac" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="OldSOMCN" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
-        <res id="YoungSOMCN" unit="http://www.wurvoc.org/vocabularies/om-1.8/one" datatype="DOUBLE"/>
+        <res id="depth" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/metre"/>
+        <res id="CelloseSurfC" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="CellosesurfN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="LigncellosesurfC" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="LigncellosesurfN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="BranchsurfC" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="BranchsurfN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="StemsurfC" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="StemsurfN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="MetabsurfC" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="MetabsurfN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="CellosesoilC" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="CellosesoilN" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="LigncellosesoilC" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="LigncellosesoilN" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="RootsoilC" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="RootsoilN" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="MetabsoilC" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="MetabsoilN" datatype="DOUBLEARRAY" unit="http://www.wurvoc.org/vocabularies/om-1.8/kilogram_per_hectare"/>
+        <res id="microLabCN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="microLabFrac" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="microRstCN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="microRstFrac" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="OldSOMCN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
+        <res id="YoungSOMCN" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/one"/>
       </header>
       <input id="layercount"/>
       <input id="layerthickness">0.03</input>
@@ -553,7 +531,7 @@ WIKI_END</description>
         <mgm id="DoHarvest" datatype="BOOLEAN" default="false" rule="true"/>
         <mgm id="Crop" datatype="CHAR"/>
       </action>
-      <action rule="${LintulPhenology.sDevStage}&gt;0 &amp;&amp; ${LintulPhenology.sDevStage} + 0.023 &lt; 2">
+      <action rule="${LintulPhenology.sDevStage} gt 0 and ${LintulPhenology.sDevStage} + 0.023 lt 2">
         <mgm id="WithCrop" datatype="BOOLEAN" default="false" rule="true"/>
       </action>
     </simcomponent>
@@ -785,7 +763,6 @@ WIKI_END</description>
     </simcomponent>
     <simcomponent id="SoilCN" class="net.simplace.sim.components.soil.soilcn.SoilCN">
       <input id="cLignfct" source="carbon_transform.Lignfct"/>
-      <input id="cBrabove" source="carbon_transform.Brabove"/>
       <input id="cFmicrolab" source="carbon_transform.Fmicrolab"/>
       <input id="cLi" source="carbon_transform.Li"/>
       <input id="cYmin" source="carbon_transform.Ymin"/>
@@ -821,10 +798,8 @@ WIKI_END</description>
       <input id="cSand" source="soil_transform.sand"/>
       <input id="cCelroot" source="soilcrop.Celroot"/>
       <input id="cCelshoot" source="soilcrop.Celshoot"/>
-      <input id="cLigbranch" source="soilcrop.Ligbranch"/>
       <input id="cLigroot" source="soilcrop.Ligroot"/>
       <input id="cLigshoot" source="soilcrop.Ligshoot"/>
-      <input id="cLigstem" source="soilcrop.Ligstem"/>
       <input id="cCellosesoilC" source="init_transform.CellosesoilC"/>
       <input id="cCellosesoilN" source="init_transform.CellosesoilN"/>
       <input id="cLigncellosesoilC" source="init_transform.LigncellosesoilC"/>
@@ -837,10 +812,6 @@ WIKI_END</description>
       <input id="cCellosesurfN" source="init_transform.CellosesurfN"/>
       <input id="cLigncellosesurfC" source="init_transform.LigncellosesurfC"/>
       <input id="cLigncellosesurfN" source="init_transform.LigncellosesurfN"/>
-      <input id="cBranchsurfC" source="init_transform.BranchsurfC"/>
-      <input id="cBranchsurfN" source="init_transform.BranchsurfN"/>
-      <input id="cStemsurfC" source="init_transform.StemsurfC"/>
-      <input id="cStemsurfN" source="init_transform.StemsurfN"/>
       <input id="cMetabsurfC" source="init_transform.MetabsurfC"/>
       <input id="cMetabsurfN" source="init_transform.MetabsurfN"/>
       <input id="cmicroLabCN" source="init_transform.microLabCN"/>
@@ -945,7 +916,7 @@ WIKI_END</description>
         <out id="Yield" datatype="DOUBLE" mode="MAX" rule="LintulBiomass.sWSO"/>
         <out id="Yield_res" datatype="DOUBLE" mode="MAX" rule="referencedata.yield"/>
         <out id="AGBm" datatype="DOUBLE" mode="MAX" rule="LintulBiomass.AboveGroundBiomass"/>
-        <out id="MobileWater|1-7" mode="MAX" datatype="DOUBLEARRAY" rule="SlimWater.sWM"/>
+        <out id="MobileWater|1-7" datatype="DOUBLEARRAY" mode="MAX" rule="SlimWater.sWM"/>
       </header>
       <statistic prefix="stat_">
         <stat id="YIELD_RMSE" mode="RMSE" simulated="Yield" observed="Yield_res"/>
@@ -961,7 +932,7 @@ WIKI_END</description>
         <out id="TOP_LINE_Stems" datatype="DOUBLE" rule="LintulBiomass.sWST"/>
         <out id="TOP_LINE_Roots" datatype="DOUBLE" rule="LintulBiomass.sWRT"/>
         <out id="TOP_LINE_StorageOrgans" datatype="DOUBLE" rule="LintulBiomass.sWSO"/>
-        <out id="CENTER_LINE_LAI" datatype="DOUBLE" description="Leaf Area Index" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_square_metre" rule="LintulBiomass.sLAI"/>
+        <out id="CENTER_LINE_LAI" datatype="DOUBLE" unit="http://www.wurvoc.org/vocabularies/om-1.8/square_metre_per_square_metre" description="Leaf Area Index" rule="LintulBiomass.sLAI"/>
         <out id="CENTER_BAR_Rainfall" datatype="DOUBLE" rule="weather.Rain"/>
         <out id="BOTTOM_ARRAY_VolumetricWaterContent|1-40" datatype="DOUBLEARRAY" description="Volumetric water content" rule="SlimWater.TotalVolumetricWaterContentPerLayer"/>
         <out id="BOTTOM_LINE_RootDepth" datatype="DOUBLE" description="Root depth" rule="SlimRoots.sSeminalRootDepth"/>
